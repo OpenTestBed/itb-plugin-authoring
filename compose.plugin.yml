@@ -1,0 +1,29 @@
+# Authoring plugin (functionality): Gherkin workbench + test manager UI.
+# UI plugins are the exception to the "no host ports" fragment rule.
+#
+# Paths are resolved against the compose PROJECT directory (the first -f file's
+# folder, i.e. itb-starter/), hence the ../itb-plugin-* defaults.
+services:
+  authoring:
+    build:
+      context: ${AUTHORING_PLUGIN_SRC:-../itb-plugin-authoring}
+      dockerfile: Dockerfile
+    # Always rebuild on `up` (cached = seconds) so a stale image is never
+    # silently reused when someone forgets --build.
+    pull_policy: build
+    restart: unless-stopped
+    ports: ["${AUTHORING_PORT:-10004}:8000"]
+    environment:
+      - CLI_DIR=/cli
+      - ITB_BASE_URL=http://gitb-ui:9000            # CLI-in-container reaches ITB over the docker network
+      - ITB_MASTER_KEY=${AUTOMATION_API_MASTER_KEY:-master-api-key}
+    volumes:
+      # the manager shells out to the mounted itb-cli (features/, out/, .itb-state.json)
+      - ${ITB_CLI_SRC:-../itb-cli}:/cli
+    depends_on:
+      gitb-ui: { condition: service_started }
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8000/api/health >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

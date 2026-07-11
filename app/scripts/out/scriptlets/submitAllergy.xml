@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scriptlet id="submitAllergy"
+            xmlns="http://www.gitb.com/tdl/v1/"
+            xmlns:gitb="http://www.gitb.com/core/v1/">
+  <params>
+    <var name="from" type="string"/>
+    <var name="content" type="string"/>
+  </params>
+  <steps>
+    <log>"Scriptlet submitAllergy executed (stub)."</log>
+  </steps>
+</scriptlet>

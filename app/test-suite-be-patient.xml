@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite id="test-suite-be-patient"
+  xmlns="http://www.gitb.com/tdl/v1/"
+  xmlns:gitb="http://www.gitb.com/core/v1/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <metadata>
+    <gitb:name>Belgian Patient Flow: FHIR Validation</gitb:name>
+    <gitb:version>1.0</gitb:version>
+    <gitb:description>Loads the Belgian Core IG, generates BePatient test data, validates against the be-patient profile, checks structure with matchetype, and evaluates FHIRPath expressions.</gitb:description>
+  </metadata>
+
+  <actors>
+    <gitb:actor id="User">
+      <gitb:name>Tester</gitb:name>
+      <gitb:desc>The user initiating the Belgian Patient validation test flow.</gitb:desc>
+    </gitb:actor>
+
+    <gitb:actor id="FHIRValidator">
+      <gitb:name>FHIR Validator</gitb:name>
+      <gitb:desc>The HL7 FHIR Validator CLI running as an HTTP service.</gitb:desc>
+    </gitb:actor>
+  </actors>
+
+  <testcase id="test-case-be-patient"/>
+
+</testsuite>

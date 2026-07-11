@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scriptlet id="checkRegisteredAllergies"
+            xmlns="http://www.gitb.com/tdl/v1/"
+            xmlns:gitb="http://www.gitb.com/core/v1/">
+  <params>
+    <var name="expectedData" type="string"/>
+  </params>
+  <steps>
+    <log>"Scriptlet checkRegisteredAllergies executed (stub)."</log>
+  </steps>
+</scriptlet>

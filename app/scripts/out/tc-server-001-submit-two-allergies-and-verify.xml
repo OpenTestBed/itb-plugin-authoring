@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase id="tc-server-001-submit-two-allergies-and-verify"
+          xmlns="http://www.gitb.com/tdl/v1/"
+          xmlns:gitb="http://www.gitb.com/core/v1/">
+  <metadata>
+    <gitb:name>tc-server-001 Submit two allergies and verify</gitb:name>
+    <gitb:version>1.0</gitb:version>
+    <gitb:description>FHIR server allergy flows</gitb:description>
+  </metadata>
+
+  <actors>
+    <gitb:actor id="Client" role="SUT"/>
+    <gitb:actor id="FHIRServer"/>
+  </actors>
+
+  <steps stopOnError="true">
+    <call path="scriptlets/setupData.xml">
+      <input name="to">FHIRServer</input>
+      <input name="ingestData">Y</input>
+      <input name="dataPool">default</input>
+      <input name="serverApiRoot">$SYSTEM{serverApiRoot}</input>
+    </call>
+    <call path="scriptlets/registerAllergy.xml" output="lastRegistered">
+      <input name="from">Client</input>
+      <input name="codeCode">762952008</input>
+      <input name="codeDisplay">&quot;Peanut (substance)&quot;</input>
+      <input name="codeText">&quot;Allergic to peanut&quot;</input>
+      <input name="reactionCode">39579001</input>
+      <input name="reactionDisplay">&quot;Anaphylactic reaction&quot;</input>
+    </call>
+    <assign to="registeredIdentifier1">$lastRegistered</assign>
+    <call path="scriptlets/registerAllergy.xml" output="lastRegistered">
+      <input name="from">Client</input>
+      <input name="codeCode">227346004</input>
+      <input name="codeDisplay">&quot;Chick peas (substance)&quot;</input>
+      <input name="codeText">&quot;Allergic to chick peas&quot;</input>
+      <input name="reactionCode">39579001</input>
+      <input name="reactionDisplay">&quot;Anaphylactic reaction&quot;</input>
+    </call>
+    <assign to="registeredIdentifier2">$lastRegistered</assign>
+    <assign to="expectedData" append="true">'{&quot;code&quot;:&quot;762952008&quot;,&quot;identifier&quot;:&quot;$registeredIdentifier1&quot;}'</assign>
+    <assign to="expectedData" append="true">'{&quot;code&quot;:&quot;227346004&quot;,&quot;identifier&quot;:&quot;$registeredIdentifier2&quot;}'</assign>
+    <call path="scriptlets/checkRegisteredAllergies.xml">
+      <input name="expectedData">$expectedData</input>
+    </call>
+  </steps>
+
+  <output>
+    <success>
+      <default>"Test case completed successfully."</default>
+    </success>
+    <failure>
+      <default>"Test case failed. Check step reports and logs."</default>
+    </failure>
+  </output>
+</testcase>

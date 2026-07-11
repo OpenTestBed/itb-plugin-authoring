@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase id="tc-server-002-reject-invalid-allergy-due-to-wrong-resource-type"
+          xmlns="http://www.gitb.com/tdl/v1/"
+          xmlns:gitb="http://www.gitb.com/core/v1/">
+  <metadata>
+    <gitb:name>tc-server-002 Reject invalid allergy due to wrong resource type</gitb:name>
+    <gitb:version>1.0</gitb:version>
+    <gitb:description>FHIR server allergy flows</gitb:description>
+  </metadata>
+
+  <actors>
+    <gitb:actor id="Client" role="SUT"/>
+    <gitb:actor id="FHIRServer"/>
+  </actors>
+
+  <steps stopOnError="true">
+    <call path="scriptlets/setupData.xml">
+      <input name="to">FHIRServer</input>
+      <input name="ingestData">Y</input>
+      <input name="dataPool">default</input>
+      <input name="serverApiRoot">$SYSTEM{serverApiRoot}</input>
+    </call>
+    <call path="scriptlets/createAllergy.xml" output="createdAllergy">
+      <input name="from">Client</input>
+      <input name="resourceType">AllergyIntoleranceXXX</input>
+      <input name="codeCode">762952008</input>
+      <input name="codeDisplay">&quot;Peanut (substance)&quot;</input>
+      <input name="codeText">&quot;Allergic to peanut&quot;</input>
+      <input name="reactionCode">39579001</input>
+      <input name="reactionDisplay">&quot;Anaphylactic reaction&quot;</input>
+    </call>
+    <call path="scriptlets/submitAllergy.xml" output="submitResult">
+      <input name="from">Client</input>
+      <input name="content">$createdAllergy{content}</input>
+    </call>
+    <verify handler="StringValidator" desc="Verify HTTP status">
+      <input name="actualstring">$submitResult{status}</input>
+      <input name="expectedstring">&quot;400&quot;</input>
+    </verify>
+    <process handler="JSONPointerProcessor" operation="process" output="jsonValue">
+      <input name="content">$submitResult{payload}</input>
+      <input name="pointer">&quot;/issue/0/severity&quot;</input>
+    </process>
+    <verify handler="StringValidator" desc="Verify OperationOutcome value">
+      <input name="actualstring">$jsonValue</input>
+      <input name="expectedstring">&quot;error&quot;</input>
+    </verify>
+  </steps>
+
+  <output>
+    <success>
+      <default>"Test case completed successfully."</default>
+    </success>
+    <failure>
+      <default>"Test case failed. Check step reports and logs."</default>
+    </failure>
+  </output>
+</testcase>

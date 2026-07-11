@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scriptlet id="setupData"
+            xmlns="http://www.gitb.com/tdl/v1/"
+            xmlns:gitb="http://www.gitb.com/core/v1/">
+  <params>
+    <var name="to" type="string"/>
+    <var name="ingestData" type="string"/>
+    <var name="dataPool" type="string"/>
+    <var name="serverApiRoot" type="string"/>
+  </params>
+  <steps>
+    <log>"Scriptlet setupData executed (stub)."</log>
+  </steps>
+</scriptlet>

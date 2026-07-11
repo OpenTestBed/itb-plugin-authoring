@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scriptlet id="registerAllergy"
+            xmlns="http://www.gitb.com/tdl/v1/"
+            xmlns:gitb="http://www.gitb.com/core/v1/">
+  <params>
+    <var name="from" type="string"/>
+    <var name="codeCode" type="string"/>
+    <var name="codeDisplay" type="string"/>
+    <var name="codeText" type="string"/>
+    <var name="reactionCode" type="string"/>
+    <var name="reactionDisplay" type="string"/>
+  </params>
+  <steps>
+    <log>"Scriptlet registerAllergy executed (stub)."</log>
+  </steps>
+</scriptlet>

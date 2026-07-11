@@ -1,0 +1,42 @@
+apiVersion: itb-plugins/v1
+name: authoring
+version: 0.1.0
+kind: functionality            # NOT a language plugin: extends the ITB installation
+                               # with a capability (the authoring UI), not the test language
+description: >
+  Test authoring UI for ITB: the Gherkin workbench (Monaco editor, live
+  suite-XML preview, dialect-aware step catalog) plus the test manager
+  (select feature, compile, deploy, run, session status) in one service.
+  The manager wraps the itb-cli commands 1:1 — no duplicated logic.
+homepage: https://github.com/OpenTestBed/itb-plugin-authoring
+license: BSD-3-Clause
+maintainers: [jose.a.teixeira@gmail.com]
+
+runtime:
+  compose: compose.plugin.yml
+  services:
+    authoring:
+      build: .                 # multi-stage: vite-builds the SPA, runs server.mjs
+      port: 8000               # UI plugins are the exception to the no-host-ports rule
+      healthcheck: /api/health
+
+ui:                            # what this plugin adds to the operator's browser
+  - { path: /,        title: Gherkin workbench,  description: edit features, preview generated suite XML }
+  - { path: /manager, title: Test manager,       description: compile / deploy / run / status via itb-cli }
+
+endpoints: {}                  # no GITB handler services — functionality only
+
+provides:
+  - { capability: test-authoring, uri: https://opentestbed.github.io/itb-plugins/capabilities/test-authoring, version: 1.0.0, service: authoring, entrypoint: / }
+
+requires: []                   # runs against any ITB; language dialects come from
+                               # the language plugins (synced into app/public/components)
+
+# No dialect: this plugin CONSUMES dialects (fhir, hcert, ...) published by
+# language plugins; itb-cli/src/sync-dialects.mjs copies them into
+# app/public/components/ where the bundled parser loads them.
+
+config:
+  AUTHORING_PORT:  { default: "10004",                description: host port for the UI }
+  ITB_CLI_SRC:     { default: "../itb-cli",           description: itb-cli checkout mounted into the container (manager backend) }
+  ITB_MASTER_KEY:  { default: "(from AUTOMATION_API_MASTER_KEY)", description: lets the manager run `itb-suite init` on fresh instances }

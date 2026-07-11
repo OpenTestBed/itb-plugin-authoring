@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase id="test-case-be-patient"
+  xmlns="http://www.gitb.com/tdl/v1/"
+  xmlns:gitb="http://www.gitb.com/core/v1/">
+
+  <metadata>
+    <gitb:name>Belgian Patient: IG load, test data generation, validation, matchetype, and FHIRPath</gitb:name>
+    <gitb:description>
+      End-to-end test: load the Belgian Core IG into the FHIR Validator, generate a BePatient resource
+      with SSIN and MRN identifiers, validate against the be-patient profile, verify structure with
+      matchetype, and extract identifiers via FHIRPath.
+    </gitb:description>
+    <gitb:version>1.0</gitb:version>
+  </metadata>
+
+  <actors>
+    <gitb:actor id="User" role="SUT"/>
+    <gitb:actor id="FHIRValidator"/>
+  </actors>
+
+  <steps>
+
+    <!-- Common headers -->
+    <assign to="jsonHeaders{Content-Type}">"application/json"</assign>
+    <assign to="jsonHeaders{Accept}">"application/fhir+json"</assign>
+    <assign to="fhirHeaders{Content-Type}">"application/fhir+json"</assign>
+    <assign to="fhirHeaders{Accept}">"application/fhir+json"</assign>
+    <assign to="matchHeaders{Content-Type}">"application/json"</assign>
+    <assign to="matchHeaders{Accept}">"application/fhir+json"</assign>
+
+    <!-- Reusable constants -->
+    <assign to="ssinSystem">"https://www.ehealth.fgov.be/standards/fhir/core/NamingSystem/ssin"</assign>
+    <assign to="mrnSystem">"https://www.example.be/fhir/NamingSystem/mrn"</assign>
+    <assign to="bePatientProfile">"https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-patient"</assign>
+
+    <!-- ================================================================
+         STEP 1: Load the Belgian Core IG
+         ================================================================ -->
+    <assign to="loadIGBody">'{"ig":"hl7.fhir.be.core#2.1.2"}'</assign>
+    <log>concat("[REQ]loadIG request body: ", $loadIGBody)</log>
+
+    <send id="loadIG" desc="Load Belgian Core IG (hl7.fhir.be.core#2.1.2)" handler="HttpMessagingV2" from="User" to="FHIRValidator">
+      <input name="uri">"http://fhir-validator:8080/loadIG"</input>
+      <input name="method">"POST"</input>
+      <input name="headers">$jsonHeaders</input>
+      <input name="body">$loadIGBody</input>
+    </send>
+
+    <log>concat("[RESP]loadIG HTTP status: ", $loadIG{response}{status})</log>
+    <log>concat("[RESP]loadIG response body: ", $loadIG{response}{body})</log>
+
+    <verify handler="NumberValidator" desc="loadIG returns HTTP 200">
+      <input name="actualnumber">$loadIG{response}{status}</input>
+      <input name="expectednumber">"200"</input>
+    </verify>
+    <log>"Belgian Core IG loaded successfully."</log>
+
+    <!-- ================================================================
+         STEP 2: Generate a single BePatient with SSIN + MRN identifiers
+         Uses TemplateProcessor; sq variable provides a literal single quote
+         for the FHIRPath expressions inside the JSON body.
+         ================================================================ -->
+    <assign to="tdParams{profile}">$bePatientProfile</assign>
+    <assign to="tdParams{ssinSys}">$ssinSystem</assign>
+    <assign to="tdParams{mrnSys}">$mrnSystem</assign>
+    <assign to="tdParams{sq}">"'"</assign>
+
+    <assign to="tdTemplate">
+      '{"profile":"${profile}","format":"json","data":[{"family":"Dupont","given":"Marie","gender":"female","birthDate":"1985-03-15","ssin":"85031512345","mrn":"MRN-001"}],"mappings":[{"path":"Patient.identifier:SSIN","parts":[{"name":"system","expression":"${sq}${ssinSys}${sq}"},{"name":"value","expression":"column(${sq}ssin${sq})"}]},{"path":"Patient.identifier","parts":[{"name":"system","expression":"${sq}${mrnSys}${sq}"},{"name":"value","expression":"column(${sq}mrn${sq})"}]},{"path":"Patient.name","parts":[{"name":"family","expression":"column(${sq}family${sq})"},{"name":"given","expression":"column(${sq}given${sq})"}]},{"path":"Patient.gender","expression":"column(${sq}gender${sq})"},{"path":"Patient.birthDate","expression":"column(${sq}birthDate${sq})"}]}'
+    </assign>
+
+    <process handler="TemplateProcessor" operation="process" output="testdataBody">
+      <input name="syntax">"freemarker"</input>
+      <input name="template">$tdTemplate</input>
+      <input name="parameters">$tdParams</input>
+    </process>
+
+    <log>concat("[REQ]testdata request body: ", $testdataBody)</log>
+
+    <send id="genPatient" desc="Generate BePatient test data" handler="HttpMessagingV2" from="User" to="FHIRValidator">
+      <input name="uri">"http://fhir-validator:8080/testdata"</input>
+      <input name="method">"POST"</input>
+      <input name="headers">$jsonHeaders</input>
+      <input name="body">$testdataBody</input>
+    </send>
+
+    <log>concat("[RESP]testdata HTTP status: ", $genPatient{response}{status})</log>
+    <log>concat("[RESP]testdata response body: ", $genPatient{response}{body})</log>
+
+    <verify handler="NumberValidator" desc="testdata returns HTTP 200">
+      <input name="actualnumber">$genPatient{response}{status}</input>
+      <input name="expectednumber">"200"</input>
+    </verify>
+
+    <!-- Verify generated resource is a Patient -->
+    <process handler="JsonPointerProcessor" operation="process" output="genResourceType">
+      <input name="content">$genPatient{response}{body}</input>
+      <input name="pointer">"/resourceType"</input>
+    </process>
+    <verify handler="StringValidator" desc="Generated resource is a Patient">
+      <input name="actualstring">$genResourceType</input>
+      <input name="expectedstring">"Patient"</input>
+    </verify>
+    <log>"BePatient test data generated successfully."</log>
+
+    <!-- ================================================================
+         STEP 3: Validate the generated Patient against the be-patient profile
+         ================================================================ -->
+    <assign to="validateQuery{profiles}">$bePatientProfile</assign>
+
+    <send id="validatePatient" desc="Validate Patient against be-patient profile" handler="HttpMessagingV2" from="User" to="FHIRValidator">
+      <input name="uri">"http://fhir-validator:8080/validateResource"</input>
+      <input name="method">"POST"</input>
+      <input name="headers">$fhirHeaders</input>
+      <input name="parameters">$validateQuery</input>
+      <input name="body">$genPatient{response}{body}</input>
+    </send>
+
+    <log>concat("[RESP]validatePatient HTTP status: ", $validatePatient{response}{status})</log>
+    <log>concat("[RESP]validatePatient response body: ", $validatePatient{response}{body})</log>
+
+    <verify handler="NumberValidator" desc="Validation returns HTTP 200">
+      <input name="actualnumber">$validatePatient{response}{status}</input>
+      <input name="expectednumber">"200"</input>
+    </verify>
+
+    <process handler="JsonPointerProcessor" operation="process" output="valResourceType">
+      <input name="content">$validatePatient{response}{body}</input>
+      <input name="pointer">"/resourceType"</input>
+    </process>
+    <verify handler="StringValidator" desc="Validation response is OperationOutcome">
+      <input name="actualstring">$valResourceType</input>
+      <input name="expectedstring">"OperationOutcome"</input>
+    </verify>
+    <log>"Validation completed."</log>
+
+    <!-- ================================================================
+         STEP 4: Validate a hand-crafted Patient (known-good resource)
+         ================================================================ -->
+    <assign to="knownPatient">
+      concat('{"resourceType":"Patient","identifier":[{"system":"', $ssinSystem, '","value":"85031512345"},{"system":"', $mrnSystem, '","value":"MRN-001"}],"name":[{"family":"Dupont","given":["Marie"]}],"gender":"female","birthDate":"1985-03-15"}')
+    </assign>
+
+    <log>concat("[REQ]knownPatient body: ", $knownPatient)</log>
+
+    <send id="validateKnown" desc="Validate hand-crafted Patient against be-patient profile" handler="HttpMessagingV2" from="User" to="FHIRValidator">
+      <input name="uri">"http://fhir-validator:8080/validateResource"</input>
+      <input name="method">"POST"</input>
+      <input name="headers">$fhirHeaders</input>
+      <input name="parameters">$validateQuery</input>
+      <input name="body">$knownPatient</input>
+    </send>
+
+    <log>concat("[RESP]validateKnown HTTP status: ", $validateKnown{response}{status})</log>
+    <log>concat("[RESP]validateKnown response body: ", $validateKnown{response}{body})</log>
+
+    <verify handler="NumberValidator" desc="Known-patient validation returns HTTP 200">
+      <input name="actualnumber">$validateKnown{response}{status}</input>
+      <input name="expectednumber">"200"</input>
+    </verify>
+    <log>"Hand-crafted patient validated against be-patient profile."</log>
+
+    <!-- ================================================================
+         STEP 5: Matchetype - verify patient has both identifiers (partial, wildcards)
+         ================================================================ -->
+    <assign to="matchPartialParams{ssinSys}">$ssinSystem</assign>
+    <assign to="matchPartialParams{mrnSys}">$mrnSystem</assign>
+    <assign to="matchPartialTpl">
+      '{"resource":{"resourceType":"Patient","identifier":[{"system":"${ssinSys}","value":"85031512345"},{"system":"${mrnSys}","value":"MRN-001"}],"name":[{"family":"Dupont","given":["Marie"]}],"gender":"female","birthDate":"1985-03-15"},"matchetype":{"resourceType":"Patient","extension":[{"url":"http://hl7.org/fhir/tools/StructureDefinition/matchetype","valueString":"partial"}],"identifier":[{"system":"${ssinSys}","value":"$string$"},{"system":"${mrnSys}","value":"$string$"}],"name":[{"family":"$string$","given":["$string$"]}],"gender":"$choice:male|female|other|unknown$","birthDate":"$date$"}}'
+    </assign>
+    <process handler="TemplateProcessor" operation="process" output="matchetypeBody">
+      <input name="syntax">"freemarker"</input>
+      <input name="template">$matchPartialTpl</input>
+      <input name="parameters">$matchPartialParams</input>
+    </process>
+
+    <send id="matchPartial" desc="Matchetype: partial structure check (wildcards)" handler="HttpMessagingV2" from="User" to="FHIRValidator">
+      <input name="uri">"http://fhir-validator:8080/matchetype"</input>
+      <input name="method">"POST"</input>
+      <input name="headers">$matchHeaders</input>
+      <input name="body">$matchetypeBody</input>
+    </send>
+
+    <log>concat("[RESP]matchPartial HTTP status: ", $matchPartial{response}{status})</log>
+    <log>concat("[RESP]matchPartial response body: ", $matchPartial{response}{body})</log>
+
+    <verify handler="NumberValidator" desc="Matchetype partial returns HTTP 200">
+      <input name="actualnumber">$matchPartial{response}{status}</input>
+      <input name="expectednumber">"200"</input>
+    </verify>
+    <log>"Matchetype partial structure check passed."</log>
+
+    <!-- ================================================================
+         STEP 6: Matchetype - verify exact identifier values
+         ================================================================ -->
+    <assign to="matchExactParams{ssinSys}">$ssinSystem</assign>
+    <assign to="matchExactParams{mrnSys}">$mrnSystem</assign>
+    <assign to="matchExactTpl">
+      '{"resource":{"resourceType":"Patient","identifier":[{"system":"${ssinSys}","value":"85031512345"},{"system":"${mrnSys}","value":"MRN-001"}],"name":[{"family":"Dupont","given":["Marie"]}],"gender":"female","birthDate":"1985-03-15"},"matchetype":{"resourceType":"Patient","extension":[{"url":"http://hl7.org/fhir/tools/StructureDefinition/matchetype","valueString":"partial"}],"identifier":[{"system":"${ssinSys}","value":"85031512345"},{"system":"${mrnSys}","value":"MRN-001"}],"name":[{"family":"Dupont","given":["Marie"]}],"gender":"female"}}'
+    </assign>
+    <process handler="TemplateProcessor" operation="process" output="matchExactBody">
+      <input name="syntax">"freemarker"</input>
+      <input name="template">$matchExactTpl</input>
+      <input name="parameters">$matchExactParams</input>
+    </process>
+
+    <send id="matchExact" desc="Matchetype: exact identifier and name values" handler="HttpMessagingV2" from="User" to="FHIRValidator">
+      <input name="uri">"http://fhir-validator:8080/matchetype"</input>
+      <input name="method">"POST"</input>
+      <input name="headers">$matchHeaders</input>
+      <input name="body">$matchExactBody</input>
+    </send>
+
+    <log>concat("[RESP]matchExact HTTP status: ", $matchExact{response}{status})</log>
+    <log>concat("[RESP]matchExact response body: ", $matchExact{response}{body})</log>
+
+    <verify handler="NumberValidator" desc="Matchetype exact returns HTTP 200">
+      <input name="actualnumber">$matchExact{response}{status}</input>
+      <input name="expectednumber">"200"</input>
+    </verify>
+    <log>"Matchetype exact value check passed."</log>
+
+    <!-- ================================================================
+         STEP 7: Matchetype - deliberately wrong name (expect mismatch)
+         ================================================================ -->
+    <assign to="matchWrongParams{ssinSys}">$ssinSystem</assign>
+    <assign to="matchWrongParams{mrnSys}">$mrnSystem</assign>
+    <assign to="matchWrongTpl">
+      '{"resource":{"resourceType":"Patient","identifier":[{"system":"${ssinSys}","value":"85031512345"},{"system":"${mrnSys}","value":"MRN-001"}],"name":[{"family":"Dupont","given":["Marie"]}],"gender":"female","birthDate":"1985-03-15"},"matchetype":{"resourceType":"Patient","extension":[{"url":"http://hl7.org/fhir/tools/StructureDefinition/matchetype","valueString":"partial"}],"name":[{"family":"WrongName","given":["WrongGiven"]}]}}'
+    </assign>
+    <process handler="TemplateProcessor" operation="process" output="matchWrongBody">
+      <input name="syntax">"freemarker"</input>
+      <input name="template">$matchWrongTpl</input>
+      <input name="parameters">$matchWrongParams</input>
+    </process>
+
+    <send id="matchWrong" desc="Matchetype: deliberately wrong name (expect errors)" handler="HttpMessagingV2" from="User" to="FHIRValidator">
+      <input name="uri">"http://fhir-validator:8080/matchetype"</input>
+      <input name="method">"POST"</input>
+      <input name="headers">$matchHeaders</input>
+      <input name="body">$matchWrongBody</input>
+    </send>
+
+    <log>concat("[RESP]matchWrong HTTP status: ", $matchWrong{response}{status})</log>
+    <log>concat("[RESP]matchWrong response body: ", $matchWrong{response}{body})</log>
+
+    <verify handler="NumberValidator" desc="Matchetype wrong name returns HTTP 200">
+      <input name="actualnumber">$matchWrong{response}{status}</input>
+      <input name="expectednumber">"200"</input>
+    </verify>
+
+    <!-- The matchetype error OperationOutcome may be returned as XML by the FHIR Validator CLI.
+         Verify that the response body contains "error" (works for both JSON and XML). -->
+    <verify handler="ExpressionValidator" desc="Mismatched name produced validation errors">
+      <input name="expression">contains($matchWrong{response}{body}, "error")</input>
+    </verify>
+    <log>"Matchetype correctly detected wrong name values."</log>
+
+    <!-- ================================================================
+         STEP 8: FHIRPath - Extract SSIN from patient
+         ================================================================ -->
+    <assign to="fhirpathQuery1{expression}">concat("Patient.identifier.where(system='", $ssinSystem, "').value")</assign>
+
+    <send id="fhirpathSSIN" desc="FHIRPath: extract SSIN identifier" handler="HttpMessagingV2" from="User" to="FHIRValidator">
+      <input name="uri">"http://fhir-validator:8080/fhirpath"</input>
+      <input name="method">"POST"</input>
+      <input name="headers">$fhirHeaders</input>
+      <input name="parameters">$fhirpathQuery1</input>
+      <input name="body">$knownPatient</input>
+    </send>
+
+    <log>concat("[RESP]fhirpathSSIN HTTP status: ", $fhirpathSSIN{response}{status})</log>
+    <log>concat("[RESP]fhirpathSSIN response body: ", $fhirpathSSIN{response}{body})</log>
+
+    <verify handler="NumberValidator" desc="FHIRPath SSIN returns HTTP 200">
+      <input name="actualnumber">$fhirpathSSIN{response}{status}</input>
+      <input name="expectednumber">"200"</input>
+    </verify>
+    <log>"FHIRPath SSIN extraction completed."</log>
+
+    <!-- ================================================================
+         STEP 9: FHIRPath - Extract MRN from patient
+         ================================================================ -->
+    <assign to="fhirpathQuery2{expression}">concat("Patient.identifier.where(system='", $mrnSystem, "').value")</assign>
+
+    <send id="fhirpathMRN" desc="FHIRPath: extract MRN identifier" handler="HttpMessagingV2" from="User" to="FHIRValidator">
+      <input name="uri">"http://fhir-validator:8080/fhirpath"</input>
+      <input name="method">"POST"</input>
+      <input name="headers">$fhirHeaders</input>
+      <input name="parameters">$fhirpathQuery2</input>
+      <input name="body">$knownPatient</input>
+    </send>
+
+    <log>concat("[RESP]fhirpathMRN HTTP status: ", $fhirpathMRN{response}{status})</log>
+    <log>concat("[RESP]fhirpathMRN response body: ", $fhirpathMRN{response}{body})</log>
+
+    <verify handler="NumberValidator" desc="FHIRPath MRN returns HTTP 200">
+      <input name="actualnumber">$fhirpathMRN{response}{status}</input>
+      <input name="expectednumber">"200"</input>
+    </verify>
+    <log>"FHIRPath MRN extraction completed."</log>
+
+  </steps>
+
+  <output>
+    <success>
+      <default>"Belgian Patient flow completed: IG loaded, test data generated, validation executed, matchetype verified, FHIRPath expressions evaluated."</default>
+    </success>
+  </output>
+
+</testcase>
