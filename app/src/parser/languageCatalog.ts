@@ -89,22 +89,52 @@ const base = () => import.meta.env.BASE_URL || '/';
  * Two ways to provide them:
  *   1. URL query param:   ?dialects=https://raw.githubusercontent.com/OpenTestBed/itb-plugin-fhir-validator/main/dialect,https://...
  *   2. localStorage key:  plugin-dialect-urls = JSON array of base URLs
+ *      (managed from the Components panel — "Plugin dialects" section)
  * Remote plugin dialects OVERRIDE a bundled component with the same id —
  * the plugin repo is the canonical home of its language extension.
  */
-export function pluginDialectUrls(): string[] {
-  const urls: string[] = [];
+export const DIALECT_URLS_KEY = 'plugin-dialect-urls';
+
+const normalizeDialectUrl = (u: string) => u.trim().replace(/\/+$/, '');
+
+/** Dialect URLs passed via ?dialects= (session-only, not persisted). */
+export function queryDialectUrls(): string[] {
   try {
     if (typeof window !== 'undefined' && window.location?.search) {
       const q = new URLSearchParams(window.location.search).get('dialects');
-      if (q) urls.push(...q.split(',').map(s => s.trim()).filter(Boolean));
-    }
-    if (typeof localStorage !== 'undefined') {
-      const stored = localStorage.getItem('plugin-dialect-urls');
-      if (stored) urls.push(...(JSON.parse(stored) as string[]));
+      if (q) return q.split(',').map(normalizeDialectUrl).filter(Boolean);
     }
   } catch { /* malformed config — ignore */ }
-  return [...new Set(urls.map(u => u.replace(/\/+$/, '')))];
+  return [];
+}
+
+/** Dialect URLs added by the user (persisted in localStorage). */
+export function getStoredDialectUrls(): string[] {
+  try {
+    if (typeof localStorage === 'undefined') return [];
+    const stored = localStorage.getItem(DIALECT_URLS_KEY);
+    const parsed = stored ? (JSON.parse(stored) as string[]) : [];
+    return Array.isArray(parsed) ? parsed.map(normalizeDialectUrl).filter(Boolean) : [];
+  } catch { return []; }
+}
+
+/** Persist a new dialect URL; returns the updated list. */
+export function addStoredDialectUrl(url: string): string[] {
+  const urls = [...new Set([...getStoredDialectUrls(), normalizeDialectUrl(url)])].filter(Boolean);
+  localStorage.setItem(DIALECT_URLS_KEY, JSON.stringify(urls));
+  return urls;
+}
+
+/** Remove a persisted dialect URL; returns the updated list. */
+export function removeStoredDialectUrl(url: string): string[] {
+  const target = normalizeDialectUrl(url);
+  const urls = getStoredDialectUrls().filter(u => u !== target);
+  localStorage.setItem(DIALECT_URLS_KEY, JSON.stringify(urls));
+  return urls;
+}
+
+export function pluginDialectUrls(): string[] {
+  return [...new Set([...queryDialectUrls(), ...getStoredDialectUrls()])];
 }
 
 /** Load a component (manifest + language extension + scriptlets) from an

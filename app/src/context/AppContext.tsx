@@ -21,6 +21,11 @@ interface AppContextType {
   itbSettingsOpen: boolean;
   setITBSettingsOpen: (v: boolean) => void;
 
+  // Plugin dialects: bumped whenever the set of dialect URLs changes so the
+  // parser and catalog consumers reload without a page refresh
+  dialectsVersion: number;
+  refreshDialects: () => void;
+
   // Parser & generator (shared instances)
   parser: GherkinParser;
   generator: XMLGenerator;
@@ -39,6 +44,8 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [selectedModel, setSelectedModel] = useState<DataModel>(dataModels[0]);
   const [itbConfig, setITBConfig] = useState<ITBConfig>(loadITBConfig);
   const [itbSettingsOpen, setITBSettingsOpen] = useState(false);
+  const [dialectsVersion, setDialectsVersion] = useState(0);
+  const refreshDialects = () => setDialectsVersion(v => v + 1);
 
   // Theme effect
   useEffect(() => {
@@ -72,7 +79,9 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         },
         strictRequirements: false,
       }),
-    [selectedModel]
+    // dialectsVersion: a fresh parser re-runs ensureCatalog, picking up
+    // newly added/removed plugin dialect URLs
+    [selectedModel, dialectsVersion]
   );
   const generator = useMemo(() => new XMLGenerator(parser), [parser]);
 
@@ -81,6 +90,7 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       isDark, setIsDark,
       selectedModel, setSelectedModel,
       itbConfig, setITBConfig, saveConfig, itbSettingsOpen, setITBSettingsOpen,
+      dialectsVersion, refreshDialects,
       parser, generator,
     }}>
       {children}

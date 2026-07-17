@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { loadCatalog, loadAllComponents, mergeCatalog, CatalogStep, ComponentInfo } from '../../parser/languageCatalog';
+import { useAppContext } from '../../context/AppContext';
 
 export interface StepEntry {
   match: string;
@@ -180,6 +181,7 @@ function usesTable(step: CatalogStep): boolean {
 }
 
 export function useCatalogData() {
+  const { dialectsVersion } = useAppContext();
   const [steps, setSteps] = useState<StepEntry[]>([]);
   const [docSteps, setDocSteps] = useState<DocStep[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -269,7 +271,7 @@ export function useCatalogData() {
       }
       setLoading(false);
     })();
-  }, []);
+  }, [dialectsVersion]);
 
   return { steps, docSteps, categories, loading, components };
 }
