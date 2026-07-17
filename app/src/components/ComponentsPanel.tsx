@@ -727,7 +727,7 @@ function StepsTab({ extension }: { extension?: { steps: any[] } }) {
             return key;
           });
 
-          const uniqueActions = [...new Set(actionTypes)];
+          const uniqueActions = [...new Set<string>(actionTypes)];
 
           return (
             <div

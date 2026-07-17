@@ -34,7 +34,7 @@ jobs:
         run: npm ci
 
       - name: Build (type-check + vite build)
-        run: npm run build-only
+        run: npm run build
         env:
           # vite.config.ts: base = process.env.VITE_BASE_PATH || '/test-workbench/'
           # Project pages are served at https://<org>.github.io/itb-plugin-authoring/

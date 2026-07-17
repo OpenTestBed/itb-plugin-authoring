@@ -78,10 +78,10 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(({ value, onChange, 
         m.editor.setModelMarkers(model, 'gherkin-parser', []);
 
         const markers = errors.map(error => ({
-          startLineNumber: error.line,
-          startColumn: error.column,
-          endLineNumber: error.line,
-          endColumn: error.column + 10,
+          startLineNumber: error.line ?? 1,
+          startColumn: error.column ?? 1,
+          endLineNumber: error.line ?? 1,
+          endColumn: (error.column ?? 1) + 10,
           message: error.message,
           severity: error.severity === 'error'
             ? m.MarkerSeverity.Error

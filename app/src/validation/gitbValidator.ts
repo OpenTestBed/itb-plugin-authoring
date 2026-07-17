@@ -1,6 +1,7 @@
 // src/validation/gitbValidator.ts
 import { XMLValidator } from 'fast-xml-parser';
 import { ValidationResult, ValidationError } from '../../types';
+import { ParseIssue } from '../types';
 
 export class GITBValidator {
   private schemas: Map<string, string> = new Map();
@@ -70,7 +71,7 @@ export class GITBValidator {
 
     } catch (error) {
       errors.push({
-        message: `Validation error: ${error.message}`,
+        message: `Validation error: ${error instanceof Error ? error.message : String(error)}`,
         type: 'error'
       });
     }
@@ -145,7 +146,7 @@ export class GITBValidator {
 }
 
 
-export async function validateTDL(xml: string)/*: Promise<ParseIssue[]>*/ {
+export async function validateTDL(_xml: string): Promise<ParseIssue[]> {
   // TODO: plug your current XSD validation here.
   // For now return [];
   return [];

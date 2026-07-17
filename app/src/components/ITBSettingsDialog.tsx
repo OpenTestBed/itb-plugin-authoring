@@ -68,7 +68,7 @@ export const ITBSettingsDialog: React.FC<Props> = ({ config, onSave, onClose }) 
   const handleCheckSpec = async () => {
     setCheckingSpec(true);
     setSpecStatus(null);
-    const result = await checkSpecification(baseUrl, apiKey, specificationId);
+    const result = await checkSpecification(baseUrl, organisationApiKey, specificationId);
     setSpecStatus(result);
     setCheckingSpec(false);
   };

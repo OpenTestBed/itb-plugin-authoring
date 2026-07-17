@@ -1,6 +1,6 @@
 import React from 'react';
 import { ExternalLink, Copy } from 'lucide-react';
-import { ExampleScenario, DataModel } from '../../types';
+import { ExampleScenario, DataModel } from '../types';
 
 interface ExamplesPanelProps {
   examples: ExampleScenario[];

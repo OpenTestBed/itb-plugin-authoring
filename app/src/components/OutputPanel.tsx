@@ -3,6 +3,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Copy, Download, AlertCircle, CheckCircle } from 'lucide-react';
 import { XMLOutput } from '../parser/xmlGenerator';
 import { ParseError } from '../types';
+import { ValidationResult } from '../../types';
 import { GITBValidator } from '../validation/gitbValidator.ts';
 
 interface OutputPanelProps {

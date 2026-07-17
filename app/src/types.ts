@@ -15,7 +15,7 @@ export interface DataModel {
 
 export interface ExampleScenario {
   id: string;
-  title: string;
+  name: string;
   description?: string;
   dataModel: string;
   content: string;
@@ -43,6 +43,7 @@ export interface ParseIssue {
   severity: 'error' | 'warning' | 'info';
   message: string;
   line?: number;
+  column?: number;
 }
 
 export type ParseError = ParseIssue;
