@@ -6,6 +6,9 @@
   "homepage": "https://opentestbed.github.io/itb-plugin-authoring/",
   "scripts": {
     "dev": "vite",
+    "gen:features-index": "node scripts/gen-features-index.mjs",
+    "prebuild": "npm run gen:features-index",
+    "prebuild-only": "npm run gen:features-index",
     "build": "tsc --noEmit && vite build",
     "build-only": "vite build",
     "type-check": "tsc --noEmit",
