@@ -103,7 +103,7 @@ steps:
       - assign:
           to: 'verifyTpl'
           value: >-
-            '{"cose_raw":{"protected_bstr":"${cose_raw_protected?json_string}","payload_bstr":"${cose_raw_payload?json_string}","signature":"${cose_raw_signature?json_string}"},"use_gdhcn":${use_gdhcn},"gdhcn_env":"${gdhcn_env}","domain":"${domain!''DCC''}","participant":"${participant}","usage":"${usage}","verify_did_proof":${verify_did_proof},"allow_unverified_trustlist":${allow_unverified_trustlist},"allow_remote_contexts":${allow_remote_contexts},"context_dir":"${context_dir}"}'
+            '{"cose_raw":{"protected_bstr":"${cose_raw_protected?json_string}","payload_bstr":"${cose_raw_payload?json_string}","signature":"${cose_raw_signature?json_string}"},"use_gdhcn":${use_gdhcn},"gdhcn_env":"${gdhcn_env}"<#if (domain!"")?has_content>,"domain":"${domain}"</#if>,"participant":"${participant}","usage":"${usage}","verify_did_proof":${verify_did_proof},"allow_unverified_trustlist":${allow_unverified_trustlist},"allow_remote_contexts":${allow_remote_contexts},"context_dir":"${context_dir}"}'
       - process:
           handler: 'TemplateProcessor'
           operation: 'process'

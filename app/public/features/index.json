@@ -1,4 +1,7 @@
 [
+  "RACSEL-track1-vhl-integration.feature",
+  "RACSEL-track2-icvp-qr-integration.feature",
+  "RACSEL-track3-ph4h-qr-integration.feature",
   "be-patient.feature",
   "be-vaccination.feature",
   "client-full.feature",
@@ -20,7 +23,6 @@
   "modify-resource.feature",
   "openehr-composition.feature",
   "ph4h-medication-overview.feature",
-  "ph4h-qr-integration.feature",
   "server-full.feature",
   "server.feature",
   "smart-anc-workflow.feature",
@@ -32,6 +34,5 @@
   "testdata-validation.feature",
   "transform-icvp.feature",
   "tutorial.feature",
-  "validate-patient.feature",
-  "vhl-integration.feature"
+  "validate-patient.feature"
 ]

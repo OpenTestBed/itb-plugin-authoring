@@ -474,6 +474,168 @@ steps:
             actualstring: '$validationErrors'
             expectedstring: '"0"'
 
+  # "<var>" conforms to "<canonical>" downgrading errors matching "<pattern>"
+  # "<var>" conforms to "<canonical>" downgrading slicing errors
+  # Same validation as `conforms to`, but ERROR-level OperationOutcome issues
+  # whose details.text contains <pattern> are DOWNGRADED: they stay in the
+  # validator report/operationOutcome (still visible) but are not counted, so
+  # known profile-level false positives (e.g. slice-matching errors) don't fail
+  # the step. Warnings/info are untouched; remaining errors still fail.
+  # `downgrading slicing errors` is a preset for "matching slice is required".
+  #
+  # Real (non-downgraded) error count is computed by FHIRPath over the
+  # OperationOutcome (/report/context/4/value) via /itb/fhirPath/process:
+  #   issue.where(severity='error').count()
+  #     - issue.where(severity='error' and details.text.contains(<pattern>)).count()
+  # FHIRPath iterates `issue` natively; a Freemarker <#list> over a
+  # JsonPointer-extracted array fails here (the array arrives as a string).
+  - match: '^"([^"]+)" conforms to "([^"]+)" downgrading errors matching "([^"]+)"$'
+    actions:
+      - assign: { to: 'conformHeaders{Content-Type}', value: '"application/json"' }
+      - assign: { to: 'conformHeaders{Accept}', value: '"application/json"' }
+      - assign: { to: 'conformTplParams{resource}', value: '$$1' }
+      - assign: { to: 'conformTplParams{profile}', value: '"$2"' }
+      - process:
+          handler: 'TemplateProcessor'
+          operation: 'process'
+          output: 'conformBody'
+          inputs:
+            syntax: '"freemarker"'
+            template: "'{ \"input\": [ { \"name\": \"contentToValidate\", \"value\": \"${resource?json_string}\", \"embeddingMethod\": \"STRING\" }, { \"name\": \"profiles\", \"value\": \"${profile?json_string}\", \"embeddingMethod\": \"STRING\" } ] }'"
+            parameters: '$conformTplParams'
+      - send:
+          id: 'lastRequest'
+          desc: 'Validate $1 conforms to $2 (downgrading errors matching "$3")'
+          handler: 'HttpMessagingV2'
+          inputs:
+            uri: 'concat($FHIRValidatorBase, "/itb/fhir/validate")'
+            method: '"POST"'
+            headers: '$conformHeaders'
+            body: '$conformBody'
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'validationErrors'
+          inputs:
+            content: '$lastRequest{response}{body}'
+            pointer: '"/report/context/0/value"'
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'validationOutcome'
+          inputs:
+            content: '$lastRequest{response}{body}'
+            pointer: '"/report/context/4/value"'
+      - assign: { to: 'dgFpParams{resource}', value: '$validationOutcome' }
+      - assign:
+          to: 'dgFpParams{expression}'
+          value: '"issue.where(severity = ''error'').count() - issue.where(severity = ''error'' and details.text.contains(''$3'')).count()"'
+      - process:
+          handler: 'TemplateProcessor'
+          operation: 'process'
+          output: 'dgFpBody'
+          inputs:
+            syntax: '"freemarker"'
+            template: "'{ \"operation\": \"evaluate\", \"input\": [ { \"name\": \"content\", \"value\": \"${resource?json_string}\", \"embeddingMethod\": \"STRING\" }, { \"name\": \"expression\", \"value\": \"${expression?json_string}\", \"embeddingMethod\": \"STRING\" } ] }'"
+            parameters: '$dgFpParams'
+      - send:
+          id: 'lastRequest'
+          desc: 'Count real (non-downgraded) errors via FHIRPath'
+          handler: 'HttpMessagingV2'
+          inputs:
+            uri: 'concat($FHIRValidatorBase, "/itb/fhirPath/process")'
+            method: '"POST"'
+            headers: '$conformHeaders'
+            body: '$dgFpBody'
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'realErrors'
+          inputs:
+            content: '$lastRequest{response}{body}'
+            pointer: '"/output/0/value"'
+      - log: 'concat("conforms (downgrading): ", $validationErrors, " total errors, ", $realErrors, " real after downgrading (matching issues stay in the report, not counted)")'
+      - verify:
+          handler: 'StringValidator'
+          desc: '$1 conforms to $2 downgrading errors matching "$3" (real errors must be 0)'
+          inputs:
+            actualstring: '$realErrors'
+            expectedstring: '"0"' 
+
+  # Preset: downgrade slice-matching errors (the common profile-level false positive).
+  - match: '^"([^"]+)" conforms to "([^"]+)" downgrading slicing errors$'
+    actions:
+      - assign: { to: 'conformHeaders{Content-Type}', value: '"application/json"' }
+      - assign: { to: 'conformHeaders{Accept}', value: '"application/json"' }
+      - assign: { to: 'conformTplParams{resource}', value: '$$1' }
+      - assign: { to: 'conformTplParams{profile}', value: '"$2"' }
+      - process:
+          handler: 'TemplateProcessor'
+          operation: 'process'
+          output: 'conformBody'
+          inputs:
+            syntax: '"freemarker"'
+            template: "'{ \"input\": [ { \"name\": \"contentToValidate\", \"value\": \"${resource?json_string}\", \"embeddingMethod\": \"STRING\" }, { \"name\": \"profiles\", \"value\": \"${profile?json_string}\", \"embeddingMethod\": \"STRING\" } ] }'"
+            parameters: '$conformTplParams'
+      - send:
+          id: 'lastRequest'
+          desc: 'Validate $1 conforms to $2 (downgrading slicing errors)'
+          handler: 'HttpMessagingV2'
+          inputs:
+            uri: 'concat($FHIRValidatorBase, "/itb/fhir/validate")'
+            method: '"POST"'
+            headers: '$conformHeaders'
+            body: '$conformBody'
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'validationErrors'
+          inputs:
+            content: '$lastRequest{response}{body}'
+            pointer: '"/report/context/0/value"'
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'validationOutcome'
+          inputs:
+            content: '$lastRequest{response}{body}'
+            pointer: '"/report/context/4/value"'
+      - assign: { to: 'dgFpParams{resource}', value: '$validationOutcome' }
+      - assign:
+          to: 'dgFpParams{expression}'
+          value: '"issue.where(severity = ''error'').count() - issue.where(severity = ''error'' and details.text.contains(''matching slice is required'')).count()"'
+      - process:
+          handler: 'TemplateProcessor'
+          operation: 'process'
+          output: 'dgFpBody'
+          inputs:
+            syntax: '"freemarker"'
+            template: "'{ \"operation\": \"evaluate\", \"input\": [ { \"name\": \"content\", \"value\": \"${resource?json_string}\", \"embeddingMethod\": \"STRING\" }, { \"name\": \"expression\", \"value\": \"${expression?json_string}\", \"embeddingMethod\": \"STRING\" } ] }'"
+            parameters: '$dgFpParams'
+      - send:
+          id: 'lastRequest'
+          desc: 'Count real (non-downgraded) errors via FHIRPath'
+          handler: 'HttpMessagingV2'
+          inputs:
+            uri: 'concat($FHIRValidatorBase, "/itb/fhirPath/process")'
+            method: '"POST"'
+            headers: '$conformHeaders'
+            body: '$dgFpBody'
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'realErrors'
+          inputs:
+            content: '$lastRequest{response}{body}'
+            pointer: '"/output/0/value"'
+      - log: 'concat("conforms (downgrading): ", $validationErrors, " total errors, ", $realErrors, " real after downgrading (matching issues stay in the report, not counted)")'
+      - verify:
+          handler: 'StringValidator'
+          desc: '$1 conforms to $2 downgrading slicing errors (real errors must be 0)'
+          inputs:
+            actualstring: '$realErrors'
+            expectedstring: '"0"' 
+
   # "<var>" conforms to "<canonical>"
   # Validates the resource against an arbitrary profile canonical URL.
   # Unlike `should be a valid <Type> resource` (which uses the base FHIR
