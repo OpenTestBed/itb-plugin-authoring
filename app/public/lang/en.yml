@@ -360,6 +360,28 @@ steps:
   # "<lhs>" should equal "<rhs>" minus "<n>"   — numeric: assert lhs == rhs - n
   # Reserved names: "response status", "response", "validation errors", etc.
 
+  # "response status" should be "<code>"  — guarded numeric status check.
+  # DEDICATED, higher-priority mapping: it must appear BEFORE the generic
+  # `"<x>" should be "<y>"` rule below so first-match-wins picks it up.
+  # Why the guard: HttpMessagingV2 can leave $lastRequest{response}{status}
+  # empty/unset when a send doesn't complete a normal HTTP exchange. Feeding
+  # an empty string to NumberValidator throws NumberFormatException, which
+  # some ITB builds surface as an indeterminate (non-failing) step — so a
+  # 500/aborted call could pass silently. Defaulting empty → "0" forces a
+  # loud failure (0 ≠ expected) instead. `response status` resolves to
+  # $lastRequest{response}{status} (see gherkinParser RESERVED_NAMES).
+  - match: '^"response status" should be "([0-9]+)"$'
+    actions:
+      - assign:
+          to: 'sigStatus'
+          value: 'if (empty($lastRequest{response}{status})) then "0" else $lastRequest{response}{status}'
+      - verify:
+          handler: 'NumberValidator'
+          desc: 'Response status is $1'
+          inputs:
+            actualnumber: '$sigStatus'
+            expectednumber: '"$1"'
+
   - match: '^"([^"]+)" should be "([^"]+)"$'
     actions:
       - verify:

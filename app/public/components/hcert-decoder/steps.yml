@@ -71,39 +71,20 @@ steps:
 
   # Verify COSE signature on an actor (table of parameters)
   #
-  # Fix note (was broken): $coseRaw is a JSON object returned by
-  # JsonPointerProcessor at /cose/_raw. Embedding it with Freemarker
-  # `${cose_raw}` calls Map.toString → `{protected_bstr=..., ...}` →
-  # invalid JSON, server responds 400. We instead pull the three known
-  # scalar subfields (protected_bstr, payload_bstr, signature) with their
-  # own JsonPointer extractions and rebuild the cose_raw object inline
-  # using ?json_string. This path uses only primitives that work on every
-  # ITB build; see docs/serialize-primitive.md for the general primitive.
+  # Fix note (was broken): the three scalar COSE bstrs (protected_bstr,
+  # payload_bstr, signature) are captured UPSTREAM in the `decodes HC1` step,
+  # while $lastRequest still holds the /decode/hcert response. They are read
+  # here only via $coseRawProtected / $coseRawPayload / $coseRawSignature —
+  # never re-extracted from $lastRequest, which the intervening
+  # `extracts metadata` step overwrites with a response that has no
+  # /cose/_raw. Re-extracting here yielded empty strings → empty cose_raw →
+  # the service base64-decoded "" and cbor2 raised "premature end of stream"
+  # (HTTP 500). The cose_raw object is still rebuilt inline via ?json_string
+  # to avoid the ITB Map.toString trap; see docs/serialize-primitive.md.
   - match: '^([A-Za-z][A-Za-z0-9_]*) verifies COSE signature on ([A-Za-z][A-Za-z0-9_]*) with:$'
     table:
       required: [parameter, value]
     actions:
-      - process:
-          handler: 'JsonPointerProcessor'
-          operation: 'process'
-          output: 'coseRawProtected'
-          inputs:
-            content: '$lastRequest{response}{body}'
-            pointer: '"/cose/_raw/protected_bstr"'
-      - process:
-          handler: 'JsonPointerProcessor'
-          operation: 'process'
-          output: 'coseRawPayload'
-          inputs:
-            content: '$lastRequest{response}{body}'
-            pointer: '"/cose/_raw/payload_bstr"'
-      - process:
-          handler: 'JsonPointerProcessor'
-          operation: 'process'
-          output: 'coseRawSignature'
-          inputs:
-            content: '$lastRequest{response}{body}'
-            pointer: '"/cose/_raw/signature"'
       - assign:
           to: 'verifyParams{cose_raw_protected}'
           value: '$coseRawProtected'
@@ -260,6 +241,35 @@ steps:
             method: '"POST"'
             headers: '$jsonHeaders'
             body: '$templateBody'
+      # Guard: /shlink/fetch-fhir returns HTTP 200 even when it could NOT
+      # dereference the manifest's file URL(s) — that failure is signalled by
+      # {"found":false,"fhir":[],"errors":[...]}. Without this guard an empty
+      # fhir[] silently yields an empty firstResource, and the test only dies
+      # far downstream at "conforms to" with the opaque validator error
+      # "Required input 'contentToValidate' is present but empty" while every
+      # arrow above looks green. Surface it HERE, at the actual point of
+      # failure, with the underlying fetch error in the log.
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'fhirFound'
+          inputs:
+            content: '$lastRequest{response}{body}'
+            pointer: '"/found"'
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'fhirFetchError'
+          inputs:
+            content: '$lastRequest{response}{body}'
+            pointer: '"/errors/0"'
+      - log: 'concat("fetch-fhir: found=", $fhirFound, " firstError=", $fhirFetchError)'
+      - verify:
+          handler: 'StringValidator'
+          desc: 'IPS bundle retrieved from SHL manifest (found=true; false = the manifest file URL could not be dereferenced — see log for the fetch error, e.g. the IPS host returning HTTP 500)'
+          inputs:
+            actualstring: '$fhirFound'
+            expectedstring: '"true"'
 
   # Precondition: variable is set (declares it so ITB knows about it, then logs)
   - match: '^"([A-Za-z_][A-Za-z0-9_]*)" is set$'
@@ -272,8 +282,14 @@ steps:
   # Decode HC1 payload — POST /decode/hcert with {qr_data,include_raw:true}
   # Prereq: $rawQRData (typically set via `extract "/qr_data" as "rawQRData"`
   # after `uploads a QR image to <Actor>`).
-  # Sets: $coseVal, $payloadVal, $hcertVal, $coseRaw (all consumed by
-  # subsequent extract-metadata / verify-COSE / extract-reference steps).
+  # Sets: $coseVal, $payloadVal, $hcertVal, $coseRaw AND the three scalar
+  # bstrs $coseRawProtected / $coseRawPayload / $coseRawSignature (all consumed
+  # by subsequent extract-metadata / verify-COSE / extract-reference steps).
+  # The scalar bstrs are captured HERE on purpose: $lastRequest is the
+  # /decode/hcert response only until the next `send` (e.g. `extracts metadata`)
+  # overwrites it, and only /decode/hcert (with include_raw:true) exposes
+  # /cose/_raw/*. Capturing them later would read an empty pointer → empty
+  # cose_raw → the verify service 500s ("premature end of stream").
   - match: '^([A-Za-z][A-Za-z0-9_]*) decodes HC1 on ([A-Za-z][A-Za-z0-9_]*)$'
     actions:
       - assign:
@@ -332,6 +348,31 @@ steps:
           inputs:
             content: '$lastRequest{response}{body}'
             pointer: '"/cose/_raw"'
+      # Capture the three scalar COSE bstrs now, while $lastRequest is still
+      # the /decode/hcert response (include_raw:true exposes these). Consumed
+      # by the verify-COSE step, which must NOT re-extract them (by then
+      # $lastRequest has been clobbered by `extracts metadata`).
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'coseRawProtected'
+          inputs:
+            content: '$lastRequest{response}{body}'
+            pointer: '"/cose/_raw/protected_bstr"'
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'coseRawPayload'
+          inputs:
+            content: '$lastRequest{response}{body}'
+            pointer: '"/cose/_raw/payload_bstr"'
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'coseRawSignature'
+          inputs:
+            content: '$lastRequest{response}{body}'
+            pointer: '"/cose/_raw/signature"'
 
   # Extract metadata — POST /extract/metadata with the JSON fragments
   # {cose, payload} (raw JSON objects, not stringified) from `decodes HC1`.

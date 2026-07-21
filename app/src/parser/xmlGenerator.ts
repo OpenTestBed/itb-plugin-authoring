@@ -39,6 +39,18 @@ export class XMLGenerator {
     const featureDescription = (parsed as any).__featureDescription ?? featureTitle;
     const scenarioIRs = (parsed as any).__scenarioIRs as { name: string; ir: IRAction[] }[] | undefined;
 
+    // Feature-level @tags. `@continue-on-error` / `@non-blocking` make the
+    // testcase's <steps> non-blocking (stopOnError="false"): a failed check
+    // still reports red and still fails the test overall, but subsequent steps
+    // keep running (e.g. a DEV-env COSE signature that can't verify against an
+    // incomplete trustlist shouldn't abort the SHL/FHIR pipeline). Default
+    // stays "true" so unrelated tests are unaffected.
+    const featureTags: string[] = (parsed as any).__featureTags ?? [];
+    const stopOnError =
+      featureTags.includes('continue-on-error') || featureTags.includes('non-blocking')
+        ? 'false'
+        : 'true';
+
     const files: GeneratedFile[] = [];
 
     // If we have multiple scenarios, generate individual test case files + a test suite
@@ -74,7 +86,7 @@ export class XMLGenerator {
 ${indent(actorsXml, 4)}
   </actors>
 ${variablesXml ? `\n  <variables>\n${indent(variablesXml, 4)}\n  </variables>\n` : ''}
-  <steps stopOnError="true">
+  <steps stopOnError="${stopOnError}">
 ${indent(stepsXml || '<!-- no steps generated for this scenario -->', 4)}
   </steps>
 

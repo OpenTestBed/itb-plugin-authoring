@@ -98,6 +98,12 @@ export class GherkinParser {
     const scenarios: { name: string; steps: Step[] }[] = [];
     let currentTarget: Step[] | null = null; // null = not collecting steps yet
     let currentScenarioName = '';
+    // Gherkin @tags. Collected feature-wide (we don't currently need
+    // per-scenario scoping). Recognised control tags:
+    //   @continue-on-error / @non-blocking → testcase <steps stopOnError="false">
+    //     (checks still report red and still fail the test overall — they just
+    //      don't abort the remaining steps; mirrors the hand-written suites).
+    const featureTags = new Set<string>();
 
     const STEP_RE = /^(Given|When|Then|And|But)\s+(.*)$/i;
     let i = 0;
@@ -107,6 +113,15 @@ export class GherkinParser {
       const line = stripInlineComments(raw).trim();
 
       if (!line) { i++; continue; }
+
+      // Tag line(s): `@foo @bar` — Gherkin tags precede Feature/Scenario.
+      // Collected feature-wide; consumed here so they don't warn as unknown.
+      if (/^@/.test(line)) {
+        for (const tok of line.split(/\s+/)) {
+          if (tok.startsWith('@')) featureTags.add(tok.slice(1).toLowerCase());
+        }
+        i++; continue;
+      }
 
       if (/^Feature:/i.test(line)) {
         featureTitle = line.replace(/^Feature:\s*/i, '').trim();
@@ -218,6 +233,7 @@ export class GherkinParser {
     (parsed as any).__scenarios = builtScenarios;
     (parsed as any).__featureTitle = featureTitle || 'Feature';
     (parsed as any).__featureDescription = featureDescription;
+    (parsed as any).__featureTags = [...featureTags];
 
     return parsed;
   }
