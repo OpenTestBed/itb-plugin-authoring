@@ -22,7 +22,33 @@ jobs:
       run:
         working-directory: app
     steps:
+      # Main checkout: this repo (itb-plugin-authoring). App lives in app/.
       - uses: actions/checkout@v4
+
+      # Sibling checkouts so we can regenerate the committed dialect copies
+      # (app/public/components/<id>/) from their canonical plugin sources at
+      # build time. This is what stops the online compiler from drifting:
+      # every Pages build re-syncs, so a dialect edit can never be "stale".
+      #
+      # NOTE: these assume the plugin/CLI repos live under the SAME owner as
+      # this repo. If they live elsewhere (or are renamed), edit `repository:`
+      # below. Cross-repo checkout of PUBLIC repos needs no extra token; for
+      # PRIVATE repos add `token: ${{ secrets.SYNC_PAT }}` to each.
+      - name: Checkout itb-cli (provides sync-dialects.mjs)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/itb-cli
+          path: itb-cli
+      - name: Checkout itb-plugin-hcert-decoder (canonical dialect)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/itb-plugin-hcert-decoder
+          path: itb-plugin-hcert-decoder
+      - name: Checkout itb-plugin-fhir-validator (canonical dialect)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/itb-plugin-fhir-validator
+          path: itb-plugin-fhir-validator
 
       - uses: actions/setup-node@v4
         with:
@@ -32,6 +58,35 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      # Regenerate app/public/components/<id>/ from each plugin's dialect/ and
+      # refresh components/index.json. Runs from repo root (not app/) because
+      # it touches sibling checkouts. js-yaml is resolved from app/node_modules
+      # (installed by `npm ci` above). ITB_WORKBENCH_PATH points the script at
+      # the app whose public/ it must write into.
+      - name: Sync plugin dialects into the app
+        working-directory: ${{ github.workspace }}
+        env:
+          ITB_WORKBENCH_PATH: ${{ github.workspace }}/app
+        run: >-
+          node itb-cli/src/sync-dialects.mjs
+          itb-plugin-hcert-decoder
+          itb-plugin-fhir-validator
+
+      # The build below always uses the freshly-synced copies, so Pages can
+      # never ship stale dialects. This step is a NON-blocking hygiene nudge:
+      # it warns (without failing the deploy) when the committed copies lag the
+      # plugin sources, so local-dev / itb-cli users get reminded to re-sync.
+      # Turn it into a hard gate by adding `exit 1` after the diff --stat.
+      - name: Warn if committed dialect copies are stale
+        working-directory: ${{ github.workspace }}
+        run: |
+          if ! git diff --quiet -- app/public/components; then
+            echo "::warning::app/public/components lags the plugin dialect sources; Pages used the fresh sync. Run 'node itb-cli/src/sync-dialects.mjs <plugin dirs>' and commit to keep local dev in sync."
+            git --no-pager diff --stat -- app/public/components
+          else
+            echo "Dialect copies are in sync."
+          fi
 
       - name: Build (type-check + vite build)
         run: npm run build

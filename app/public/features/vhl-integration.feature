@@ -1,4 +1,4 @@
-Feature: HCERT VHL — QR to Verified LAC IPS Bundle
+Feature: Track 1: HCERT VHL — QR to Verified LAC IPS Bundle
   Semantic-equivalent Gherkin for the hand-written test-case-vhl.xml:
   QR upload → HC1 decode → metadata extract → COSE signature check (DEV) →
   SHL reference extract → SHL authorize (PIN) → FHIR fetch via manifest →
@@ -9,8 +9,13 @@ Feature: HCERT VHL — QR to Verified LAC IPS Bundle
     And HCertDecoder is infrastructure at "http://hcert-validator:8080"
     And VHLResponder is infrastructure at "http://hcert-validator:8080"
     And SmartHelper is infrastructure at "http://smart-helper:8000"
-    And FHIRValidator is infrastructure at "http://fhir-server:8080/fhir"
+    And FHIRValidator is infrastructure at "http://fhir-validator:8080"
 
+  # @continue-on-error → non-blocking <steps>: the DEV COSE signature can't
+  # verify (the card's DSC isn't published in the WHO dev trustlist), so the
+  # signature check shows red but the SHL → FHIR → conforms-to pipeline still
+  # runs. The check still fails the test overall — it just doesn't abort it.
+  @continue-on-error
   Scenario: tc-vhl-001 Full VHL verification pipeline
 
     # ------------------------------------------------------------------
@@ -77,14 +82,10 @@ Feature: HCERT VHL — QR to Verified LAC IPS Bundle
     # 8) Ensure the LacPass IG is loaded on the FHIR server via
     #    SmartHelper (target=fhir — same call as XML step "Upload IG").
     # ------------------------------------------------------------------
-    When User loads IG "https://lacpass.racsel.org" target "fhir" on SmartHelper
+    When User loads IG "https://ig.racsel.org" on FHIRValidator
     Then "response status" should be "200"
 
     # ------------------------------------------------------------------
-    # 9) Validate the Bundle against the LAC IPS Bundle profile via
-    #    the FHIR server's native $validate operation
-    #    (HAPI POST /Bundle/$validate?profile=…). Provided by the
-    #    smart-helper component extension.
+    # 9) Validate the Bundle against the LAC IPS Bundle profile
     # ------------------------------------------------------------------
-    When User validates "firstResource" against "http://lacpass.racsel.org/StructureDefinition/lac-bundle" on FHIRValidator
-    Then "response status" should be "200"
+    Then "firstResource" conforms to "http://racsel.org/StructureDefinition/LACBundleIPS"
