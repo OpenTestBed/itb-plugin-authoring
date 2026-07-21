@@ -476,20 +476,19 @@ steps:
 
   # "<var>" conforms to "<canonical>" downgrading errors matching "<pattern>"
   # "<var>" conforms to "<canonical>" downgrading slicing errors
-  # Same validation as `conforms to`, but ERROR-level report items whose
-  # description contains <pattern> (case-insensitive) are DOWNGRADED: they stay
-  # in the validator's report/operationOutcome (still visible), are logged as
-  # DOWNGRADED, and are subtracted from the error count so known profile-level
-  # false positives (e.g. slice-matching errors) don't fail the step.
-  # Warnings/info are never touched; remaining (non-downgraded) errors still
-  # fail. `downgrading slicing errors` is a preset for the pattern
-  # "matching slice is required".
+  # Same validation as `conforms to`, but ERROR-level OperationOutcome issues
+  # whose details.text contains <pattern> are DOWNGRADED: they stay in the
+  # validator report/operationOutcome (still visible) but are not counted, so
+  # known profile-level false positives (e.g. slice-matching errors) don't fail
+  # the step. Warnings/info are untouched; remaining errors still fail.
+  # `downgrading slicing errors` is a preset for "matching slice is required".
   #
-  # Implementation: real errors = total errors (from /report/context/0/value)
-  # minus the ignored count, which a Freemarker <#list> over /report/items
-  # computes at runtime (the catalog's `foreach` only unrolls compile-time
-  # tables). An empty/failed report leaves total empty -> number("")=NaN ->
-  # the check fails, so a broken validate can't pass silently.
+  # Real (non-downgraded) error count is computed by FHIRPath over the
+  # OperationOutcome (/report/context/4/value) via /itb/fhirPath/process:
+  #   issue.where(severity='error').count()
+  #     - issue.where(severity='error' and details.text.contains(<pattern>)).count()
+  # FHIRPath iterates `issue` natively; a Freemarker <#list> over a
+  # JsonPointer-extracted array fails here (the array arrives as a string).
   - match: '^"([^"]+)" conforms to "([^"]+)" downgrading errors matching "([^"]+)"$'
     actions:
       - assign: { to: 'conformHeaders{Content-Type}', value: '"application/json"' }
@@ -523,46 +522,47 @@ steps:
       - process:
           handler: 'JsonPointerProcessor'
           operation: 'process'
-          output: 'reportItems'
+          output: 'validationOutcome'
           inputs:
             content: '$lastRequest{response}{body}'
-            pointer: '"/report/items"'
-      - assign: { to: 'maskParams{items}', value: '$reportItems' }
-      - assign: { to: 'maskParams{pattern}', value: '"$3"' }
+            pointer: '"/report/context/4/value"'
+      - assign: { to: 'dgFpParams{resource}', value: '$validationOutcome' }
       - assign:
-          to: 'maskTpl'
-          value: >-
-            '{"ignoredCount":<#assign m=0><#assign t=""><#list (items![]) as it><#if (it.level!"")=="ERROR" && (it.description!"")?lower_case?contains(pattern?lower_case)><#assign m=m+1><#assign t=t+"DOWNGRADED: "+(it.description!"")+" || "></#if></#list>${m},"ignoredText":"${t?json_string}"}'
+          to: 'dgFpParams{expression}'
+          value: '"issue.where(severity = ''error'').count() - issue.where(severity = ''error'' and details.text.contains(''$3'')).count()"'
       - process:
           handler: 'TemplateProcessor'
           operation: 'process'
-          output: 'maskResult'
+          output: 'dgFpBody'
           inputs:
             syntax: '"freemarker"'
-            template: '$maskTpl'
-            parameters: '$maskParams'
+            template: "'{ \"operation\": \"evaluate\", \"input\": [ { \"name\": \"content\", \"value\": \"${resource?json_string}\", \"embeddingMethod\": \"STRING\" }, { \"name\": \"expression\", \"value\": \"${expression?json_string}\", \"embeddingMethod\": \"STRING\" } ] }'"
+            parameters: '$dgFpParams'
+      - send:
+          id: 'lastRequest'
+          desc: 'Count real (non-downgraded) errors via FHIRPath'
+          handler: 'HttpMessagingV2'
+          inputs:
+            uri: 'concat($FHIRValidatorBase, "/itb/fhirPath/process")'
+            method: '"POST"'
+            headers: '$conformHeaders'
+            body: '$dgFpBody'
       - process:
           handler: 'JsonPointerProcessor'
           operation: 'process'
-          output: 'ignoredCount'
+          output: 'realErrors'
           inputs:
-            content: '$maskResult'
-            pointer: '"/ignoredCount"'
-      - process:
-          handler: 'JsonPointerProcessor'
-          operation: 'process'
-          output: 'ignoredErrorText'
-          inputs:
-            content: '$maskResult'
-            pointer: '"/ignoredText"'
-      - log: 'concat("Downgraded (was ERROR): ", $ignoredErrorText)'
+            content: '$lastRequest{response}{body}'
+            pointer: '"/output/0/value"'
+      - log: 'concat("conforms (downgrading): ", $validationErrors, " total errors, ", $realErrors, " real after downgrading (matching issues stay in the report, not counted)")'
       - verify:
-          handler: 'ExpressionValidator'
-          desc: '$1 conforms to $2 downgrading errors matching "$3" (real = total errors minus ignored)'
+          handler: 'StringValidator'
+          desc: '$1 conforms to $2 downgrading errors matching "$3" (real errors must be 0)'
           inputs:
-            expression: 'number($validationErrors) - number($ignoredCount) = 0'
+            actualstring: '$realErrors'
+            expectedstring: '"0"' 
 
-  # Preset: ignore slice-matching errors (the common profile-level false positive).
+  # Preset: downgrade slice-matching errors (the common profile-level false positive).
   - match: '^"([^"]+)" conforms to "([^"]+)" downgrading slicing errors$'
     actions:
       - assign: { to: 'conformHeaders{Content-Type}', value: '"application/json"' }
@@ -596,44 +596,45 @@ steps:
       - process:
           handler: 'JsonPointerProcessor'
           operation: 'process'
-          output: 'reportItems'
+          output: 'validationOutcome'
           inputs:
             content: '$lastRequest{response}{body}'
-            pointer: '"/report/items"'
-      - assign: { to: 'maskParams{items}', value: '$reportItems' }
-      - assign: { to: 'maskParams{pattern}', value: '"matching slice is required"' }
+            pointer: '"/report/context/4/value"'
+      - assign: { to: 'dgFpParams{resource}', value: '$validationOutcome' }
       - assign:
-          to: 'maskTpl'
-          value: >-
-            '{"ignoredCount":<#assign m=0><#assign t=""><#list (items![]) as it><#if (it.level!"")=="ERROR" && (it.description!"")?lower_case?contains(pattern?lower_case)><#assign m=m+1><#assign t=t+"DOWNGRADED: "+(it.description!"")+" || "></#if></#list>${m},"ignoredText":"${t?json_string}"}'
+          to: 'dgFpParams{expression}'
+          value: '"issue.where(severity = ''error'').count() - issue.where(severity = ''error'' and details.text.contains(''matching slice is required'')).count()"'
       - process:
           handler: 'TemplateProcessor'
           operation: 'process'
-          output: 'maskResult'
+          output: 'dgFpBody'
           inputs:
             syntax: '"freemarker"'
-            template: '$maskTpl'
-            parameters: '$maskParams'
+            template: "'{ \"operation\": \"evaluate\", \"input\": [ { \"name\": \"content\", \"value\": \"${resource?json_string}\", \"embeddingMethod\": \"STRING\" }, { \"name\": \"expression\", \"value\": \"${expression?json_string}\", \"embeddingMethod\": \"STRING\" } ] }'"
+            parameters: '$dgFpParams'
+      - send:
+          id: 'lastRequest'
+          desc: 'Count real (non-downgraded) errors via FHIRPath'
+          handler: 'HttpMessagingV2'
+          inputs:
+            uri: 'concat($FHIRValidatorBase, "/itb/fhirPath/process")'
+            method: '"POST"'
+            headers: '$conformHeaders'
+            body: '$dgFpBody'
       - process:
           handler: 'JsonPointerProcessor'
           operation: 'process'
-          output: 'ignoredCount'
+          output: 'realErrors'
           inputs:
-            content: '$maskResult'
-            pointer: '"/ignoredCount"'
-      - process:
-          handler: 'JsonPointerProcessor'
-          operation: 'process'
-          output: 'ignoredErrorText'
-          inputs:
-            content: '$maskResult'
-            pointer: '"/ignoredText"'
-      - log: 'concat("Downgraded (was ERROR): ", $ignoredErrorText)'
+            content: '$lastRequest{response}{body}'
+            pointer: '"/output/0/value"'
+      - log: 'concat("conforms (downgrading): ", $validationErrors, " total errors, ", $realErrors, " real after downgrading (matching issues stay in the report, not counted)")'
       - verify:
-          handler: 'ExpressionValidator'
-          desc: '$1 conforms to $2 downgrading slicing errors (real = total errors minus ignored)'
+          handler: 'StringValidator'
+          desc: '$1 conforms to $2 downgrading slicing errors (real errors must be 0)'
           inputs:
-            expression: 'number($validationErrors) - number($ignoredCount) = 0'
+            actualstring: '$realErrors'
+            expectedstring: '"0"' 
 
   # "<var>" conforms to "<canonical>"
   # Validates the resource against an arbitrary profile canonical URL.
