@@ -474,14 +474,15 @@ steps:
             actualstring: '$validationErrors'
             expectedstring: '"0"'
 
-  # "<var>" conforms to "<canonical>" ignoring errors matching "<pattern>"
-  # "<var>" conforms to "<canonical>" ignoring slicing errors
+  # "<var>" conforms to "<canonical>" downgrading errors matching "<pattern>"
+  # "<var>" conforms to "<canonical>" downgrading slicing errors
   # Same validation as `conforms to`, but ERROR-level report items whose
-  # description contains <pattern> (case-insensitive) are reclassified as
-  # IGNORED_ERROR: logged for visibility and subtracted from the error count,
-  # so known profile-level false positives (e.g. slice-matching errors) don't
-  # fail the step. Warnings/info are never masked; remaining (non-ignored)
-  # errors still fail. `ignoring slicing errors` is a preset for the pattern
+  # description contains <pattern> (case-insensitive) are DOWNGRADED: they stay
+  # in the validator's report/operationOutcome (still visible), are logged as
+  # DOWNGRADED, and are subtracted from the error count so known profile-level
+  # false positives (e.g. slice-matching errors) don't fail the step.
+  # Warnings/info are never touched; remaining (non-downgraded) errors still
+  # fail. `downgrading slicing errors` is a preset for the pattern
   # "matching slice is required".
   #
   # Implementation: real errors = total errors (from /report/context/0/value)
@@ -489,7 +490,7 @@ steps:
   # computes at runtime (the catalog's `foreach` only unrolls compile-time
   # tables). An empty/failed report leaves total empty -> number("")=NaN ->
   # the check fails, so a broken validate can't pass silently.
-  - match: '^"([^"]+)" conforms to "([^"]+)" ignoring errors matching "([^"]+)"$'
+  - match: '^"([^"]+)" conforms to "([^"]+)" downgrading errors matching "([^"]+)"$'
     actions:
       - assign: { to: 'conformHeaders{Content-Type}', value: '"application/json"' }
       - assign: { to: 'conformHeaders{Accept}', value: '"application/json"' }
@@ -505,7 +506,7 @@ steps:
             parameters: '$conformTplParams'
       - send:
           id: 'lastRequest'
-          desc: 'Validate $1 conforms to $2 (ignoring errors matching "$3")'
+          desc: 'Validate $1 conforms to $2 (downgrading errors matching "$3")'
           handler: 'HttpMessagingV2'
           inputs:
             uri: 'concat($FHIRValidatorBase, "/itb/fhir/validate")'
@@ -531,7 +532,7 @@ steps:
       - assign:
           to: 'maskTpl'
           value: >-
-            '{"ignoredCount":<#assign m=0><#assign t=""><#list (items![]) as it><#if (it.level!"")=="ERROR" && (it.description!"")?lower_case?contains(pattern?lower_case)><#assign m=m+1><#assign t=t+"IGNORED_ERROR: "+(it.description!"")+" || "></#if></#list>${m},"ignoredText":"${t?json_string}"}'
+            '{"ignoredCount":<#assign m=0><#assign t=""><#list (items![]) as it><#if (it.level!"")=="ERROR" && (it.description!"")?lower_case?contains(pattern?lower_case)><#assign m=m+1><#assign t=t+"DOWNGRADED: "+(it.description!"")+" || "></#if></#list>${m},"ignoredText":"${t?json_string}"}'
       - process:
           handler: 'TemplateProcessor'
           operation: 'process'
@@ -554,15 +555,15 @@ steps:
           inputs:
             content: '$maskResult'
             pointer: '"/ignoredText"'
-      - log: 'concat("Masked (IGNORED_ERROR): ", $ignoredErrorText)'
+      - log: 'concat("Downgraded (was ERROR): ", $ignoredErrorText)'
       - verify:
           handler: 'ExpressionValidator'
-          desc: '$1 conforms to $2 ignoring errors matching "$3" (real = total errors minus ignored)'
+          desc: '$1 conforms to $2 downgrading errors matching "$3" (real = total errors minus ignored)'
           inputs:
             expression: 'number($validationErrors) - number($ignoredCount) = 0'
 
   # Preset: ignore slice-matching errors (the common profile-level false positive).
-  - match: '^"([^"]+)" conforms to "([^"]+)" ignoring slicing errors$'
+  - match: '^"([^"]+)" conforms to "([^"]+)" downgrading slicing errors$'
     actions:
       - assign: { to: 'conformHeaders{Content-Type}', value: '"application/json"' }
       - assign: { to: 'conformHeaders{Accept}', value: '"application/json"' }
@@ -578,7 +579,7 @@ steps:
             parameters: '$conformTplParams'
       - send:
           id: 'lastRequest'
-          desc: 'Validate $1 conforms to $2 (ignoring slicing errors)'
+          desc: 'Validate $1 conforms to $2 (downgrading slicing errors)'
           handler: 'HttpMessagingV2'
           inputs:
             uri: 'concat($FHIRValidatorBase, "/itb/fhir/validate")'
@@ -604,7 +605,7 @@ steps:
       - assign:
           to: 'maskTpl'
           value: >-
-            '{"ignoredCount":<#assign m=0><#assign t=""><#list (items![]) as it><#if (it.level!"")=="ERROR" && (it.description!"")?lower_case?contains(pattern?lower_case)><#assign m=m+1><#assign t=t+"IGNORED_ERROR: "+(it.description!"")+" || "></#if></#list>${m},"ignoredText":"${t?json_string}"}'
+            '{"ignoredCount":<#assign m=0><#assign t=""><#list (items![]) as it><#if (it.level!"")=="ERROR" && (it.description!"")?lower_case?contains(pattern?lower_case)><#assign m=m+1><#assign t=t+"DOWNGRADED: "+(it.description!"")+" || "></#if></#list>${m},"ignoredText":"${t?json_string}"}'
       - process:
           handler: 'TemplateProcessor'
           operation: 'process'
@@ -627,10 +628,10 @@ steps:
           inputs:
             content: '$maskResult'
             pointer: '"/ignoredText"'
-      - log: 'concat("Masked (IGNORED_ERROR): ", $ignoredErrorText)'
+      - log: 'concat("Downgraded (was ERROR): ", $ignoredErrorText)'
       - verify:
           handler: 'ExpressionValidator'
-          desc: '$1 conforms to $2 ignoring slicing errors (real = total errors minus ignored)'
+          desc: '$1 conforms to $2 downgrading slicing errors (real = total errors minus ignored)'
           inputs:
             expression: 'number($validationErrors) - number($ignoredCount) = 0'
 

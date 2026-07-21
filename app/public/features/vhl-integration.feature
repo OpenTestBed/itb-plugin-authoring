@@ -88,4 +88,4 @@ Feature: Track 1: HCERT VHL — QR to Verified LAC IPS Bundle
     # ------------------------------------------------------------------
     # 9) Validate the Bundle against the LAC IPS Bundle profile
     # ------------------------------------------------------------------
-    Then "firstResource" conforms to "http://racsel.org/StructureDefinition/LACBundleIPS" ignoring slicing errors
+    Then "firstResource" conforms to "http://racsel.org/StructureDefinition/LACBundleIPS" downgrading slicing errors
