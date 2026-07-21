@@ -474,6 +474,166 @@ steps:
             actualstring: '$validationErrors'
             expectedstring: '"0"'
 
+  # "<var>" conforms to "<canonical>" ignoring errors matching "<pattern>"
+  # "<var>" conforms to "<canonical>" ignoring slicing errors
+  # Same validation as `conforms to`, but ERROR-level report items whose
+  # description contains <pattern> (case-insensitive) are reclassified as
+  # IGNORED_ERROR: logged for visibility and subtracted from the error count,
+  # so known profile-level false positives (e.g. slice-matching errors) don't
+  # fail the step. Warnings/info are never masked; remaining (non-ignored)
+  # errors still fail. `ignoring slicing errors` is a preset for the pattern
+  # "matching slice is required".
+  #
+  # Implementation: real errors = total errors (from /report/context/0/value)
+  # minus the ignored count, which a Freemarker <#list> over /report/items
+  # computes at runtime (the catalog's `foreach` only unrolls compile-time
+  # tables). An empty/failed report leaves total empty -> number("")=NaN ->
+  # the check fails, so a broken validate can't pass silently.
+  - match: '^"([^"]+)" conforms to "([^"]+)" ignoring errors matching "([^"]+)"$'
+    actions:
+      - assign: { to: 'conformHeaders{Content-Type}', value: '"application/json"' }
+      - assign: { to: 'conformHeaders{Accept}', value: '"application/json"' }
+      - assign: { to: 'conformTplParams{resource}', value: '$$1' }
+      - assign: { to: 'conformTplParams{profile}', value: '"$2"' }
+      - process:
+          handler: 'TemplateProcessor'
+          operation: 'process'
+          output: 'conformBody'
+          inputs:
+            syntax: '"freemarker"'
+            template: "'{ \"input\": [ { \"name\": \"contentToValidate\", \"value\": \"${resource?json_string}\", \"embeddingMethod\": \"STRING\" }, { \"name\": \"profiles\", \"value\": \"${profile?json_string}\", \"embeddingMethod\": \"STRING\" } ] }'"
+            parameters: '$conformTplParams'
+      - send:
+          id: 'lastRequest'
+          desc: 'Validate $1 conforms to $2 (ignoring errors matching "$3")'
+          handler: 'HttpMessagingV2'
+          inputs:
+            uri: 'concat($FHIRValidatorBase, "/itb/fhir/validate")'
+            method: '"POST"'
+            headers: '$conformHeaders'
+            body: '$conformBody'
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'validationErrors'
+          inputs:
+            content: '$lastRequest{response}{body}'
+            pointer: '"/report/context/0/value"'
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'reportItems'
+          inputs:
+            content: '$lastRequest{response}{body}'
+            pointer: '"/report/items"'
+      - assign: { to: 'maskParams{items}', value: '$reportItems' }
+      - assign: { to: 'maskParams{pattern}', value: '"$3"' }
+      - assign:
+          to: 'maskTpl'
+          value: >-
+            '{"ignoredCount":<#assign m=0><#assign t=""><#list (items![]) as it><#if (it.level!"")=="ERROR" && (it.description!"")?lower_case?contains(pattern?lower_case)><#assign m=m+1><#assign t=t+"IGNORED_ERROR: "+(it.description!"")+" || "></#if></#list>${m},"ignoredText":"${t?json_string}"}'
+      - process:
+          handler: 'TemplateProcessor'
+          operation: 'process'
+          output: 'maskResult'
+          inputs:
+            syntax: '"freemarker"'
+            template: '$maskTpl'
+            parameters: '$maskParams'
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'ignoredCount'
+          inputs:
+            content: '$maskResult'
+            pointer: '"/ignoredCount"'
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'ignoredErrorText'
+          inputs:
+            content: '$maskResult'
+            pointer: '"/ignoredText"'
+      - log: 'concat("Masked (IGNORED_ERROR): ", $ignoredErrorText)'
+      - verify:
+          handler: 'ExpressionValidator'
+          desc: '$1 conforms to $2 ignoring errors matching "$3" (real = total errors minus ignored)'
+          inputs:
+            expression: 'number($validationErrors) - number($ignoredCount) = 0'
+
+  # Preset: ignore slice-matching errors (the common profile-level false positive).
+  - match: '^"([^"]+)" conforms to "([^"]+)" ignoring slicing errors$'
+    actions:
+      - assign: { to: 'conformHeaders{Content-Type}', value: '"application/json"' }
+      - assign: { to: 'conformHeaders{Accept}', value: '"application/json"' }
+      - assign: { to: 'conformTplParams{resource}', value: '$$1' }
+      - assign: { to: 'conformTplParams{profile}', value: '"$2"' }
+      - process:
+          handler: 'TemplateProcessor'
+          operation: 'process'
+          output: 'conformBody'
+          inputs:
+            syntax: '"freemarker"'
+            template: "'{ \"input\": [ { \"name\": \"contentToValidate\", \"value\": \"${resource?json_string}\", \"embeddingMethod\": \"STRING\" }, { \"name\": \"profiles\", \"value\": \"${profile?json_string}\", \"embeddingMethod\": \"STRING\" } ] }'"
+            parameters: '$conformTplParams'
+      - send:
+          id: 'lastRequest'
+          desc: 'Validate $1 conforms to $2 (ignoring slicing errors)'
+          handler: 'HttpMessagingV2'
+          inputs:
+            uri: 'concat($FHIRValidatorBase, "/itb/fhir/validate")'
+            method: '"POST"'
+            headers: '$conformHeaders'
+            body: '$conformBody'
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'validationErrors'
+          inputs:
+            content: '$lastRequest{response}{body}'
+            pointer: '"/report/context/0/value"'
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'reportItems'
+          inputs:
+            content: '$lastRequest{response}{body}'
+            pointer: '"/report/items"'
+      - assign: { to: 'maskParams{items}', value: '$reportItems' }
+      - assign: { to: 'maskParams{pattern}', value: '"matching slice is required"' }
+      - assign:
+          to: 'maskTpl'
+          value: >-
+            '{"ignoredCount":<#assign m=0><#assign t=""><#list (items![]) as it><#if (it.level!"")=="ERROR" && (it.description!"")?lower_case?contains(pattern?lower_case)><#assign m=m+1><#assign t=t+"IGNORED_ERROR: "+(it.description!"")+" || "></#if></#list>${m},"ignoredText":"${t?json_string}"}'
+      - process:
+          handler: 'TemplateProcessor'
+          operation: 'process'
+          output: 'maskResult'
+          inputs:
+            syntax: '"freemarker"'
+            template: '$maskTpl'
+            parameters: '$maskParams'
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'ignoredCount'
+          inputs:
+            content: '$maskResult'
+            pointer: '"/ignoredCount"'
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'ignoredErrorText'
+          inputs:
+            content: '$maskResult'
+            pointer: '"/ignoredText"'
+      - log: 'concat("Masked (IGNORED_ERROR): ", $ignoredErrorText)'
+      - verify:
+          handler: 'ExpressionValidator'
+          desc: '$1 conforms to $2 ignoring slicing errors (real = total errors minus ignored)'
+          inputs:
+            expression: 'number($validationErrors) - number($ignoredCount) = 0'
+
   # "<var>" conforms to "<canonical>"
   # Validates the resource against an arbitrary profile canonical URL.
   # Unlike `should be a valid <Type> resource` (which uses the base FHIR
