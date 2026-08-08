@@ -75,7 +75,7 @@ export class GherkinParser {
   async ensureCatalog(locale='en') {
     if (!this.catalog) {
       const core = await loadCatalog(locale);
-      this.components = await loadAllComponents();
+      this.components = await loadAllComponents(core);
       this.catalog = mergeCatalog(core, this.components);
     }
   }

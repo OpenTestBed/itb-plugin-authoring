@@ -1,6 +1,13 @@
 version: 1
 locale: en
 
+# Core language spec identity — extensions declare compatibility against
+# these (component.yml: language.base / language.baseVersion). Bump
+# specVersion on ANY step-pattern change: minor for additions, major for
+# changed/removed patterns (first-match merging makes silent drift unsafe).
+id: itb-core-en
+specVersion: "1.0.0"
+
 # ====================================================================
 # FHIR Gherkin Dialect — Core Language
 # ====================================================================

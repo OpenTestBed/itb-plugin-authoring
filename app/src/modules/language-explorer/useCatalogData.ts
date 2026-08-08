@@ -192,7 +192,7 @@ export function useCatalogData() {
     (async () => {
       try {
         const core = await loadCatalog('en');
-        const comps = await loadAllComponents();
+        const comps = await loadAllComponents(core);
         setComponents(comps);
         const merged = mergeCatalog(core, comps);
 

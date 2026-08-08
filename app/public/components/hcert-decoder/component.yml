@@ -36,7 +36,11 @@ actors:
     description: Handles VHL/SHL authorization and FHIR retrieval
 
 # Language extension — loaded and merged into the step catalog
-language: steps.yml
+language:
+  steps: steps.yml
+  version: "1.0.0"        # this extension's own language version
+  base: itb-core-en        # base language this extension is written against
+  baseVersion: ">=1 <2"    # compatible core specVersion range (semver)
 
 # Scriptlets — reusable TDL XML functions included in generated test suites
 # (kept for reference / future use by other features)

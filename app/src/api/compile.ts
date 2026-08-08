@@ -10,7 +10,7 @@ import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { GherkinParser } from '../parser/gherkinParser';
 import { XMLGenerator } from '../parser/xmlGenerator';
-import { mergeCatalog, type Catalog, type ComponentInfo, type ExtensionCatalog, type ComponentManifest } from '../parser/languageCatalog';
+import { mergeCatalog, languageDecl, checkBaseCompatibility, type Catalog, type ComponentInfo, type ExtensionCatalog, type ComponentManifest } from '../parser/languageCatalog';
 import { dataModels } from '../data/models';
 
 const publicDir = join(process.cwd(), 'public');
@@ -32,13 +32,14 @@ function loadCatalogFromDisk(): { catalog: Catalog; components: ComponentInfo[] 
       const manifest = yaml.load(readFileSync(manifestPath, 'utf-8')) as ComponentManifest;
 
       let extension: ExtensionCatalog | undefined;
-      if (manifest.language) {
-        const extPath = join(publicDir, 'components', id, manifest.language);
+      const langFile = languageDecl(manifest)?.steps;
+      if (langFile) {
+        const extPath = join(publicDir, 'components', id, langFile);
         if (existsSync(extPath)) {
           extension = yaml.load(readFileSync(extPath, 'utf-8')) as ExtensionCatalog;
         }
       }
-      components.push({ manifest, extension, enabled: true, status: 'unknown' });
+      components.push({ manifest, extension, enabled: true, status: 'unknown', compat: checkBaseCompatibility(core, manifest) });
     }
   }
 

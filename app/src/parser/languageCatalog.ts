@@ -31,6 +31,12 @@ export interface CatalogStep {
 export interface Catalog {
   version: number;
   locale: string;
+  /** Core language spec identity (e.g. "itb-core-en") — extensions declare
+   *  their base against this id. */
+  id?: string;
+  /** Core language spec version (semver) — extensions declare a compatible
+   *  range via language.baseVersion. */
+  specVersion?: string;
   steps: CatalogStep[];
 }
 
@@ -40,6 +46,21 @@ export interface ExtensionCatalog {
   name: string;
   description?: string;
   steps: CatalogStep[];
+}
+
+/** Versioned language declaration (component.yml `language:` object form).
+ *  The legacy string form (`language: steps.yml`) is still accepted and
+ *  normalized via languageDecl(). Everything is versioned: the extension
+ *  itself, and the base language spec it is written against. */
+export interface LanguageDecl {
+  /** Relative path to the steps file (default steps.yml) */
+  steps: string;
+  /** This extension's own language version (semver) */
+  version?: string;
+  /** Id of the base language this extension extends (e.g. "itb-core-en") */
+  base?: string;
+  /** Semver range of compatible base specVersions (e.g. ">=1 <2") */
+  baseVersion?: string;
 }
 
 /** Component manifest loaded from component.yml */
@@ -61,8 +82,17 @@ export interface ComponentManifest {
   };
   actors?: { id: string; description?: string }[];
   services?: { handler: string; path: string }[];
-  language?: string; // relative path to steps.yml
+  /** Path to steps.yml (legacy string form) or a versioned LanguageDecl */
+  language?: string | LanguageDecl;
   scriptlets?: string[]; // list of scriptlet XML files shipped with this component
+}
+
+/** Normalize the manifest's language field to a LanguageDecl (or null). */
+export function languageDecl(manifest: ComponentManifest): LanguageDecl | null {
+  const lang = manifest?.language;
+  if (!lang) return null;
+  if (typeof lang === 'string') return { steps: lang };
+  return { ...lang, steps: lang.steps || 'steps.yml' };
 }
 
 /** A scriptlet XML file shipped with a component */
@@ -73,19 +103,91 @@ export interface ComponentScriptlet {
   xml: string;
 }
 
+/** Result of checking an extension's declared base against the core spec. */
+export interface BaseCompat {
+  ok: boolean;
+  message?: string;
+}
+
 export interface ComponentInfo {
   manifest: ComponentManifest;
   extension?: ExtensionCatalog;
   scriptlets?: ComponentScriptlet[];
   enabled: boolean;
   status: 'unknown' | 'healthy' | 'unhealthy' | 'checking';
+  /** Base-language compatibility (undefined = legacy manifest, no declaration) */
+  compat?: BaseCompat;
+}
+
+// ── Semver-lite ──────────────────────────────────────────────────────
+// Minimal semver range check (no dependency): supports space-separated
+// AND comparators with >=, <=, >, <, =, ^, ~ and bare versions.
+
+function parseVer(v: string): number[] | null {
+  const m = /^v?(\d+)(?:\.(\d+))?(?:\.(\d+))?/.exec(v.trim());
+  if (!m) return null;
+  return [Number(m[1]), Number(m[2] ?? 0), Number(m[3] ?? 0)];
+}
+
+function cmpVer(a: number[], b: number[]): number {
+  for (let i = 0; i < 3; i++) if (a[i] !== b[i]) return a[i] < b[i] ? -1 : 1;
+  return 0;
+}
+
+/** Does `version` satisfy `range`? Unparseable input → false (fail closed). */
+export function satisfiesRange(version: string, range: string): boolean {
+  const v = parseVer(version);
+  if (!v) return false;
+  const parts = range.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return true;
+  for (const part of parts) {
+    const m = /^(>=|<=|>|<|=|\^|~)?\s*(.+)$/.exec(part);
+    if (!m) return false;
+    const op = m[1] || '=';
+    const bounds = parseVer(m[2]);
+    if (!bounds) return false;
+    const c = cmpVer(v, bounds);
+    let ok: boolean;
+    switch (op) {
+      case '>=': ok = c >= 0; break;
+      case '<=': ok = c <= 0; break;
+      case '>': ok = c > 0; break;
+      case '<': ok = c < 0; break;
+      case '^': ok = c >= 0 && v[0] === bounds[0]; break;
+      case '~': ok = c >= 0 && v[0] === bounds[0] && v[1] === bounds[1]; break;
+      default: ok = c === 0;
+    }
+    if (!ok) return false;
+  }
+  return true;
+}
+
+/** Check an extension's declared base language/version against the core
+ *  catalog. Returns undefined for legacy manifests with no declaration
+ *  (treated as compatible, but flagged nowhere — first-match merge rules
+ *  apply as before). */
+export function checkBaseCompatibility(core: Catalog | undefined, manifest: ComponentManifest): BaseCompat | undefined {
+  const lang = languageDecl(manifest);
+  if (!lang || (!lang.base && !lang.baseVersion)) return undefined;
+  if (!core) return undefined; // core spec unknown — cannot judge, don't block
+  const coreId = core.id ?? 'itb-core-en';
+  const coreVer = core.specVersion ?? String(core.version ?? '1');
+  if (lang.base && lang.base !== coreId) {
+    return { ok: false, message: `targets base language "${lang.base}" — core is "${coreId}"` };
+  }
+  if (lang.baseVersion && !satisfiesRange(coreVer, lang.baseVersion)) {
+    return { ok: false, message: `requires base ${lang.baseVersion} — core spec is ${coreVer}` };
+  }
+  return { ok: true };
 }
 
 const base = () => import.meta.env.BASE_URL || '/';
 
 /**
  * Plugin dialect sources: absolute base URLs of a plugin repo's dialect/
- * folder (must contain component.yml + steps.yml [+ scriptlets/]).
+ * folder (must contain component.yml + steps.yml [+ scriptlets/]) — OR a
+ * deployed plugin service's base URL, which serves its own dialect at the
+ * well-known /gherkin-dialect path (self-describing services).
  * Two ways to provide them:
  *   1. URL query param:   ?dialects=https://raw.githubusercontent.com/OpenTestBed/itb-plugin-fhir-validator/main/dialect,https://...
  *   2. localStorage key:  plugin-dialect-urls = JSON array of base URLs
@@ -137,24 +239,39 @@ export function pluginDialectUrls(): string[] {
   return [...new Set([...queryDialectUrls(), ...getStoredDialectUrls()])];
 }
 
+/** Well-known path under which a *deployed plugin service* serves its own
+ *  dialect (self-describing services): <service-base>/gherkin-dialect/…
+ *  Deliberately unversioned — it means "the dialect this running instance
+ *  speaks"; all version info lives in component.yml. */
+export const GHERKIN_DIALECT_PATH = 'gherkin-dialect';
+
 /** Load a component (manifest + language extension + scriptlets) from an
- *  absolute base URL — a plugin repo's dialect/ folder served over HTTP. */
+ *  absolute base URL. Accepts either a dialect folder itself (a plugin
+ *  repo's dialect/ served over HTTP) or a deployed service's base URL —
+ *  in the latter case the well-known /gherkin-dialect path is tried. */
 export async function loadRemoteComponent(baseUrl: string): Promise<ComponentInfo | null> {
   try {
-    const mres = await fetch(`${baseUrl}/component.yml`);
-    if (!mres.ok) return null;
+    // Resolve the effective dialect base: the URL as given, else the
+    // service's well-known /gherkin-dialect endpoint.
+    let effectiveBase = baseUrl;
+    let mres = await fetch(`${baseUrl}/component.yml`).catch(() => null);
+    if (!mres?.ok) {
+      effectiveBase = `${baseUrl}/${GHERKIN_DIALECT_PATH}`;
+      mres = await fetch(`${effectiveBase}/component.yml`).catch(() => null);
+    }
+    if (!mres?.ok) return null;
     const manifest = yaml.load(await mres.text()) as ComponentManifest;
     if (!manifest?.id) return null;
 
     let extension: ExtensionCatalog | null = null;
-    const langFile = manifest.language ?? 'steps.yml';
-    const eres = await fetch(`${baseUrl}/${langFile}`);
+    const langFile = languageDecl(manifest)?.steps ?? 'steps.yml';
+    const eres = await fetch(`${effectiveBase}/${langFile}`);
     if (eres.ok) extension = yaml.load(await eres.text()) as ExtensionCatalog;
 
     const scriptlets: ComponentScriptlet[] = [];
     for (const file of manifest.scriptlets ?? []) {
       try {
-        const sres = await fetch(`${baseUrl}/scriptlets/${file}`);
+        const sres = await fetch(`${effectiveBase}/scriptlets/${file}`);
         if (sres.ok) scriptlets.push({ path: `scriptlets/${file}`, xml: await sres.text() });
       } catch { /* skip */ }
     }
@@ -217,8 +334,13 @@ export async function loadComponentExtension(componentId: string, languageFile: 
   }
 }
 
-/** Load all components and their extensions */
-export async function loadAllComponents(): Promise<ComponentInfo[]> {
+/** Load all components and their extensions.
+ *  Pass the core catalog when you have it (so base-compatibility is judged
+ *  against the right locale); otherwise the default core is fetched here. */
+export async function loadAllComponents(core?: Catalog): Promise<ComponentInfo[]> {
+  if (!core) {
+    try { core = await loadCatalog(); } catch { core = undefined; }
+  }
   const ids = await discoverComponents();
   const results: ComponentInfo[] = [];
 
@@ -227,8 +349,9 @@ export async function loadAllComponents(): Promise<ComponentInfo[]> {
     if (!manifest) continue;
 
     let extension: ExtensionCatalog | null = null;
-    if (manifest.language) {
-      extension = await loadComponentExtension(id, manifest.language);
+    const langFile = languageDecl(manifest)?.steps;
+    if (langFile) {
+      extension = await loadComponentExtension(id, langFile);
     }
 
     // Load scriptlet XML files shipped with this component
@@ -250,7 +373,14 @@ export async function loadAllComponents(): Promise<ComponentInfo[]> {
     const stored = localStorage.getItem(`component:${id}:enabled`);
     const enabled = stored !== null ? stored === 'true' : true;
 
-    results.push({ manifest, extension: extension ?? undefined, scriptlets: scriptlets.length > 0 ? scriptlets : undefined, enabled, status: 'unknown' });
+    results.push({
+      manifest,
+      extension: extension ?? undefined,
+      scriptlets: scriptlets.length > 0 ? scriptlets : undefined,
+      enabled,
+      status: 'unknown',
+      compat: checkBaseCompatibility(core, manifest),
+    });
   }
 
   // Plugin-provided dialects (remote base URLs) — canonical, so they replace
@@ -258,6 +388,7 @@ export async function loadAllComponents(): Promise<ComponentInfo[]> {
   for (const url of pluginDialectUrls()) {
     const remote = await loadRemoteComponent(url);
     if (!remote) { console.warn(`plugin dialect not loadable: ${url}`); continue; }
+    remote.compat = checkBaseCompatibility(core, remote.manifest);
     const idx = results.findIndex(r => r.manifest.id === remote.manifest.id);
     if (idx >= 0) results[idx] = remote; else results.push(remote);
   }
@@ -269,11 +400,18 @@ export async function loadAllComponents(): Promise<ComponentInfo[]> {
  * Merge component extensions into the core catalog.
  * Extension steps are appended after core steps so that
  * core patterns take precedence (first match wins).
+ * Extensions whose declared base language is INCOMPATIBLE with the core
+ * spec are refused (skipped) — merging them could silently shadow or
+ * un-shadow steps. The Components panel surfaces the reason.
  */
 export function mergeCatalog(core: Catalog, components: ComponentInfo[]): Catalog {
   const merged: CatalogStep[] = [...core.steps];
 
   for (const comp of components) {
+    if (comp.compat && !comp.compat.ok) {
+      console.warn(`dialect "${comp.manifest.id}" not merged: ${comp.compat.message}`);
+      continue;
+    }
     if (comp.extension?.steps) {
       // Tag each extension step with its source component and enabled status
       const tagged = comp.extension.steps.map(s => ({

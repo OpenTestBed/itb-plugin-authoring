@@ -22,6 +22,7 @@ import {
   getStoredDialectUrls,
   addStoredDialectUrl,
   removeStoredDialectUrl,
+  languageDecl,
   ComponentInfo,
   ComponentManifest,
 } from '../parser/languageCatalog';
@@ -364,7 +365,7 @@ function DialectSourcesSection({ onChanged }: { onChanged: () => void }) {
     setError(null);
     const remote = await loadRemoteComponent(url);
     if (!remote) {
-      setError('No loadable dialect at this URL — it must serve component.yml (+ steps.yml) with CORS enabled.');
+      setError('No loadable dialect at this URL — it must serve component.yml (+ steps.yml), directly or under /gherkin-dialect, with CORS enabled.');
       setAdding(false);
       return;
     }
@@ -413,7 +414,7 @@ function DialectSourcesSection({ onChanged }: { onChanged: () => void }) {
             value={input}
             onChange={e => { setInput(e.target.value); setError(null); }}
             onKeyDown={e => { if (e.key === 'Enter') add(); }}
-            placeholder="https://…/itb-plugin-x/main/dialect"
+            placeholder="https://…/dialect or service URL (/gherkin-dialect)"
             className="flex-1 px-2 py-1 text-[10px] font-mono border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-200 focus:ring-1 focus:ring-blue-500 focus:border-transparent"
           />
           <button
@@ -525,6 +526,25 @@ function ComponentCard({
         {comp.extension && (
           <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
             {comp.extension.steps.length} steps
+          </span>
+        )}
+        {(() => {
+          const lang = languageDecl(m);
+          return lang?.version ? (
+            <span
+              className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono"
+              title={lang.base ? `extends ${lang.base} ${lang.baseVersion ?? ''}`.trim() : undefined}
+            >
+              lang v{lang.version}
+            </span>
+          ) : null;
+        })()}
+        {comp.compat && !comp.compat.ok && (
+          <span
+            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+            title={comp.compat.message}
+          >
+            <AlertCircle size={9} /> incompatible base — steps not loaded
           </span>
         )}
       </div>
