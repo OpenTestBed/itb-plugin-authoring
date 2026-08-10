@@ -1,4 +1,4 @@
-# FHIR Gherkin Workbench
+# ITB Authoring Workbench
 
 A lightweight web workbench for authoring, parsing, and validating **FHIR test scenarios** using a Gherkin-like DSL.  
 The app converts Gherkin feature files into an **intermediate representation (IR)** and generates **GITB/ITB-compatible XML test cases**.  

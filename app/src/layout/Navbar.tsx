@@ -60,7 +60,7 @@ export const Navbar: React.FC<Props> = ({
     <header className="flex h-11 flex-shrink-0 items-center gap-2 border-b border-gray-200 bg-white px-3 dark:border-slate-700 dark:bg-slate-900">
       <FileCode2 size={17} className="text-blue-600 dark:text-blue-400" />
       <span className="truncate text-[13px] font-semibold text-gray-900 dark:text-gray-100">
-        ITB Test Workbench
+        ITB Authoring Workbench
       </span>
 
       <div className="flex-1" />
