@@ -6,7 +6,7 @@ locale: en
 # specVersion on ANY step-pattern change: minor for additions, major for
 # changed/removed patterns (first-match merging makes silent drift unsafe).
 id: itb-core-en
-specVersion: "1.0.0"
+specVersion: "1.1.0"
 
 # ====================================================================
 # FHIR Gherkin Dialect — Core Language
@@ -92,6 +92,19 @@ steps:
   - match: '^([A-Za-z][A-Za-z0-9_]*) is infrastructure$'
     actions:
       - declareActor: { id: '$1', role: 'infra' }
+
+  # Data pools — a named set of sample resources (app/public/data/
+  # sample-pools.json, plus any the author adds in the Data panel) that an
+  # actor is seeded from.
+  #
+  # NOTE: this records the binding only. The pool id is declared as a test
+  # case variable so later steps can reference it and so the intent survives
+  # into the generated TDL, but nothing yet loads the pool's resources into
+  # the actor — that needs a handler on the generator side. Treat the step as
+  # a declaration, not an action.
+  - match: '^([A-Za-z][A-Za-z0-9_]*) is configured with data pool "([^"]+)"$'
+    actions:
+      - declareVariable: { name: '$1DataPool', varType: 'string', value: '$2' }
 
   # ==================================================================
   # 2. HTTP REQUESTS

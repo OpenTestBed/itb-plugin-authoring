@@ -291,7 +291,9 @@ export const AppShell: React.FC = () => {
           <DataPoolsPanel
             isDark={isDark}
             onInsertPoolStep={id =>
-              insertAtCursor(`    Given the test environment is configured with data pool "${id}"`)}
+              // Actor-scoped: a pool is seeded into a specific system. Address
+              // the SUT when the file declares one, else leave a stub to edit.
+              insertAtCursor(`    And ${engine.sutActor ?? 'Actor'} is configured with data pool "${id}"`)}
           />
         );
       case 'env':

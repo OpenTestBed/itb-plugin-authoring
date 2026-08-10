@@ -11,6 +11,8 @@ export interface GherkinEngine {
   xmlOutput: XMLOutput | null;
   issues: any[];
   requiredActors: RequiredActor[];
+  /** Id of the first actor declared with role SUT, if any. */
+  sutActor: string | null;
   stepHighlights: StepHighlight[];
   /** Feature-wide Gherkin tags, lowercased and without the leading `@`. */
   featureTags: string[];
@@ -120,6 +122,19 @@ export function useGherkinEngine(gherkinContent: string): GherkinEngine {
     return out;
   }, [gherkinContent, parsedScenario, parser]);
 
+  // The system under test — used to address the actor in steps inserted from
+  // the side panels, so they land as `FHIRServer is …` rather than a stub.
+  const sutActor: string | null = useMemo(() => {
+    const scenarioIRs = (parsedScenario as any)?.__scenarioIRs as { ir: any[] }[] | undefined;
+    if (!scenarioIRs) return null;
+    for (const sc of scenarioIRs) {
+      for (const action of sc.ir) {
+        if (action.type === 'declareActor' && action.role === 'SUT') return action.id;
+      }
+    }
+    return null;
+  }, [parsedScenario]);
+
   const featureTags: string[] = useMemo(
     () => ((parsedScenario as any)?.__featureTags as string[] | undefined) ?? [],
     [parsedScenario],
@@ -130,7 +145,7 @@ export function useGherkinEngine(gherkinContent: string): GherkinEngine {
   const scenarioCount = (parsedScenario as any)?.__scenarios?.length ?? 0;
 
   return {
-    parsedScenario, xmlOutput, issues, requiredActors, stepHighlights, featureTags,
+    parsedScenario, xmlOutput, issues, requiredActors, sutActor, stepHighlights, featureTags,
     errorCount, warnCount, scenarioCount,
   };
 }
