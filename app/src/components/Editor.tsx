@@ -5,6 +5,19 @@ import { ParseError } from '../types';
 
 export interface EditorHandle {
   insertText: (text: string) => void;
+  revealLine: (line: number) => void;
+  focus: () => void;
+}
+
+/** One entry offered by Ctrl+Space after a Given/When/Then keyword. */
+export interface StepCompletion {
+  /** Human-readable pattern, e.g. `User creates a resource <type> from <file>`. */
+  label: string;
+  /** Text actually inserted (snippet syntax allowed). */
+  insertText: string;
+  /** Right-hand hint — the dialect the step comes from. */
+  detail?: string;
+  documentation?: string;
 }
 
 /** A step (line range) provided by a plugin dialect rather than the core language. */
@@ -23,13 +36,22 @@ interface EditorProps {
   isDark: boolean;
   /** plugin-dialect steps to render distinctly (base language keeps token colors) */
   highlights?: StepHighlight[];
+  /** step catalog offered as Ctrl+Space completions */
+  completions?: StepCompletion[];
 }
 
-export const Editor = forwardRef<EditorHandle, EditorProps>(({ value, onChange, errors, isDark, highlights }, ref) => {
+export const Editor = forwardRef<EditorHandle, EditorProps>((
+  { value, onChange, errors, isDark, highlights, completions }, ref,
+) => {
   const editorRef = useRef<monacoNs.editor.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<Monaco | null>(null);
   const decorationsRef = useRef<monacoNs.editor.IEditorDecorationsCollection | null>(null);
+  // The completion provider is registered once but must see the latest catalog,
+  // which arrives asynchronously — so it reads through a ref.
+  const completionsRef = useRef<StepCompletion[]>([]);
   const [mounted, setMounted] = React.useState(false);
+
+  completionsRef.current = completions ?? [];
 
   useImperativeHandle(ref, () => ({
     insertText(text: string) {
@@ -41,6 +63,16 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(({ value, onChange, 
       const range = new m.Range(pos.lineNumber, pos.column, pos.lineNumber, pos.column);
       ed.executeEdits('snippet', [{ range, text: text + '\n' }]);
       ed.focus();
+    },
+    revealLine(line: number) {
+      const ed = editorRef.current;
+      if (!ed) return;
+      ed.revealLineInCenter(line);
+      ed.setPosition({ lineNumber: line, column: 1 });
+      ed.focus();
+    },
+    focus() {
+      editorRef.current?.focus();
     },
   }));
 
@@ -98,6 +130,43 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(({ value, onChange, 
 
     // Register Gherkin language
     monaco.languages.register({ id: 'gherkin' });
+
+    // Step completions. Offered on any step line — the catalog is the language,
+    // so it belongs at the caret rather than only in a side panel.
+    monaco.languages.registerCompletionItemProvider('gherkin', {
+      triggerCharacters: [' '],
+      provideCompletionItems(model, position) {
+        const line = model.getValueInRange({
+          startLineNumber: position.lineNumber,
+          startColumn: 1,
+          endLineNumber: position.lineNumber,
+          endColumn: position.column,
+        });
+        const m = /^(\s*)(Given|When|Then|And|But)\s+(.*)$/.exec(line);
+        if (!m) return { suggestions: [] };
+
+        const typed = m[3];
+        const startColumn = position.column - typed.length;
+        const range = {
+          startLineNumber: position.lineNumber,
+          endLineNumber: position.lineNumber,
+          startColumn,
+          endColumn: position.column,
+        };
+
+        return {
+          suggestions: completionsRef.current.map(c => ({
+            label: c.label,
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertText: c.insertText,
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            detail: c.detail,
+            documentation: c.documentation,
+            range,
+          })),
+        };
+      },
+    });
 
     // Monarch tokenizer for FHIR Gherkin Dialect
     monaco.languages.setMonarchTokensProvider('gherkin', {
@@ -268,7 +337,7 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(({ value, onChange, 
   };
 
   return (
-    <div className="h-full border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+    <div className="h-full overflow-hidden">
       <MonacoEditor
         height="100%"
         language="gherkin"

@@ -11,6 +11,57 @@ EBNF-like grammar for the FHIR Gherkin Dialect core language and the FHIR Valida
 - Steps are matched after stripping the Gherkin keyword (`Given`, `When`, `Then`, `And`, `But`).
 - A trailing `:` indicates that a docstring or data table follows on subsequent lines.
 
+## Feature tags
+
+Tags precede `Feature:` and are collected feature-wide (there is no
+per-scenario scoping — a tag anywhere in the file applies to the whole file).
+They are lowercased when read, so ids compare case-insensitively.
+
+### Behaviour
+
+| Tag | Effect |
+|---|---|
+| `@continue-on-error`, `@non-blocking` | emits `<steps stopOnError="false">`; checks still report red and still fail the test, they just don't abort the remaining steps |
+
+### Language and dialect requirements
+
+A file may declare which language spec and which plugin dialects it was written
+against. These are optional — a file with no such tags behaves exactly as before.
+
+```gherkin
+@lang:itb-core-en@^1.4
+@dialect:fhir-validator@^1.2
+Feature: Patient profile validation
+```
+
+```ebnf
+LangTag     = "@lang:" , SpecId , [ "@" , Range ] ;
+DialectTag  = "@dialect:" , ComponentId , [ "@" , Range ] ;
+Range       = [ "^" | "~" | ">=" | "<=" | ">" | "<" | "=" ] , Version ;
+Version     = [ "v" ] , Digit+ , [ "." , Digit+ ] , [ "." , Digit+ ] ;
+```
+
+Ranges use the same matcher as a component manifest's `language.baseVersion`:
+
+| Range | Matches |
+|---|---|
+| `^1.4` | `1.4.0` up to, but not including, `2.0.0` |
+| `~1.4` | `1.4.x` only |
+| `1.4.2` | exactly `1.4.2` |
+| `1.4` | exactly `1.4.0` — missing parts default to zero, **not** "any 1.4.x" |
+| `>=1.4` | `1.4.0` or newer, any major |
+| *(omitted)* | any version; the tag then only names a requirement |
+
+**One comparator per tag.** The matcher ANDs space-separated parts, but a
+Gherkin tag cannot contain a space, so two-sided ranges such as `>=1.3 <1.6`
+cannot be written as a tag. `^` and `~` cover the realistic cases.
+
+A declaration that is not satisfied produces a **warning**, never an error: the
+file may still compile, and any step that genuinely failed to match already
+reports itself. The warning exists to explain *why* those errors are there —
+for example `This file targets fhir-validator ^1.2 — 2.0.1 is loaded — 12 steps
+unmatched`.
+
 ## Terminals
 
 ```ebnf

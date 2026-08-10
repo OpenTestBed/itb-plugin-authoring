@@ -5,28 +5,10 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <!-- Tailwind CSS CDN for immediate styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            colors: {
-              primary: {
-                50: '#eff6ff',
-                100: '#dbeafe',
-                500: '#3b82f6',
-                600: '#2563eb',
-                700: '#1d4ed8',
-                800: '#1e40af',
-                900: '#1e3a8a',
-              }
-            }
-          }
-        }
-      }
-    </script>
+    <!-- Tailwind is compiled at build time (tailwind.config.js). The runtime
+         CDN that used to live here needed network access and flashed unstyled
+         content on load. -->
+
     
     <!-- Custom styles for better appearance -->
     <style>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { loadCatalog, loadAllComponents, mergeCatalog, CatalogStep, ComponentInfo } from '../../parser/languageCatalog';
+import { loadCatalog, loadAllComponents, mergeCatalog, Catalog, CatalogStep, ComponentInfo } from '../../parser/languageCatalog';
 import { useAppContext } from '../../context/AppContext';
 
 export interface StepEntry {
@@ -187,11 +187,14 @@ export function useCatalogData() {
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [components, setComponents] = useState<ComponentInfo[]>([]);
+  // The core spec's own identity/version — needed to judge a file's @lang: tag.
+  const [core, setCore] = useState<Catalog | undefined>(undefined);
 
   useEffect(() => {
     (async () => {
       try {
         const core = await loadCatalog('en');
+        setCore(core);
         const comps = await loadAllComponents(core);
         setComponents(comps);
         const merged = mergeCatalog(core, comps);
@@ -273,5 +276,5 @@ export function useCatalogData() {
     })();
   }, [dialectsVersion]);
 
-  return { steps, docSteps, categories, loading, components };
+  return { steps, docSteps, categories, loading, components, core };
 }

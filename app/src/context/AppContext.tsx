@@ -1,9 +1,15 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { ITBConfig, loadITBConfig, saveITBConfig } from '../services/itbClient';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import { ITBConfig, loadITBConfig, saveITBConfig, checkITBHealth } from '../services/itbClient';
 import { GherkinParser } from '../parser/gherkinParser';
 import { XMLGenerator } from '../parser/xmlGenerator';
 import { dataModels } from '../data/models';
 import { DataModel } from '../types';
+import {
+  FileSource, FileSourceKind, bundledSource, serverSource, localSource, serverAvailable,
+} from '../services/fileSources';
+import { localFsSupported, pickDirectory, restoreDirectory, forgetDirectory } from '../services/localFs';
+
+export type ITBStatus = 'unconfigured' | 'checking' | 'connected' | 'unreachable';
 
 interface AppContextType {
   // Theme
@@ -20,6 +26,27 @@ interface AppContextType {
   saveConfig: (c: ITBConfig) => void;
   itbSettingsOpen: boolean;
   setITBSettingsOpen: (v: boolean) => void;
+
+  // ── Capabilities ──────────────────────────────────────────────────
+  /** The authoring-plugin server is answering /api/features. */
+  hasServerFiles: boolean;
+  /** This browser can open a local folder (Chromium + secure context). */
+  hasLocalFs: boolean;
+  /** Liveness of the configured test bed. */
+  itbStatus: ITBStatus;
+  recheckITB: () => void;
+
+  // ── Where files come from ─────────────────────────────────────────
+  sourceKind: FileSourceKind;
+  source: FileSource;
+  /** Set to 'local' only succeeds once a folder is granted; use pickLocalFolder. */
+  setSourceKind: (k: FileSourceKind) => void;
+  localDirName: string | null;
+  pickLocalFolder: () => Promise<boolean>;
+  closeLocalFolder: () => Promise<void>;
+  /** Bumped whenever the file list should be reloaded. */
+  filesVersion: number;
+  refreshFiles: () => void;
 
   // Plugin dialects: bumped whenever the set of dialect URLs changes so the
   // parser and catalog consumers reload without a page refresh
@@ -45,7 +72,15 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [itbConfig, setITBConfig] = useState<ITBConfig>(loadITBConfig);
   const [itbSettingsOpen, setITBSettingsOpen] = useState(false);
   const [dialectsVersion, setDialectsVersion] = useState(0);
-  const refreshDialects = () => setDialectsVersion(v => v + 1);
+  const refreshDialects = useCallback(() => setDialectsVersion(v => v + 1), []);
+
+  const [hasServerFiles, setHasServerFiles] = useState(false);
+  const [hasLocalFs] = useState(localFsSupported);
+  const [itbStatus, setITBStatus] = useState<ITBStatus>('unconfigured');
+  const [sourceKind, setSourceKindState] = useState<FileSourceKind>('bundled');
+  const [localDir, setLocalDir] = useState<FileSystemDirectoryHandle | null>(null);
+  const [filesVersion, setFilesVersion] = useState(0);
+  const refreshFiles = useCallback(() => setFilesVersion(v => v + 1), []);
 
   // Theme effect
   useEffect(() => {
@@ -62,10 +97,69 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     window.localStorage?.setItem('theme', isDark ? 'dark' : 'light');
   }, [isDark]);
 
-  const saveConfig = (config: ITBConfig) => {
+  // Pick the best available file source once, at startup:
+  // the plugin server if it answers, else a previously granted folder, else bundled.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const server = await serverAvailable();
+      if (cancelled) return;
+      setHasServerFiles(server);
+      if (server) { setSourceKindState('server'); return; }
+
+      const dir = await restoreDirectory(false);
+      if (cancelled) return;
+      if (dir) { setLocalDir(dir); setSourceKindState('local'); return; }
+
+      setSourceKindState('bundled');
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Probe the test bed whenever its base URL changes.
+  const recheckITB = useCallback(() => {
+    const url = itbConfig.baseUrl?.trim();
+    if (!url) { setITBStatus('unconfigured'); return; }
+    setITBStatus('checking');
+    checkITBHealth(url)
+      .then(r => setITBStatus(r.ok ? 'connected' : 'unreachable'))
+      .catch(() => setITBStatus('unreachable'));
+  }, [itbConfig.baseUrl]);
+
+  useEffect(() => { recheckITB(); }, [recheckITB]);
+
+  const saveConfig = useCallback((config: ITBConfig) => {
     setITBConfig(config);
     saveITBConfig(config);
-  };
+  }, []);
+
+  const pickLocalFolder = useCallback(async () => {
+    const dir = await pickDirectory();
+    if (!dir) return false;
+    setLocalDir(dir);
+    setSourceKindState('local');
+    refreshFiles();
+    return true;
+  }, [refreshFiles]);
+
+  const closeLocalFolder = useCallback(async () => {
+    await forgetDirectory();
+    setLocalDir(null);
+    setSourceKindState(hasServerFiles ? 'server' : 'bundled');
+    refreshFiles();
+  }, [hasServerFiles, refreshFiles]);
+
+  const setSourceKind = useCallback((k: FileSourceKind) => {
+    if (k === 'local' && !localDir) { void pickLocalFolder(); return; }
+    setSourceKindState(k);
+    refreshFiles();
+  }, [localDir, pickLocalFolder, refreshFiles]);
+
+  const source = useMemo<FileSource>(() => {
+    if (sourceKind === 'server' && hasServerFiles) return serverSource();
+    if (sourceKind === 'local' && localDir) return localSource(localDir);
+    return bundledSource();
+  }, [sourceKind, hasServerFiles, localDir]);
 
   // Parser & generator
   const parser = useMemo(
@@ -81,7 +175,7 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       }),
     // dialectsVersion: a fresh parser re-runs ensureCatalog, picking up
     // newly added/removed plugin dialect URLs
-    [selectedModel, dialectsVersion]
+    [selectedModel, dialectsVersion], // eslint-disable-line react-hooks/exhaustive-deps
   );
   const generator = useMemo(() => new XMLGenerator(parser), [parser]);
 
@@ -90,6 +184,11 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       isDark, setIsDark,
       selectedModel, setSelectedModel,
       itbConfig, setITBConfig, saveConfig, itbSettingsOpen, setITBSettingsOpen,
+      hasServerFiles, hasLocalFs, itbStatus, recheckITB,
+      sourceKind, source, setSourceKind,
+      localDirName: localDir?.name ?? null,
+      pickLocalFolder, closeLocalFolder,
+      filesVersion, refreshFiles,
       dialectsVersion, refreshDialects,
       parser, generator,
     }}>

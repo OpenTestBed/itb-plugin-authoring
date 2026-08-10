@@ -7,34 +7,27 @@ import { StepHighlight } from '../components/Editor';
 import { validateTDL } from '../validation/gitbValidator';
 
 export interface GherkinEngine {
-  gherkinContent: string;
-  setGherkinContent: (v: string) => void;
   parsedScenario: ParsedScenario | null;
   xmlOutput: XMLOutput | null;
   issues: any[];
   requiredActors: RequiredActor[];
   stepHighlights: StepHighlight[];
+  /** Feature-wide Gherkin tags, lowercased and without the leading `@`. */
+  featureTags: string[];
   errorCount: number;
   warnCount: number;
   scenarioCount: number;
 }
 
-export function useGherkinEngine(): GherkinEngine {
+/**
+ * Parse → expand → generate → validate, for one buffer.
+ *
+ * The buffer itself is owned by the document store (see useDocuments), so the
+ * engine is a pure derivation of whatever text is passed in. Switching tabs
+ * just re-runs it against the new content.
+ */
+export function useGherkinEngine(gherkinContent: string): GherkinEngine {
   const { parser, generator } = useAppContext();
-  const [gherkinContent, setGherkinContentState] = useState<string>('');
-
-  // Listen for content imported from itb-test-manager via postMessage
-  useEffect(() => {
-    const handler = (e: MessageEvent) => {
-      if (e.data?.type === 'workbench-import' && e.data.gherkin) {
-        setGherkinContentState(e.data.gherkin);
-      }
-    };
-    window.addEventListener('message', handler);
-    return () => window.removeEventListener('message', handler);
-  }, []);
-
-  const setGherkinContent = setGherkinContentState;
   const [parsedScenario, setParsedScenario] = useState<ParsedScenario | null>(null);
   const [issues, setIssues] = useState<any[]>([]);
 
@@ -72,6 +65,7 @@ export function useGherkinEngine(): GherkinEngine {
 
   // Schema validation
   useEffect(() => {
+    let cancelled = false;
     (async () => {
       if (!xmlOutput || !parsedScenario) return;
       const allSchemaIssues = [];
@@ -79,8 +73,9 @@ export function useGherkinEngine(): GherkinEngine {
         const fileIssues = await validateTDL(file.xml);
         allSchemaIssues.push(...fileIssues.map(i => ({ ...i, message: `[${file.filename}] ${i.message}` })));
       }
-      setIssues([...(parsedScenario.errors ?? []), ...allSchemaIssues]);
+      if (!cancelled) setIssues([...(parsedScenario.errors ?? []), ...allSchemaIssues]);
     })();
+    return () => { cancelled = true; };
   }, [xmlOutput, parsedScenario]);
 
   // Required actors from IR
@@ -103,8 +98,6 @@ export function useGherkinEngine(): GherkinEngine {
 
   // Plugin-dialect step highlights: classify each step line against the
   // catalog; only plugin-provided steps are returned (core = token colors).
-  // Recomputed when parsedScenario changes too, so highlights appear once the
-  // async catalog load has completed.
   const stepHighlights: StepHighlight[] = useMemo(() => {
     const out: StepHighlight[] = [];
     const p = parser as any;
@@ -127,13 +120,17 @@ export function useGherkinEngine(): GherkinEngine {
     return out;
   }, [gherkinContent, parsedScenario, parser]);
 
+  const featureTags: string[] = useMemo(
+    () => ((parsedScenario as any)?.__featureTags as string[] | undefined) ?? [],
+    [parsedScenario],
+  );
+
   const errorCount = issues.filter(e => e.severity === 'error').length;
   const warnCount = issues.filter(e => e.severity === 'warning').length;
   const scenarioCount = (parsedScenario as any)?.__scenarios?.length ?? 0;
 
   return {
-    gherkinContent, setGherkinContent,
-    parsedScenario, xmlOutput, issues, requiredActors, stepHighlights,
+    parsedScenario, xmlOutput, issues, requiredActors, stepHighlights, featureTags,
     errorCount, warnCount, scenarioCount,
   };
 }

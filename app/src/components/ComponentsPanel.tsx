@@ -10,18 +10,10 @@ import {
   Heart,
   Wrench,
   FileCode2,
-  Globe,
-  Plus,
-  X,
 } from 'lucide-react';
 import {
   loadAllComponents,
-  loadRemoteComponent,
   checkComponentHealth,
-  queryDialectUrls,
-  getStoredDialectUrls,
-  addStoredDialectUrl,
-  removeStoredDialectUrl,
   languageDecl,
   ComponentInfo,
   ComponentManifest,
@@ -35,7 +27,6 @@ export interface RequiredActor {
 }
 
 interface ComponentsPanelProps {
-  isDark: boolean;
   requiredActors?: RequiredActor[];
   onComponentsChange?: (components: ComponentInfo[]) => void;
 }
@@ -111,8 +102,8 @@ function dockerComposeYaml(components: ComponentInfo[]): string {
 
 // ── Main Panel ───────────────────────────────────────────────────────
 
-export function ComponentsPanel({ isDark, requiredActors, onComponentsChange }: ComponentsPanelProps) {
-  const { dialectsVersion, refreshDialects } = useAppContext();
+export function ComponentsPanel({ requiredActors, onComponentsChange }: ComponentsPanelProps) {
+  const { dialectsVersion } = useAppContext();
   const [components, setComponents] = useState<ComponentInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCompose, setShowCompose] = useState(false);
@@ -313,8 +304,8 @@ export function ComponentsPanel({ isDark, requiredActors, onComponentsChange }: 
         </div>
       )}
 
-      {/* ── Plugin dialects (remote, by URL) ─────────────────── */}
-      <DialectSourcesSection onChanged={refreshDialects} />
+      {/* Plugin dialects moved to the Language reference — they extend the
+          grammar, so they belong beside the steps they contribute. */}
 
       {/* ── Component cards ───────────────────────────────────── */}
       <div className="px-4 py-3 space-y-3">
@@ -339,95 +330,6 @@ export function ComponentsPanel({ isDark, requiredActors, onComponentsChange }: 
               />
             );
           })
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ── Plugin dialect sources ───────────────────────────────────────────
-
-/** Manage remote plugin dialects: base URLs of a plugin repo's dialect/
- *  folder (component.yml + steps.yml [+ scriptlets/]). The bundled
- *  fhir-validator dialect stays the default; remote dialects with the same
- *  id override it, others are added alongside. Persisted in localStorage. */
-function DialectSourcesSection({ onChanged }: { onChanged: () => void }) {
-  const [stored, setStored] = useState<string[]>(() => getStoredDialectUrls());
-  const [input, setInput] = useState('');
-  const [adding, setAdding] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const fromQuery = queryDialectUrls();
-
-  const add = async () => {
-    const url = input.trim().replace(/\/+$/, '');
-    if (!url) return;
-    setAdding(true);
-    setError(null);
-    const remote = await loadRemoteComponent(url);
-    if (!remote) {
-      setError('No loadable dialect at this URL — it must serve component.yml (+ steps.yml), directly or under /gherkin-dialect, with CORS enabled.');
-      setAdding(false);
-      return;
-    }
-    setStored(addStoredDialectUrl(url));
-    setInput('');
-    setAdding(false);
-    onChanged();
-  };
-
-  const remove = (url: string) => {
-    setStored(removeStoredDialectUrl(url));
-    onChanged();
-  };
-
-  return (
-    <div className="mx-4 mt-3 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 overflow-hidden">
-      <div className="flex items-center gap-1.5 px-3 py-2 border-b border-gray-100 dark:border-slate-700">
-        <Globe size={11} className="text-blue-500 dark:text-blue-400" />
-        <span className="text-[11px] font-medium text-gray-700 dark:text-gray-300">Plugin dialects</span>
-        <span className="text-[9px] text-gray-400 dark:text-gray-500 ml-auto">
-          fhir-validator bundled by default
-        </span>
-      </div>
-      <div className="px-3 py-2 space-y-1.5">
-        {fromQuery.map(url => (
-          <div key={`q-${url}`} className="flex items-center gap-2 text-[10px]">
-            <span className="flex-1 font-mono text-gray-600 dark:text-gray-300 truncate" title={url}>{url}</span>
-            <span className="px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">?dialects=</span>
-          </div>
-        ))}
-        {stored.map(url => (
-          <div key={url} className="flex items-center gap-2 text-[10px] group">
-            <span className="flex-1 font-mono text-gray-600 dark:text-gray-300 truncate" title={url}>{url}</span>
-            <button
-              onClick={() => remove(url)}
-              className="p-0.5 rounded text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-              title="Remove dialect"
-            >
-              <X size={11} />
-            </button>
-          </div>
-        ))}
-        <div className="flex gap-1.5 pt-0.5">
-          <input
-            type="text"
-            value={input}
-            onChange={e => { setInput(e.target.value); setError(null); }}
-            onKeyDown={e => { if (e.key === 'Enter') add(); }}
-            placeholder="https://…/dialect or service URL (/gherkin-dialect)"
-            className="flex-1 px-2 py-1 text-[10px] font-mono border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-200 focus:ring-1 focus:ring-blue-500 focus:border-transparent"
-          />
-          <button
-            onClick={add}
-            disabled={adding || !input.trim()}
-            className="px-2 py-1 text-[10px] font-medium rounded bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-40 transition-colors flex items-center gap-1"
-          >
-            {adding ? <Loader2 size={10} className="animate-spin" /> : <Plus size={10} />}
-            Add
-          </button>
-        </div>
-        {error && (
-          <p className="text-[10px] text-red-600 dark:text-red-400">{error}</p>
         )}
       </div>
     </div>
@@ -545,6 +447,17 @@ function ComponentCard({
             title={comp.compat.message}
           >
             <AlertCircle size={9} /> incompatible base — steps not loaded
+          </span>
+        )}
+        {/* App→dialect drift (implementsDialect vs language.version): report-only,
+            the dialect spec stays authoritative and keeps loading — the
+            diagnostic points at the app. */}
+        {comp.dialectDrift && !comp.dialectDrift.ok && (
+          <span
+            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300"
+            title={comp.dialectDrift.message}
+          >
+            <AlertCircle size={9} /> app behind dialect spec
           </span>
         )}
       </div>
