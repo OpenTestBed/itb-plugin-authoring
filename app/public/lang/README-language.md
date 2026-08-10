@@ -222,6 +222,55 @@ Feature: Client submits and monitor validates an allergy
 
 ---
 
+## Versioning & the plugin manifest (`component.yml`)
+
+Everything is versioned, along **three independent axes** that are routinely
+confused — keep them distinct:
+
+| Axis | Where it lives | Example |
+|---|---|---|
+| Component / app version | `component.yml` → `version` | `"1.0"` |
+| Dialect spec version | `component.yml` → `language.version` | `"1.0.0"` |
+| Core spec compatibility | `component.yml` → `language.baseVersion` | `">=1 <2"` |
+| Deployed service version | consumer-side services map, feeds step `requires` | `1.2.0` |
+
+A dialect (language extension) declares which **core language spec** it extends
+(`lang/en.yml` carries `id: itb-core-en` + `specVersion`), and the **app** declares
+which **dialect spec** it implements:
+
+```yaml
+id: fhir-validator
+version: "1.0"                 # the app/component build
+implementsDialect: "^1.0"      # dialect spec range this build satisfies (optional)
+language:
+  steps: steps.yml
+  version: "1.0.0"             # the dialect spec itself
+  base: itb-core-en            # base language this dialect extends
+  baseVersion: ">=1 <2"        # compatible core specVersion range
+```
+
+Compatibility is checked in both directions:
+
+```
+dialect ──language.baseVersion──▶ core spec     incompatible ⇒ steps REFUSED (red badge)
+app     ──implementsDialect─────▶ dialect spec  drift ⇒ REPORTED only (amber badge)
+```
+
+The dialect spec is **authoritative**: when app and dialect disagree, the app is
+out of date, and the diagnostic points at the app, never at the dialect. Both
+declarations are optional — a manifest without them loads exactly as before, with
+no checks and no warnings; an unparseable range means "cannot judge" and is
+skipped silently. Range syntax is the shared semver-lite subset: `^`, `~`, `>=`,
+`<=`, `>`, `<`, `=`, space-separated parts ANDed.
+
+The canonical `component.yml` lives in each plugin repo's `dialect/` folder;
+`itb-cli/src/sync-dialects.mjs` copies it verbatim into
+`public/components/<id>/` (fields must survive the sync — a dropped
+`implementsDialect` silently disables the drift check), and deployed services
+serve the same folder at the well-known `/gherkin-dialect` path.
+
+---
+
 ## Files
 
 - `en.yml`: Catalog of supported steps + requirements

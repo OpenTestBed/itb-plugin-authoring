@@ -3,6 +3,10 @@
 id: smart-helper
 name: SMART Helper
 version: "1.0"
+# Dialect spec range this app build satisfies (optional). The dialect spec
+# (language.version below) is authoritative: if it falls outside this range,
+# THIS APP is out of date — diagnostics point here, not at the dialect.
+implementsDialect: "^1.0"
 description: >
   Helper service for SMART-on-FHIR testing. Supports uploading
   Implementation Guides and preparing SMART app launch contexts.

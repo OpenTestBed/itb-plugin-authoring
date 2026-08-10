@@ -82,6 +82,11 @@ export interface ComponentManifest {
   };
   actors?: { id: string; description?: string }[];
   services?: { handler: string; path: string }[];
+  /** Dialect spec range this app build satisfies (optional). The dialect
+   *  spec (language.version) is authoritative: if it falls outside this
+   *  range, the APP is out of date — diagnostics point at the app, never
+   *  at the dialect. Same semver-lite syntax as language.baseVersion. */
+  implementsDialect?: string;
   /** Path to steps.yml (legacy string form) or a versioned LanguageDecl */
   language?: string | LanguageDecl;
   scriptlets?: string[]; // list of scriptlet XML files shipped with this component
@@ -117,6 +122,39 @@ export interface ComponentInfo {
   status: 'unknown' | 'healthy' | 'unhealthy' | 'checking';
   /** Base-language compatibility (undefined = legacy manifest, no declaration) */
   compat?: BaseCompat;
+  /** App → dialect-spec drift (implementsDialect vs language.version).
+   *  Report-only: the dialect stays authoritative and keeps loading;
+   *  undefined = no declaration or cannot judge. */
+  dialectDrift?: BaseCompat;
+}
+
+/** Check the app→dialect direction: does the app build (implementsDialect)
+ *  cover the loaded dialect spec (language.version)?
+ *
+ *  Three independent version axes — don't confuse them:
+ *    - manifest.version            the app/component build
+ *    - language.version            the dialect spec itself
+ *    - language.baseVersion        dialect → core spec compatibility
+ *  implementsDialect adds the missing app → dialect-spec direction.
+ *
+ *  Optional and never blocking: returns undefined when the field is absent,
+ *  the dialect spec version is unknown, or either side is unparseable
+ *  ("cannot judge" — silent skip, mirroring checkBaseCompatibility for
+ *  legacy manifests). On mismatch, the message points at the APP: the
+ *  dialect spec is authoritative. */
+export function checkDialectImplementation(manifest: ComponentManifest): BaseCompat | undefined {
+  const range = manifest?.implementsDialect;
+  if (!range || typeof range !== 'string') return undefined;
+  const specVer = languageDecl(manifest)?.version;
+  if (!specVer) return undefined;
+  if (!parseVer(specVer) || !range.trim().split(/\s+/).every(p => /^(>=|<=|>|<|=|\^|~)?\s*v?\d+(\.\d+){0,2}$/.test(p))) {
+    return undefined; // cannot judge — skip silently
+  }
+  if (satisfiesRange(specVer, range)) return { ok: true };
+  return {
+    ok: false,
+    message: `app (v${manifest.version}) declares implementsDialect ${range}, but the loaded dialect spec is ${specVer} — the app is out of date with its dialect`,
+  };
 }
 
 // ── Semver-lite ──────────────────────────────────────────────────────
@@ -380,6 +418,7 @@ export async function loadAllComponents(core?: Catalog): Promise<ComponentInfo[]
       enabled,
       status: 'unknown',
       compat: checkBaseCompatibility(core, manifest),
+      dialectDrift: checkDialectImplementation(manifest),
     });
   }
 
@@ -389,6 +428,7 @@ export async function loadAllComponents(core?: Catalog): Promise<ComponentInfo[]
     const remote = await loadRemoteComponent(url);
     if (!remote) { console.warn(`plugin dialect not loadable: ${url}`); continue; }
     remote.compat = checkBaseCompatibility(core, remote.manifest);
+    remote.dialectDrift = checkDialectImplementation(remote.manifest);
     const idx = results.findIndex(r => r.manifest.id === remote.manifest.id);
     if (idx >= 0) results[idx] = remote; else results.push(remote);
   }
