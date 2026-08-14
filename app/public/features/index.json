@@ -32,6 +32,7 @@
   "testdata-bundle.feature",
   "testdata-generation.feature",
   "testdata-validation.feature",
+  "tng-certificate-governance.feature",
   "transform-icvp.feature",
   "tutorial.feature",
   "validate-patient.feature"

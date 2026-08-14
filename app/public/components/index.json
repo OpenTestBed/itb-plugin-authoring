@@ -2,6 +2,7 @@
   "components": [
     "fhir-validator",
     "hcert-decoder",
-    "smart-helper"
+    "smart-helper",
+    "tng-certificate"
   ]
 }
