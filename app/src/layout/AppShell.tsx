@@ -90,7 +90,7 @@ export const AppShell: React.FC = () => {
       severity: i.severity === 'error' ? 'error' : 'warning',
       line: i.line,
       message: i.message,
-      from: 'parser' as const,
+      from: (i.from ?? 'parser') as 'parser' | 'scriptlet',
     }));
 
     const unmatched = engine.issues.filter(

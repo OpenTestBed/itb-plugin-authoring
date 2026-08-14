@@ -6,7 +6,7 @@ locale: en
 # specVersion on ANY step-pattern change: minor for additions, major for
 # changed/removed patterns (first-match merging makes silent drift unsafe).
 id: itb-core-en
-specVersion: "1.1.0"
+specVersion: "1.2.0"
 
 # ====================================================================
 # FHIR Gherkin Dialect — Core Language
@@ -105,6 +105,66 @@ steps:
   - match: '^([A-Za-z][A-Za-z0-9_]*) is configured with data pool "([^"]+)"$'
     actions:
       - declareVariable: { name: '$1DataPool', varType: 'string', value: '$2' }
+
+  # ==================================================================
+  # 1b. ESCAPE TO RAW ITB (scriptlets)
+  # ==================================================================
+  # When something cannot — or should not — be expressed in Gherkin, call a
+  # GITB scriptlet holding the raw TDL.
+  #
+  #   And call scriptlet "verifyCoseSignature"
+  #   And call scriptlet "verifyCoseSignature" as "result"
+  #   And call scriptlet "verifyCoseSignature" with:
+  #     | name     | value     |
+  #     | resource | $response |
+  #
+  # The scriptlet is resolved against the locations in the `# itb:` header
+  # block, then `scriptlets/` beside the feature files, then the scriptlets
+  # shipped by enabled components. An id that resolves nowhere is an error —
+  # there is no stub fallback, because a stub deploys and runs green while
+  # doing nothing.
+  #
+  # A doc string supplies the body inline, so the raw TDL lives in the feature
+  # file and survives recompilation. A scriptlet only sees its <params>, so
+  # pass anything it needs through the table:
+  #
+  #   And call scriptlet "checkOutcome" with:
+  #     | name     | value     |
+  #     | resource | $response |
+  #     """
+  #     <verify handler="StringValidator">
+  #       <input name="actualstring">$resource{severity}</input>
+  #       <input name="expectedstring">"error"</input>
+  #     </verify>
+  #     """
+
+  - match: '^call scriptlet "([^"]+)" as "([A-Za-z_][A-Za-z0-9_]*)" with:$'
+    actions:
+      - call:
+          path: 'scriptlets/$1.xml'
+          output: '$2'
+          inputsFromTable: true
+          body: '$docString'
+
+  - match: '^call scriptlet "([^"]+)" with:$'
+    actions:
+      - call:
+          path: 'scriptlets/$1.xml'
+          inputsFromTable: true
+          body: '$docString'
+
+  - match: '^call scriptlet "([^"]+)" as "([A-Za-z_][A-Za-z0-9_]*)"$'
+    actions:
+      - call:
+          path: 'scriptlets/$1.xml'
+          output: '$2'
+          body: '$docString'
+
+  - match: '^call scriptlet "([^"]+)"$'
+    actions:
+      - call:
+          path: 'scriptlets/$1.xml'
+          body: '$docString'
 
   # ==================================================================
   # 2. HTTP REQUESTS

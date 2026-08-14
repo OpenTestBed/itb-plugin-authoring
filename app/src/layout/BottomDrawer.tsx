@@ -11,7 +11,7 @@ export interface Problem {
   line?: number;
   message: string;
   /** Which check produced this — shown right-aligned on the row. */
-  from: 'parser' | 'language' | 'environment';
+  from: 'parser' | 'scriptlet' | 'language' | 'environment';
 }
 
 interface Props {

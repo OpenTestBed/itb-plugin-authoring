@@ -5,6 +5,8 @@ import { ParsedScenario } from '../types';
 import { RequiredActor } from '../components/ComponentsPanel';
 import { StepHighlight } from '../components/Editor';
 import { validateTDL } from '../validation/gitbValidator';
+import { ITBHeader, scriptletSearchPaths } from '../parser/itbHeader';
+import { loadScriptlets, referencedScriptletIds } from '../services/scriptletSources';
 
 export interface GherkinEngine {
   parsedScenario: ParsedScenario | null;
@@ -29,9 +31,32 @@ export interface GherkinEngine {
  * just re-runs it against the new content.
  */
 export function useGherkinEngine(gherkinContent: string): GherkinEngine {
-  const { parser, generator } = useAppContext();
+  const { parser, generator, source, filesVersion } = useAppContext();
   const [parsedScenario, setParsedScenario] = useState<ParsedScenario | null>(null);
   const [issues, setIssues] = useState<any[]>([]);
+  // Bumped once scriptlets referenced by this buffer have been fetched, so the
+  // memo below re-generates with them present instead of reporting them missing.
+  const [scriptletsVersion, setScriptletsVersion] = useState(0);
+
+  // Load raw-ITB scriptlets from the file source: the locations named in the
+  // feature's `# itb:` header, then `scriptlets/` beside the features.
+  useEffect(() => {
+    let cancelled = false;
+    const ids = referencedScriptletIds(gherkinContent);
+    if (ids.length === 0) {
+      generator.setExternalScriptlets(new Map());
+      return;
+    }
+    const header = ((parsedScenario as any)?.__itbHeader ?? {}) as ITBHeader;
+    loadScriptlets(source, scriptletSearchPaths(header), ids)
+      .then(map => {
+        if (cancelled) return;
+        generator.setExternalScriptlets(map);
+        setScriptletsVersion(v => v + 1);
+      })
+      .catch(() => { /* unresolved ids are reported by the generator */ });
+    return () => { cancelled = true; };
+  }, [gherkinContent, parsedScenario, source, filesVersion, generator]);
 
   // Parse + expand on content change
   useEffect(() => {
@@ -63,19 +88,36 @@ export function useGherkinEngine(gherkinContent: string): GherkinEngine {
   const xmlOutput: XMLOutput | null = useMemo(() => {
     if (!parsedScenario) return null;
     return generator.generate(parsedScenario);
-  }, [parsedScenario, generator]);
+    // scriptletsVersion: re-generate once external scriptlets have loaded
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parsedScenario, generator, scriptletsVersion]);
 
-  // Schema validation
+  // Parser + generator diagnostics, then schema validation on top.
+  //
+  // Schema validation is best-effort and must never swallow the rest: it used
+  // to run unguarded, so one throw from validateTDL rejected the whole effect
+  // and setIssues never ran — leaving the UI reporting "no problems" for a file
+  // that had them.
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      if (!xmlOutput || !parsedScenario) return;
-      const allSchemaIssues = [];
-      for (const file of xmlOutput.files) {
-        const fileIssues = await validateTDL(file.xml);
-        allSchemaIssues.push(...fileIssues.map(i => ({ ...i, message: `[${file.filename}] ${i.message}` })));
+      if (!parsedScenario) return;
+      const base = [
+        ...(parsedScenario.errors ?? []),
+        ...(xmlOutput?.issues ?? []),   // e.g. unresolved scriptlets
+      ];
+
+      const schemaIssues: any[] = [];
+      try {
+        for (const file of xmlOutput?.files ?? []) {
+          const fileIssues = await validateTDL(file.xml);
+          schemaIssues.push(...fileIssues.map(i => ({ ...i, message: `[${file.filename}] ${i.message}` })));
+        }
+      } catch {
+        /* schema validation unavailable — parser and generator issues still stand */
       }
-      if (!cancelled) setIssues([...(parsedScenario.errors ?? []), ...allSchemaIssues]);
+
+      if (!cancelled) setIssues([...base, ...schemaIssues]);
     })();
     return () => { cancelled = true; };
   }, [xmlOutput, parsedScenario]);

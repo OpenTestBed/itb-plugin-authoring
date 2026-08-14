@@ -62,6 +62,79 @@ reports itself. The warning exists to explain *why* those errors are there —
 for example `This file targets fhir-validator ^1.2 — 2.0.1 is loaded — 12 steps
 unmatched`.
 
+## Escaping to raw ITB
+
+Anything the dialect cannot express — or should not — goes into a GITB scriptlet
+holding raw TDL, called from Gherkin.
+
+```ebnf
+CallScriptlet = "call scriptlet" , Value , [ "as" , Variable ] , [ "with:" ] ;
+```
+
+```gherkin
+And call scriptlet "verifyCoseSignature"
+And call scriptlet "verifyCoseSignature" as "result"
+And call scriptlet "verifyCoseSignature" with:
+  | name     | value     |
+  | resource | $response |
+```
+
+Each row of the table becomes one `<input>`, named by its `name` column, and
+the names become the scriptlet's `<params>`. A scriptlet only sees its params —
+it cannot reach the enclosing test case's variables — so pass everything it
+needs through the table.
+
+### Where the scriptlet lives
+
+`call scriptlet "foo"` resolves to `scriptlets/foo.xml`, searched in this order:
+
+1. an inline body in the feature file (below)
+2. the locations listed under `scriptlets:` in the `# itb:` header block
+3. `scriptlets/` beside the feature files (the convention)
+4. the scriptlets shipped by an enabled component
+
+An id that resolves nowhere is an **error**. There is no stub fallback: a stub
+imports and runs green while asserting nothing, so a mistyped id used to produce
+a passing test that tested nothing.
+
+```gherkin
+# itb:
+#   scriptlets:
+#     - ./shared-scriptlets
+#     - https://raw.githubusercontent.com/OpenTestBed/itb-scriptlets/main
+Feature: ...
+```
+
+Paths are relative to the root of the file source (the folder you opened, or
+the mounted `itb-cli/features`), not to the individual feature file — so moving
+a feature between subfolders does not break its scriptlets. Remote locations
+need CORS, and cannot be `localhost` when the workbench is served over HTTPS.
+
+Locations go in the header block rather than a tag because tags are lowercased
+and cannot contain whitespace — a silently lowercased path works on Windows and
+fails in the Linux container that runs the suite.
+
+### Inline body
+
+A doc string supplies the scriptlet body, so the raw TDL lives in the feature
+file, travels with the test, and is regenerated identically every compile:
+
+```gherkin
+And call scriptlet "checkOutcome" with:
+  | name     | value     |
+  | resource | $response |
+  """
+  <verify handler="StringValidator">
+    <input name="actualstring">$resource{severity}</input>
+    <input name="expectedstring">"error"</input>
+  </verify>
+  """
+```
+
+The body is emitted **verbatim and unescaped** — that is the point of an escape
+hatch. Generated scriptlets are schema-validated like every other file, so
+malformed TDL surfaces as a problem rather than failing at ITB import.
+
 ## Terminals
 
 ```ebnf

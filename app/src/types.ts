@@ -44,6 +44,8 @@ export interface ParseIssue {
   message: string;
   line?: number;
   column?: number;
+  /** Which check produced this. Defaults to the parser when unset. */
+  from?: 'parser' | 'scriptlet';
 }
 
 export type ParseError = ParseIssue;

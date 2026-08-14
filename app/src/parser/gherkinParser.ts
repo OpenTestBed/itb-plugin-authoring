@@ -36,10 +36,13 @@ function parseDocString(lines: string[], startIdx: number): { text: string; endI
 }
 
 import { loadCatalog, Catalog, CatalogAction, loadAllComponents, mergeCatalog, ComponentInfo } from './languageCatalog';
+import { parseITBHeader } from './itbHeader';
 
 
 export type IRAction =
-  | { type: 'call', path: string, output?: string, from?: string, to?: string, inputs?: Record<string,string> }
+  | { type: 'call', path: string, output?: string, from?: string, to?: string, inputs?: Record<string,string>,
+      /** Raw TDL supplied inline in the feature file; becomes the scriptlet's <steps> body. */
+      body?: string }
   | { type: 'send', id?: string, desc?: string, handler: string, from?: string, to?: string, inputs: Record<string,string> }
   | { type: 'verify', handler: string, desc?: string, inputs: Record<string,string> }
   | { type: 'process', handler: string, operation: string, output?: string, from?: string, to?: string, inputs: Record<string,string>, hidden?: boolean }
@@ -176,14 +179,16 @@ export class GherkinParser {
         let table: Record<string,string>[] | undefined;
         if (tableRows.length > 1) table = tableRows.slice(1);
 
-        // optional doc string (triple-quoted block)
+        // Optional doc string (triple-quoted block). Allowed *after* a table
+        // too: `call scriptlet ... with:` takes a table of inputs and a
+        // docstring holding the raw TDL body. A GITB scriptlet only sees what
+        // its <params> receive, so an inline body without inputs could not
+        // reach the enclosing test case's variables.
         let docString: string | undefined;
-        if (!table || table.length === 0) {
-          const ds = parseDocString(lines, j);
-          if (ds) {
-            docString = ds.text;
-            j = ds.endIdx;
-          }
+        const ds = parseDocString(lines, j);
+        if (ds) {
+          docString = ds.text;
+          j = ds.endIdx;
         }
 
         currentTarget.push({
@@ -234,6 +239,15 @@ export class GherkinParser {
     (parsed as any).__featureTitle = featureTitle || 'Feature';
     (parsed as any).__featureDescription = featureDescription;
     (parsed as any).__featureTags = [...featureTags];
+
+    // `# itb:` header block — carries anything path-shaped (scriptlet
+    // locations), which tags cannot hold because they are lowercased and
+    // whitespace-split. A malformed block is reported, never fatal.
+    const { header, issues: headerIssues } = parseITBHeader(text);
+    (parsed as any).__itbHeader = header;
+    for (const h of headerIssues) {
+      issues.push({ line: h.line, severity: 'warning', message: h.message });
+    }
 
     return parsed;
   }
@@ -593,7 +607,29 @@ function materialize(actions: CatalogAction[], ctx: any): IRAction[] {
     }
     if (clone.call) {
       if (clone.call.inputs) for (const k in clone.call.inputs) clone.call.inputs[k] = subst(clone.call.inputs[k]);
-      out.push({ type: 'call', path: clone.call.path, output: clone.call.output ? subst(clone.call.output) : undefined, from: subst(clone.call.from ?? ''), to: subst(clone.call.to ?? ''), inputs: clone.call.inputs });
+      // `inputsFromTable`: each row of the step's table contributes one input,
+      // named by its `name` column. Lets one step pattern accept an arbitrary
+      // parameter list instead of a fixed set baked into the YAML.
+      if (clone.call.inputsFromTable) {
+        const built: Record<string, string> = { ...(clone.call.inputs ?? {}) };
+        for (const row of ctx.tableRows ?? []) {
+          const name = (row.name ?? '').trim();
+          if (name) built[name] = subst(row.value ?? '');
+        }
+        clone.call.inputs = built;
+      }
+      out.push({
+        type: 'call',
+        path: subst(clone.call.path),
+        output: clone.call.output ? subst(clone.call.output) : undefined,
+        from: subst(clone.call.from ?? ''),
+        to: subst(clone.call.to ?? ''),
+        inputs: clone.call.inputs,
+        // Emitted verbatim into the scriptlet — this is the raw-ITB escape
+        // hatch, so it is deliberately NOT escaped. Schema validation of the
+        // generated file is the safety net.
+        body: clone.call.body ? String(clone.call.body).replace(/\$docString/g, ctx.docString ?? '') : undefined,
+      });
       return;
     }
     if (clone.verify) {
