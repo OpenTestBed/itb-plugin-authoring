@@ -23,6 +23,16 @@
 #   rules answer "does this pass?"; a step such as
 #   `"cert" keyUsage "cRLSign" must be false` needs the *value*.
 #
+# DIVERGENCE FROM THE CANONICAL FEATURE
+#   This copy adds three core-language lines to Background — SUT actor,
+#   TNGValidator endpoint, and the participant country. The canonical copy in
+#   tng-participant-DEV-XXR omits them, because the Python dialect knows only
+#   its own 23 steps and would report core-language steps as UNKNOWN.
+#   Every certificate-dialect step below is byte-identical between the two.
+#
+#   Change the endpoint to wherever the TNG trust service actually runs. The
+#   generated suite reads it as $TNGValidatorBase.
+#
 # EXECUTION MODEL — read this before wiring it up
 #   The unit of execution is ONE SCENARIO RUN PER CERTIFICATE. Bind the subject
 #   once, reuse the binding for every step in that scenario (that is where
@@ -64,7 +74,16 @@ Feature: WHO GDHCN certificate governance
   governance rules for the role its folder places it in.
 
   Background:
-    Given certificate "cert" is loaded from the participant material
+    # --- ITB wiring (core language, not the certificate dialect) ------------
+    # These three lines are what this copy adds over the canonical feature in
+    # tng-participant-DEV-XXR. Without them the generated suite falls back to
+    # the default Client/FHIRServer actors, $TNGValidatorBase is declared but
+    # never assigned, and every send resolves to a relative URI and fails.
+    Given Participant is the system under test
+    And TNGValidator is infrastructure at "http://tng-trust-service:8080"
+    And set "tngCountry" to "XXR"
+    # --- the certificate dialect proper -------------------------------------
+    And certificate "cert" is loaded from the participant material
     And its group and filename prefix are known
 
   # --- Key strength --------------------------------------------------------
