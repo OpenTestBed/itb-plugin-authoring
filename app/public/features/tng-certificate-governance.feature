@@ -8,7 +8,8 @@
 # The dialect deliberately contains NO Feature/Scenario/Rule parsing. It takes a
 # step's text plus its data table and evaluates them against certificate facts,
 # so it binds to an ITB base parser, to behave, or to pytest-bdd equally well.
-# Every step below is one of its 23 definitions.
+# Every step below maps 1:1 onto one of its 23 definitions, restyled to the
+# ITB house conventions.
 #
 # WHERE THE FACTS COME FROM
 #   The dialect reads facts from `describe_cert` — the same module the rule
@@ -21,14 +22,16 @@
 #
 #   That endpoint reports what a certificate IS, not whether it passes. The
 #   rules answer "does this pass?"; a step such as
-#   `"cert" keyUsage "cRLSign" must be false` needs the *value*.
+#   `"cert" keyUsage "cRLSign" should be "false"` needs the *value*.
 #
 # DIVERGENCE FROM THE CANONICAL FEATURE
 #   This copy adds three core-language lines to Background — SUT actor,
 #   TNGValidator endpoint, and the participant country. The canonical copy in
 #   tng-participant-DEV-XXR omits them, because the Python dialect knows only
 #   its own 23 steps and would report core-language steps as UNKNOWN.
-#   Every certificate-dialect step below is byte-identical between the two.
+#   The step TEXT also differs: this copy follows the ITB house conventions
+#   (actor-bearing actions, `should` assertions). The SEMANTICS are the same
+#   dialect — see the mapping table in the component's steps.yml.
 #
 #   Change the endpoint to wherever the TNG trust service actually runs. The
 #   generated suite reads it as $TNGValidatorBase.
@@ -83,8 +86,8 @@ Feature: WHO GDHCN certificate governance
     And TNGValidator is infrastructure at "http://tng-trust-service:8080"
     And set "tngCountry" to "XXR"
     # --- the certificate dialect proper -------------------------------------
-    And certificate "cert" is loaded from the participant material
-    And its group and filename prefix are known
+    And Participant inspects the participant material on TNGValidator as "cert"
+    And "cert" should be placed at domain, group and filename
 
   # --- Key strength --------------------------------------------------------
   Rule: RSA and DSA keys are at least 3000 bit; EC keys are P-256
@@ -93,7 +96,7 @@ Feature: WHO GDHCN certificate governance
     Scenario: Public key meets the minimum size for its algorithm
       # An algorithm absent from this table FAILS. Unlisted is unreviewed,
       # which is not the same as permitted.
-      Then "cert" public key must satisfy the minimum size:
+      Then "cert" public key should satisfy the minimum size:
         | algorithm | minBits |
         | RSA       | 3000    |
         | DSA       | 3000    |
@@ -103,74 +106,74 @@ Feature: WHO GDHCN certificate governance
     Scenario: Public key algorithm is on the allow-list
       # The rule engine accepts RSA, DSA and EC. GDHCN signing is RSA or
       # EC P-256 only, so this is stricter than what /validate enforces.
-      Then "cert" public key algorithm must be one of "RSA, EC(P-256)"
+      Then "cert" public key algorithm should be one of "RSA, EC(P-256)"
 
   # --- Key usage -----------------------------------------------------------
   Rule: keyUsage flags match the role the folder assigns
 
     @enforced
     Scenario: The keyUsage extension is present at all
-      Then "cert" must contain extension "2.5.29.15"
+      Then "cert" extension "2.5.29.15" should be present
 
     @enforced
     Scenario: TLS end-entity keyUsage
-      Given "cert" group is "TLS" and filename starts with "TLS"
-      Then "cert" keyUsage "digitalSignature" must be true
-      And "cert" keyUsage "cRLSign" must be false
+      Given Participant inspects group "TLS" file "TLS" on TNGValidator as "cert"
+      Then "cert" keyUsage "digitalSignature" should be "true"
+      And "cert" keyUsage "cRLSign" should be "false"
 
     @proposed
     Scenario: TLS CA keyUsage
       # One role per scenario: a combined TLS-CA-and-UPLOAD scenario would be
       # ambiguous about which role broke when it failed.
-      Given "cert" group is "TLS" and filename starts with "CA"
-      Then "cert" keyUsage "keyCertSign" must be true
+      Given Participant inspects group "TLS" file "CA" on TNGValidator as "cert"
+      Then "cert" keyUsage "keyCertSign" should be "true"
 
     @enforced
     Scenario: UPLOAD keyUsage
-      Given "cert" group is "UP"
-      Then "cert" keyUsage "digitalSignature" must be true
+      Given Participant inspects group "UP" on TNGValidator as "cert"
+      Then "cert" keyUsage "digitalSignature" should be "true"
 
     @enforced
     Scenario: SCA keyUsage
-      Given "cert" group is "SCA"
-      Then "cert" keyUsage "keyCertSign" must be true
+      Given Participant inspects group "SCA" on TNGValidator as "cert"
+      Then "cert" keyUsage "keyCertSign" should be "true"
 
   # --- Extended key usage --------------------------------------------------
   Rule: TLS client certificates are usable for client authentication
 
     @enforced
     Scenario: TLS end-entity declares clientAuth
-      Given "cert" group is "TLS" and filename starts with "TLS"
-      Then "cert" EKU must include "1.3.6.1.5.5.7.3.2"
+      Given Participant inspects group "TLS" file "TLS" on TNGValidator as "cert"
+      Then "cert" EKU should include "1.3.6.1.5.5.7.3.2"
 
     @enforced
     Scenario: EKU is not required of the other roles
       # Documentation-only waiver. It PASSES for the waived groups and SKIPS
       # otherwise, so it can never be mistaken for evidence that a TLS leaf's
       # EKU was checked.
-      Then "cert" EKU requirement is waived for groups "CA, SCA, UP, DECA"
+      Then "cert" EKU should not be required for groups "CA, SCA, UP, DECA"
 
   # --- Basic constraints ---------------------------------------------------
   Rule: only the certificates that must be CAs are CAs
 
     @enforced
     Scenario: SCA is a CA with an unconstrained or zero path length
-      Given "cert" group is "SCA"
-      Then "cert" basicConstraints CA must be true
-      And "cert" basicConstraints pathLen must be "0 or absent"
+      Given Participant inspects group "SCA" on TNGValidator as "cert"
+      Then "cert" basicConstraints CA should be "true"
+      And "cert" basicConstraints pathLen should be "0 or absent"
 
     @proposed
     Scenario: The CA in a TLS group is a CA
       # EXPECTED TO FAIL on the reference material — see the header. This is
       # the scenario that exposes the gap between the spec as revised and the
       # rules as enforced.
-      Given "cert" group is "TLS" and filename starts with "CA"
-      Then "cert" basicConstraints CA must be true
+      Given Participant inspects group "TLS" file "CA" on TNGValidator as "cert"
+      Then "cert" basicConstraints CA should be "true"
 
     @proposed
     Scenario: End-entity certificates are not CAs
       # Within TLS this skips the CA file, which is a CA by definition.
-      Then "cert" basicConstraints CA must be false for groups:
+      Then "cert" basicConstraints CA should be "false" for groups:
         | group |
         | TLS   |
         | UP    |
@@ -182,15 +185,15 @@ Feature: WHO GDHCN certificate governance
     Scenario: The TLS end-entity is signed by the CA beside it
       # This compares issuer DN against the CA's subject DN. The cryptographic
       # check is tng.cert.chain in the rule engine; both read the same facts.
-      Given "tlsCert" is a TLS end-entity certificate
-      And "caCert" is the CA certificate in the same TLS group
-      Then "tlsCert" must be signed by "caCert"
+      Given Participant inspects the TLS end-entity on TNGValidator as "tlsCert"
+      And Participant inspects the CA beside it on TNGValidator as "caCert"
+      Then "tlsCert" should be signed by "caCert"
 
     @enforced
     Scenario: A TLS end-entity nothing signs is rejected
-      Given "tlsCert" is a TLS end-entity certificate
-      And no CA certificate in its TLS group verifies it
-      Then "tlsCert" must be rejected
+      Given Participant inspects the TLS end-entity on TNGValidator as "tlsCert"
+      And no CA in the TLS group verifies "tlsCert"
+      Then "tlsCert" should be rejected
 
   # --- Subject -------------------------------------------------------------
   Rule: the subject identifies the participant
@@ -198,13 +201,13 @@ Feature: WHO GDHCN certificate governance
     @proposed
     Scenario: Subject common name is populated
       # rules.yaml exposes subject.require_common_name; it ships off.
-      Then "cert" subject CN must be non-empty
+      Then "cert" subject CN should not be empty
 
     @enforced
     Scenario: Subject country is the participant's own
       # Skips when the harness was given no participant country, rather than
       # silently passing.
-      Then "cert" subject country must equal the participant country
+      Then "cert" subject country should be the participant country
 
   # --- Validity ------------------------------------------------------------
   Rule: certificates do not outlive the limit for their role
@@ -212,7 +215,7 @@ Feature: WHO GDHCN certificate governance
     @enforced
     Scenario: Validity is within the limit for the group
       # A group absent from the table skips rather than failing.
-      Then "cert" validity must not exceed the limit for its group:
+      Then "cert" validity should not exceed the limit for its group:
         | group | maxYears |
         | SCA   | 4        |
         | DECA  | 4        |
@@ -223,5 +226,5 @@ Feature: WHO GDHCN certificate governance
     Scenario: An SCA does not issue a DSC that outlives it
       # Cross-certificate check. It skips entirely when the material contains
       # no DSC, which is the case for a participant shipping only TLS/UP/SCA.
-      Given "dsc" is a DSC issued by "sca"
-      Then "dsc" notAfter must not exceed "sca" notAfter
+      Given Participant inspects the DSC issued by "sca" on TNGValidator as "dsc"
+      Then "dsc" notAfter should not exceed "sca" notAfter

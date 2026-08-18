@@ -1,9 +1,28 @@
 # Language extension for the TNG Certificate Governance component
 #
-# Implements the 23-step certificate dialect specified in
-# tng-participant-DEV-XXR/tng_certificate_dialect.py. Step TEXT is identical to
-# the dialect, so docs/features/tng_governance_itb.feature there and
-# public/features/tng-certificate-governance.feature here are the same file.
+# An EXTENSION on itb-core-en. It adds the 23 certificate-governance verbs
+# specified in tng-participant-DEV-XXR/tng_certificate_dialect.py and nothing
+# else — actor wiring, variable assignment and generic comparisons stay with
+# core.
+#
+# The semantics are the Python dialect's, one definition to one definition. The
+# WORDING follows the ITB house conventions instead, so it reads like the other
+# dialects here:
+#
+#   action      <Actor> inspects group "TLS" file "TLS" on <Actor2> as "cert"
+#               (cf. `User decodes HC1 on HCertDecoder`), with the endpoint
+#               resolved through $$NBase from the actor named in the step
+#   assertion   "cert" keyUsage "cRLSign" should be "false"
+#               (cf. `"sigValid" should be "true"`)
+#
+# The loader appends extension steps AFTER core and takes the first match, so
+# every pattern here is anchored and carries tokens between the quoted subject
+# and `should`. Otherwise core's `"x" should be "y"` would claim the line and
+# these steps would be dead code.
+#
+# Consequence: the canonical feature in tng-participant-DEV-XXR keeps the Python
+# dialect's wording; the copy here uses this one. The Python harness cannot run
+# the ITB copy, and vice versa. The scenarios and their meaning are identical.
 #
 # ---------------------------------------------------------------------------
 # HOW THE DIALECT'S SEMANTICS MAP ONTO TDL
@@ -51,7 +70,7 @@ steps:
 
   # Load every certificate in the participant material, and bind the first as
   # the default subject. A scenario with a guard rebinds below.
-  - match: '^certificate "([A-Za-z_][A-Za-z0-9_]*)" is loaded from the participant material$'
+  - match: '^([A-Za-z][A-Za-z0-9_]*) inspects the participant material on ([A-Za-z][A-Za-z0-9_]*) as "([A-Za-z_][A-Za-z0-9_]*)"$'
     actions:
       - declareVariable:
           name: 'tngCountry'
@@ -78,7 +97,7 @@ steps:
           desc: 'Inspect the participant material'
           handler: 'HttpMessagingV2'
           inputs:
-            uri: 'concat($TNGValidatorBase, "/tng/api/inspect")'
+            uri: 'concat($$2Base, "/tng/api/inspect")'
             method: '"POST"'
             headers: '$tngHeaders'
             body: '$inspectBody'
@@ -106,7 +125,7 @@ steps:
   # Every certificate must sit at <domain>/<group>/<file>. inspect_folder only
   # returns certificates it could place, so a populated group and filename IS
   # the assertion.
-  - match: '^its group and filename prefix are known$'
+  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" should be placed at domain, group and filename$'
     actions:
       - process:
           handler: 'JsonPointerProcessor'
@@ -145,7 +164,7 @@ steps:
 
   # GUARD, as a selector: bind the certificate in <group> whose filename starts
   # with <prefix>. Nothing that fails the guard is bound, so nothing is skipped.
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" group is "([A-Z]+)" and filename starts with "([A-Za-z0-9_.-]+)"$'
+  - match: '^([A-Za-z][A-Za-z0-9_]*) inspects group "([A-Z]+)" file "([A-Za-z0-9_.-]+)" on ([A-Za-z][A-Za-z0-9_]*) as "([A-Za-z_][A-Za-z0-9_]*)"$'
     actions:
       - assign:
           to: 'selectTplParams{country}'
@@ -169,7 +188,7 @@ steps:
           desc: 'Select the certificate this scenario applies to'
           handler: 'HttpMessagingV2'
           inputs:
-            uri: 'concat($TNGValidatorBase, "/tng/api/inspect")'
+            uri: 'concat($$4Base, "/tng/api/inspect")'
             method: '"POST"'
             headers: '$tngHeaders'
             body: '$selectBody'
@@ -196,7 +215,7 @@ steps:
             pointer: '"/certificate"'
 
   # GUARD on group alone.
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" group is "([A-Z]+)"$'
+  - match: '^([A-Za-z][A-Za-z0-9_]*) inspects group "([A-Z]+)" on ([A-Za-z][A-Za-z0-9_]*) as "([A-Za-z_][A-Za-z0-9_]*)"$'
     actions:
       - assign:
           to: 'selectGroupParams{country}'
@@ -217,7 +236,7 @@ steps:
           desc: 'Select the certificates in this group'
           handler: 'HttpMessagingV2'
           inputs:
-            uri: 'concat($TNGValidatorBase, "/tng/api/inspect")'
+            uri: 'concat($$3Base, "/tng/api/inspect")'
             method: '"POST"'
             headers: '$tngHeaders'
             body: '$selectGroupBody'
@@ -243,7 +262,7 @@ steps:
             expectedstring: '"$2"'
 
   # Bind the TLS end-entity: group TLS, filename TLS.pem.
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" is a TLS end-entity certificate$'
+  - match: '^([A-Za-z][A-Za-z0-9_]*) inspects the TLS end-entity on ([A-Za-z][A-Za-z0-9_]*) as "([A-Za-z_][A-Za-z0-9_]*)"$'
     actions:
       - assign:
           to: 'tlsSelParams{country}'
@@ -261,7 +280,7 @@ steps:
           desc: 'Bind the TLS end-entity certificate'
           handler: 'HttpMessagingV2'
           inputs:
-            uri: 'concat($TNGValidatorBase, "/tng/api/inspect")'
+            uri: 'concat($$2Base, "/tng/api/inspect")'
             method: '"POST"'
             headers: '$tngHeaders'
             body: '$tlsSelBody'
@@ -274,7 +293,7 @@ steps:
             pointer: '"/certificate"'
 
   # Bind the sibling CA in the same TLS group.
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" is the CA certificate in the same TLS group$'
+  - match: '^([A-Za-z][A-Za-z0-9_]*) inspects the CA beside it on ([A-Za-z][A-Za-z0-9_]*) as "([A-Za-z_][A-Za-z0-9_]*)"$'
     actions:
       - assign:
           to: 'caSelParams{country}'
@@ -292,7 +311,7 @@ steps:
           desc: 'Bind the CA certificate beside it'
           handler: 'HttpMessagingV2'
           inputs:
-            uri: 'concat($TNGValidatorBase, "/tng/api/inspect")'
+            uri: 'concat($$2Base, "/tng/api/inspect")'
             method: '"POST"'
             headers: '$tngHeaders'
             body: '$caSelBody'
@@ -313,7 +332,7 @@ steps:
 
   # GUARD: applies only when nothing in the TLS group signs the bound leaf.
   # Bound as a precondition on the issuer/subject comparison below.
-  - match: '^no CA certificate in its TLS group verifies it$'
+  - match: '^no CA in the TLS group verifies "([A-Za-z_][A-Za-z0-9_]*)"$'
     actions:
       - process:
           handler: 'JsonPointerProcessor'
@@ -325,7 +344,7 @@ steps:
       - log: 'concat("leaf issuer DN = ", $leafIssuer, " ; sibling CA subject DN = ", $caSubject)'
 
   # Bind a DSC issued by the named SCA.
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" is a DSC issued by "([A-Za-z_][A-Za-z0-9_]*)"$'
+  - match: '^([A-Za-z][A-Za-z0-9_]*) inspects the DSC issued by "([A-Za-z_][A-Za-z0-9_]*)" on ([A-Za-z][A-Za-z0-9_]*) as "([A-Za-z_][A-Za-z0-9_]*)"$'
     actions:
       - assign:
           to: 'dscSelParams{country}'
@@ -343,7 +362,7 @@ steps:
           desc: 'Bind a DSC and its issuing SCA'
           handler: 'HttpMessagingV2'
           inputs:
-            uri: 'concat($TNGValidatorBase, "/tng/api/inspect")'
+            uri: 'concat($$3Base, "/tng/api/inspect")'
             method: '"POST"'
             headers: '$tngHeaders'
             body: '$dscSelBody'
@@ -361,7 +380,7 @@ steps:
 
   # Table of | algorithm | minBits |. An algorithm absent from the table FAILS:
   # unlisted is unreviewed, not permitted.
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" public key must satisfy the minimum size:$'
+  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" public key should satisfy the minimum size:$'
     table:
       required: [algorithm, minBits]
     actions:
@@ -427,7 +446,7 @@ steps:
             actualstring: '$bitsOk'
             expectedstring: '"true"'
 
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" public key algorithm must be one of "([^"]+)"$'
+  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" public key algorithm should be one of "([^"]+)"$'
     actions:
       - process:
           handler: 'JsonPointerProcessor'
@@ -474,7 +493,7 @@ steps:
   # EXTENSIONS, KEY USAGE, EKU
   # ==================================================================
 
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" must contain extension "([0-9.]+)"$'
+  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" extension "([0-9.]+)" should be present$'
     actions:
       - process:
           handler: 'JsonPointerProcessor'
@@ -492,7 +511,7 @@ steps:
             expectedstring: '"true"'
 
   # keyUsage bit names are camelCase as in RFC 5280.
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" keyUsage "([A-Za-z]+)" must be (true|false)$'
+  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" keyUsage "([A-Za-z]+)" should be "(true|false)"$'
     actions:
       - process:
           handler: 'JsonPointerProcessor'
@@ -508,7 +527,7 @@ steps:
             actualstring: '$keyUsageBit'
             expectedstring: '"$3"'
 
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" EKU must include "([0-9.]+)"$'
+  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" EKU should include "([0-9.]+)"$'
     actions:
       - process:
           handler: 'JsonPointerProcessor'
@@ -529,7 +548,7 @@ steps:
   # groups and SKIPS otherwise. Here the scenario is only ever bound to a waived
   # group, so the step records the waiver rather than asserting anything — it
   # must never read as evidence that a TLS leaf's EKU was checked.
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" EKU requirement is waived for groups "([^"]+)"$'
+  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" EKU should not be required for groups "([^"]+)"$'
     actions:
       - process:
           handler: 'JsonPointerProcessor'
@@ -544,7 +563,7 @@ steps:
   # BASIC CONSTRAINTS
   # ==================================================================
 
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" basicConstraints CA must be (true|false)$'
+  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" basicConstraints CA should be "(true|false)"$'
     actions:
       - process:
           handler: 'JsonPointerProcessor'
@@ -562,7 +581,7 @@ steps:
 
   # Table of | group |. Within TLS the CA file is excluded — it is a CA by
   # definition — which the selector already guarantees here.
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" basicConstraints CA must be false for groups:$'
+  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" basicConstraints CA should be "false" for groups:$'
     table:
       required: [group]
     actions:
@@ -597,7 +616,7 @@ steps:
             actualstring: '$bcCa'
             expectedstring: '"false"'
 
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" basicConstraints pathLen must be "([^"]+)"$'
+  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" basicConstraints pathLen should be "([^"]+)"$'
     actions:
       - process:
           handler: 'JsonPointerProcessor'
@@ -619,7 +638,7 @@ steps:
 
   # Compares issuer DN against the CA's subject DN. The cryptographic check is
   # tng.cert.chain in the rule engine; both read the same facts.
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" must be signed by "([A-Za-z_][A-Za-z0-9_]*)"$'
+  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" should be signed by "([A-Za-z_][A-Za-z0-9_]*)"$'
     actions:
       - process:
           handler: 'JsonPointerProcessor'
@@ -635,7 +654,7 @@ steps:
             actualstring: '$leafIssuer'
             expectedstring: '$caSubject'
 
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" must be rejected$'
+  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" should be rejected$'
     actions:
       - process:
           handler: 'JsonPointerProcessor'
@@ -669,7 +688,7 @@ steps:
   # SUBJECT
   # ==================================================================
 
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" subject CN must be non-empty$'
+  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" subject CN should not be empty$'
     actions:
       # describe_cert already exposes this as a boolean.
       - process:
@@ -688,7 +707,7 @@ steps:
 
   # The service resolves the subject country to the participant's alpha-3 code,
   # so this compares against $tngCountry rather than the raw subject C.
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" subject country must equal the participant country$'
+  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" subject country should be the participant country$'
     actions:
       - assign:
           to: 'countryTplParams{country}'
@@ -714,7 +733,7 @@ steps:
 
   # Table of | group | maxYears |. A group absent from the table is not covered
   # by a limit; the rule engine treats that as "no range applies".
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" validity must not exceed the limit for its group:$'
+  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" validity should not exceed the limit for its group:$'
     table:
       required: [group, maxYears]
     actions:
@@ -765,7 +784,7 @@ steps:
             actualstring: '$validityOk'
             expectedstring: '"true"'
 
-  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" notAfter must not exceed "([A-Za-z_][A-Za-z0-9_]*)" notAfter$'
+  - match: '^"([A-Za-z_][A-Za-z0-9_]*)" notAfter should not exceed "([A-Za-z_][A-Za-z0-9_]*)" notAfter$'
     actions:
       - process:
           handler: 'JsonPointerProcessor'
