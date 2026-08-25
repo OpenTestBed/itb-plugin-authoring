@@ -20,6 +20,7 @@
   "l3-sop-questionnaire.feature",
   "language-showcase.feature",
   "matchetype-comparison.feature",
+  "meow-client.feature",
   "modify-resource.feature",
   "openehr-composition.feature",
   "ph4h-medication-overview.feature",
