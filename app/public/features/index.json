@@ -21,6 +21,7 @@
   "language-showcase.feature",
   "matchetype-comparison.feature",
   "meow-client.feature",
+  "meow-server-compact.feature",
   "meow-server.feature",
   "modify-resource.feature",
   "openehr-composition.feature",

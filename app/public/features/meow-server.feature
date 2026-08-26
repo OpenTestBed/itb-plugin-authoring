@@ -57,12 +57,25 @@ Feature: IHE MEOW Medication Overview Responder — server-side conformance
   # ==================================================================
   Scenario: tc-meow-server-001 PHARM-11 query by patient returns treatment lines
 
-    # IHE MEOW 1.0.0-preview2 — the FIXED Bundle.entry slicing. The official
-    # 1.0.0-preview mis-slices every entry into the Patient slice, which is
-    # why RACSEL-track3 carries a 10-clause exact-error mask. Served by the
-    # local package server; the trailing /package.tgz is required because
-    # format-sniffing loaders need the .tgz extension.
-    When MedicationOverviewConsumer loads IG "http://package-server:8000/ihe.pharm.meow/1.0.0-preview2/package.tgz" on FHIRValidator
+    # IHE MEOW 1.0.0-preview, the official IHE publication — the only
+    # version published (packages.fhir.org lists 1.0.0-preview and nothing
+    # else). No local package server involved.
+    #
+    # The URL MUST end in .tgz. The validator sniffs format from the
+    # extension, so the registry form
+    # https://packages.fhir.org/ihe.pharm.meow/1.0.0-preview — which serves
+    # the identical 187,692-byte tarball but carries no extension — makes it
+    # read gzip bytes as XML and die with
+    # "[Fatal Error] :1:1: Invalid byte 1 of 1-byte UTF-8 sequence".
+    #
+    # KNOWN: this build has broken Bundle.entry slicing — it mis-slices every
+    # entry into the Patient slice, which is why RACSEL-track3 carries a
+    # 10-clause exact-error mask. The `conforms to` in tc-meow-server-004 is
+    # expected to report errors against it. Deliberately NOT masked here: the
+    # errors are real output from the real published profile, and masking
+    # them would hide genuine findings alongside the known ones. Remove this
+    # note once 1.0.0-preview2 (fixed slicing) is published.
+    When MedicationOverviewConsumer loads IG "https://profiles.ihe.net/PHARM/MEOW/package.tgz" on FHIRValidator
     Then "response status" should be "200"
 
     # ------------------------------------------------------------------
@@ -157,7 +170,7 @@ Feature: IHE MEOW Medication Overview Responder — server-side conformance
   # this scenario for a Responder that supports PHARM-11 alone.
   Scenario: tc-meow-server-004 PHARM-12 returns a conformant MedicationOverview
 
-    When MedicationOverviewConsumer loads IG "http://package-server:8000/ihe.pharm.meow/1.0.0-preview2/package.tgz" on FHIRValidator
+    When MedicationOverviewConsumer loads IG "https://profiles.ihe.net/PHARM/MEOW/package.tgz" on FHIRValidator
     Then "response status" should be "200"
 
     # ------------------------------------------------------------------
