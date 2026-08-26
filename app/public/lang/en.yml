@@ -6,7 +6,7 @@ locale: en
 # specVersion on ANY step-pattern change: minor for additions, major for
 # changed/removed patterns (first-match merging makes silent drift unsafe).
 id: itb-core-en
-specVersion: "1.2.0"
+specVersion: "1.3.0"
 
 # ====================================================================
 # FHIR Gherkin Dialect — Core Language
@@ -778,17 +778,31 @@ steps:
   # <Actor> is informed "<message>" [with "<content>"]
   # <Actor> is asked for "<variable>" [with "<message>"]
 
+  # `is informed` emits <interact> DIRECTLY rather than calling the
+  # instructUser scriptlet. The reason is `with`: it routes the message to
+  # one actor's tester instead of whoever is driving the session, and TDL
+  # takes an actor ID there — not a variable — so a scriptlet could never
+  # set it from a parameter. Inline, $1 is substituted at compile time and
+  # becomes the literal actor ID, which is exactly what the attribute wants.
+  # This is what makes `Client is informed "..."` actually reach the client
+  # side in a multi-actor test.
   - match: '^([A-Za-z][A-Za-z0-9_]*) is informed "([^"]+)" with "([^"]+)"$'
     actions:
-      - call:
-          path: scriptlets/instructUser.xml
-          inputs: { step: '"inform"', actor: '"$1"', message: '"$2"', content: '"$3"' }
+      - interact:
+          id: 'inform'
+          desc: 'Instruction for $1'
+          with: '$1'
+          instructions:
+            - { desc: '$2', name: 'message', value: '"$3"' }
 
   - match: '^([A-Za-z][A-Za-z0-9_]*) is informed "(.+)"$'
     actions:
-      - call:
-          path: scriptlets/instructUser.xml
-          inputs: { step: '"inform"', actor: '"$1"', message: '"$2"' }
+      - interact:
+          id: 'inform'
+          desc: 'Instruction for $1'
+          with: '$1'
+          instructions:
+            - { desc: '$2', name: 'message', value: '""' }
 
   - match: '^([A-Za-z][A-Za-z0-9_]*) is asked for "([A-Za-z_][A-Za-z0-9_]*)" with "([^"]+)"$'
     actions:

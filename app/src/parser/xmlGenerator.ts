@@ -590,9 +590,36 @@ function emitIR(ir: IRAction[]): string {
     } else if (a.type === 'interact') {
       const idAttr = a.id ? ` id="${escapeAttr(a.id)}"` : '';
       const descAttr = a.desc ? ` desc="${escapeAttr(a.desc)}"` : '';
-      const titleAttr = a.inputTitle ? ` inputTitle="${escapeAttr(a.inputTitle)}"` : '';
-      out.push(`<interact${idAttr}${descAttr}${titleAttr}>`);
-      for (const req of a.requests) {
+      // Two spellings, deliberately both kept. `title` is what gitb_tdl.xsd
+      // declares on UserInteraction; `inputTitle` is not in that schema at
+      // all — but neither are `inputType` and `required` on <request>, and
+      // those demonstrably work in the RACSEL suites. So this XSD lags the
+      // running ITB, and "absent from the schema" is not evidence that an
+      // attribute is wrong. Existing steps keep emitting inputTitle rather
+      // than being silently retargeted on that bad inference.
+      const titleAttr = a.title ? ` title="${escapeAttr(a.title)}"` : '';
+      const inputTitleAttr = a.inputTitle ? ` inputTitle="${escapeAttr(a.inputTitle)}"` : '';
+      // `with` routes the interaction to one actor's tester rather than
+      // whoever happens to be driving the session. Actor IDs are literal by
+      // nature, which is why this is a compile-time attribute.
+      const withAttr = a.with ? ` with="${escapeAttr(a.with)}"` : '';
+      out.push(`<interact${idAttr}${descAttr}${titleAttr}${inputTitleAttr}${withAttr}>`);
+      // Display-only instructions come first: a tester reads the message,
+      // then fills in whatever the requests ask for.
+      for (const ins of a.instructions ?? []) {
+        const nameAttr = ins.name ? ` name="${escapeAttr(ins.name)}"` : '';
+        // The instruction text is `desc`; the body is optional content shown
+        // beneath it. A plain message has no content, and emitting an empty
+        // string literal there renders as a stray blank block — so close the
+        // element instead of giving it an empty value.
+        const value = (ins.value ?? '').trim();
+        if (value === '' || value === '""') {
+          out.push(`  <instruct desc="${escapeAttr(ins.desc)}"${nameAttr}/>`);
+        } else {
+          out.push(`  <instruct desc="${escapeAttr(ins.desc)}"${nameAttr}>${escapeXml(value)}</instruct>`);
+        }
+      }
+      for (const req of a.requests ?? []) {
         const nameAttr = req.name ? ` name="${escapeAttr(req.name)}"` : '';
         const typeAttr = req.inputType ? ` inputType="${escapeAttr(req.inputType)}"` : '';
         const reqAttr = req.required != null ? ` required="${req.required}"` : '';

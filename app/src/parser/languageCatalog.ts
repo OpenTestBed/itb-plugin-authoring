@@ -10,7 +10,7 @@ export type CatalogAction =
   | { send: { id?: string; desc?: string; handler: string; from?: string; to?: string; inputs: Record<string,string> } }
   | { declareActor: { id: string; name?: string; role?: string; endpoint?: string; canonical?: string } }
   | { declareVariable: { name: string; varType?: string; value?: string } }
-  | { interact: { id?: string; desc?: string; inputTitle?: string; requests: { desc: string; name?: string; inputType?: string; required?: boolean; variable: string }[] } }
+  | { interact: { id?: string; desc?: string; title?: string; inputTitle?: string; with?: string; instructions?: { desc: string; name?: string; value?: string }[]; requests?: { desc: string; name?: string; inputType?: string; required?: boolean; variable: string }[] } }
   | { receive: { id?: string; desc?: string; handler: string; from?: string; to?: string; inputs?: Record<string,string> } }
   | { log: string };
 

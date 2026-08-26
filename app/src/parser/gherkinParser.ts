@@ -54,7 +54,12 @@ export type IRAction =
   | { type: 'wait', durationMs: string }
   | { type: 'declareActor', id: string, name?: string, role?: string, endpoint?: string, canonical?: string }
   | { type: 'declareVariable', name: string, varType: string, value?: string }
-  | { type: 'interact', id?: string, desc?: string, inputTitle?: string, requests: { desc: string, name?: string, inputType?: string, required?: boolean, variable: string }[] }
+  /** `with` targets the interaction at one actor (gitb_tdl.xsd: UserInteraction
+   *  allows `with` and `title`). It is an actor ID, not a variable, so it can
+   *  only be set at compile time — which is fine, because the step names the
+   *  actor. `instructions` emit <instruct> (display-only) alongside <request>
+   *  (input); the schema allows either, in any mix. */
+  | { type: 'interact', id?: string, desc?: string, title?: string, inputTitle?: string, with?: string, instructions?: { desc: string, name?: string, value?: string }[], requests: { desc: string, name?: string, inputType?: string, required?: boolean, variable: string }[] }
   | { type: 'receive', id?: string, desc?: string, handler: string, from?: string, to?: string, inputs?: Record<string,string> };
 
 
@@ -665,7 +670,24 @@ function materialize(actions: CatalogAction[], ctx: any): IRAction[] {
         required: r.required,
         variable: subst(r.variable ?? '')
       }));
-      out.push({ type: 'interact', id: subst(clone.interact.id ?? ''), desc: subst(clone.interact.desc ?? ''), inputTitle: subst(clone.interact.inputTitle ?? ''), requests });
+      const instructions = (clone.interact.instructions || []).map((i: any) => ({
+        desc: subst(i.desc ?? ''),
+        name: subst(i.name ?? ''),
+        value: subst(i.value ?? ''),
+      }));
+      // Both title spellings are carried through unchanged — see the note in
+      // xmlGenerator: this XSD lags the running ITB, so `inputTitle` being
+      // absent from it does not mean ITB ignores it.
+      out.push({
+        type: 'interact',
+        id: subst(clone.interact.id ?? ''),
+        desc: subst(clone.interact.desc ?? ''),
+        title: subst(clone.interact.title ?? ''),
+        inputTitle: subst(clone.interact.inputTitle ?? ''),
+        with: subst(clone.interact.with ?? ''),
+        instructions,
+        requests,
+      });
       return;
     }
     if (clone.receive) {
