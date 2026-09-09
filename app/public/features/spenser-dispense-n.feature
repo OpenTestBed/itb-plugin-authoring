@@ -32,22 +32,28 @@ Feature: Spenser dispenses N dark chocolates and inventory drops by N
     # ------------------------------------------------------------------
     # Step 3: Build a single dark-chocolate MedicationRequest body
     # ------------------------------------------------------------------
+    # Generated from the MedicationRequest profile rather than hand-written,
+    # so anything the profile makes REQUIRED is filled in automatically, and
+    # the shape follows the FHIR version the validator has loaded. The body
+    # this replaces used `medicationCodeableConcept` — R4 — against a device
+    # the smoke test asserts is fhirVersion 5.0.0, where medication is a
+    # CodeableReference reached at `medication.concept.coding`.
+    #
     # The Spenser firmware requires `id` to be non-empty (see main.cpp). We
     # use a fixed id for all N requests in this run; the device doesn't
     # enforce id-uniqueness at the MedicationRequest endpoint.
-    Given set "darkOrder" to:
-      """
-      {
-        "resourceType": "MedicationRequest",
-        "id": "dispense-test",
-        "status": "active",
-        "intent": "instance-order",
-        "medicationCodeableConcept": {
-          "coding": [{"code": "chocolate-dark"}]
-        },
-        "subject": {"reference": "Patient/dispense-test"}
-      }
-      """
+    Given generate required test data as "darkOrder" from profile "http://hl7.org/fhir/StructureDefinition/MedicationRequest" with values:
+      | path                                        | value                  | system | code           |
+      | MedicationRequest.id                        | dispense-test          |        |                |
+      | MedicationRequest.status                    | active                 |        |                |
+      | MedicationRequest.intent                    | instance-order         |        |                |
+      | MedicationRequest.subject.reference         | Patient/dispense-test  |        |                |
+      | MedicationRequest.medication.concept.coding |                        |        | chocolate-dark |
+
+    # The same body goes out N times below, so validate it once here — a
+    # malformed order would otherwise fail N times with the device's error
+    # rather than the validator's.
+    Then "darkOrder" should be a valid MedicationRequest resource
 
     # ------------------------------------------------------------------
     # Step 4: POST the order N times. After each request the operator gets a

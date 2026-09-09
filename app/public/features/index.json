@@ -30,6 +30,7 @@
   "server.feature",
   "smart-anc-workflow.feature",
   "smart-immunization.feature",
+  "spenser-dispense-n-compact.feature",
   "spenser-dispense-n.feature",
   "spenser-smoke.feature",
   "testdata-bundle.feature",

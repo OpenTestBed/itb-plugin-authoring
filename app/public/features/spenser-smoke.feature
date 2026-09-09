@@ -50,21 +50,34 @@ Feature: FHIR Spenser dispenser smoke test
     # ------------------------------------------------------------------
     # Step 3: Place an order for one piece of dark chocolate
     # ------------------------------------------------------------------
-    Given set "darkChocolateOrder" to:
-      """
-      {
-        "resourceType": "MedicationRequest",
-        "id": "smoke-001",
-        "status": "active",
-        "intent": "instance-order",
-        "medicationCodeableConcept": {
-          "coding": [
-            { "code": "chocolate-dark" }
-          ]
-        },
-        "subject": { "reference": "Patient/smoke-001" }
-      }
-      """
+    # Built by the validator from the MedicationRequest profile rather than
+    # written out by hand. Two reasons beyond brevity:
+    #
+    #  - whatever the profile makes REQUIRED is filled in automatically, so
+    #    the order cannot be missing a mandatory element nobody remembered;
+    #  - the shape follows the FHIR version the validator has loaded. The
+    #    hand-written body this replaces used `medicationCodeableConcept`,
+    #    which is R4 — while step 1 above asserts Spenser is fhirVersion
+    #    5.0.0, where medication is a CodeableReference and the path is
+    #    `medication.concept.coding`. It was posting an R4 body to an R5
+    #    server.
+    #
+    # The table takes `value` for scalars, or `system`+`code` for a coding;
+    # the generator picks per row, so one table covers both. `code` alone
+    # (no system) matches the original payload, which carried a bare code.
+    Given generate required test data as "darkChocolateOrder" from profile "http://hl7.org/fhir/StructureDefinition/MedicationRequest" with values:
+      | path                                        | value             | system | code           |
+      | MedicationRequest.id                        | smoke-001         |        |                |
+      | MedicationRequest.status                    | active            |        |                |
+      | MedicationRequest.intent                    | instance-order    |        |                |
+      | MedicationRequest.subject.reference         | Patient/smoke-001 |        |                |
+      | MedicationRequest.medication.concept.coding |                   |        | chocolate-dark |
+
+    # Worth asserting now that the resource is generated: this checks the
+    # validator's own output against the base profile, not a literal we
+    # typed. Against a hand-written body it would only re-state the payload.
+    Then "darkChocolateOrder" should be a valid MedicationRequest resource
+
     When Client posts to Spenser at "/MedicationRequest" with:
       """
       $darkChocolateOrder
