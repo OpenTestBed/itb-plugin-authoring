@@ -43,5 +43,6 @@
   "tng-certificate-governance.feature",
   "transform-icvp.feature",
   "tutorial.feature",
+  "tx-simple-expand.feature",
   "validate-patient.feature"
 ]
