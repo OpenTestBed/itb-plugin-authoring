@@ -2,10 +2,11 @@ Feature: Match comparison with wildcards
 
   Background:
     Given Client is the system under test
-    And FHIRServer is available
+    And FHIRServer is infrastructure
+    And FHIRValidator is a fhir-validator at "http://fhir-validator:8081"
 
   Scenario: Partial match with wildcard patterns
-    Given generate test data from profile "http://hl7.org/fhir/StructureDefinition/Patient" as "patient"
+    Given Client generates test data from "http://hl7.org/fhir/StructureDefinition/Patient" as $patient
     Then partially match "patient" against expected:
       | resourceType | name                     |
       | Patient      | [{"family": "$string$"}] |

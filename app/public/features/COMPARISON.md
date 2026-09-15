@@ -49,9 +49,9 @@ and it *does* state the expectation — but 83 lines for this one case:
 ```gherkin
 # upstream fixture: updates/KO-ErrorCase3-4-hashModified.json
 Scenario: mhd-imm-006 update changing hash is rejected
-  When DocumentSource gets "https://gitlab.inria.fr/…/KO-ErrorCase3-4-hashModified.json" as "payload"
-  When DocumentSource puts to DocumentResponder at "/DocumentReference/" with id "docId" and body "payload"
-  Then "response status" should be "400"
+  When DocumentSource gets "https://gitlab.inria.fr/…/KO-ErrorCase3-4-hashModified.json" as $payload
+  When DocumentSource puts to DocumentResponder at "/DocumentReference/" with id $docId with body $payload
+  Then $response.status should be 400
 ```
 
 ## Two problems, two layers

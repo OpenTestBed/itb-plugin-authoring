@@ -3,7 +3,7 @@
 # exchange as the Consumer. That reverses the hard part — ITB sends and the
 # SUT answers, so nothing depends on <receive> or on ITB replying, and every
 # assertion is on a response ITB fetched itself.
-@lang:itb-core-en@^1.2 @dialect:fhir-validator@^1.0
+@lang:itb-core-en@^2 @dialect:fhir-validator@^2
 Feature: IHE MEOW Medication Overview Responder — server-side conformance
   Exercises the Responder actor of the IHE PHARM MEOW profile:
 
@@ -63,7 +63,7 @@ Feature: IHE MEOW Medication Overview Responder — server-side conformance
     And MedicationOverviewConsumer is infrastructure as defined by "https://profiles.ihe.net/PHARM/MEOW/CapabilityStatement/MedicationOverviewConsumer"
     # GITB-compatible FHIR validator (validator_cli.jar). Same actor the
     # RACSEL track features and meow-client.feature use.
-    And FHIRValidator is infrastructure at "http://fhir-validator:8080"
+    And FHIRValidator is a fhir-validator at "http://fhir-validator:8080"
 
   # ==================================================================
   # 1. PHARM-11 — query by patient
@@ -89,36 +89,35 @@ Feature: IHE MEOW Medication Overview Responder — server-side conformance
     # them would hide genuine findings alongside the known ones. Remove this
     # note once 1.0.0-preview2 (fixed slicing) is published.
     When MedicationOverviewConsumer loads IG "https://profiles.ihe.net/PHARM/MEOW/package.tgz" on FHIRValidator
-    Then "response status" should be "200"
 
     # ------------------------------------------------------------------
     # The one mandatory PHARM-11 query: patient and nothing else.
     # ------------------------------------------------------------------
-    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement?patient=137202631" as "lines"
-    Then "response status" should be "200"
-    And "lines" should not be empty
+    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement?patient=137202631" as $lines
+    Then $response.status should be 200
+    And $lines should not be empty
 
     # A FHIR search always answers with a searchset Bundle, never a bare
     # resource and never an OperationOutcome on success.
-    And evaluate FHIRPath "Bundle.type" on "lines" and expect "searchset"
+    And $lines at "Bundle.type" should be "searchset"
 
     # The server must actually hold data for the test patient — an empty
     # searchset is a valid Bundle but tells us nothing about conformance,
     # so fail loudly rather than pass vacuously.
-    And evaluate FHIRPath "Bundle.entry.exists()" on "lines" and expect "true"
+    And $lines at "Bundle.entry.exists()" should be true
 
     # Every entry must be a MedicationStatement. `.all()` is empty-true in
     # FHIRPath, which is why the existence check above has to come first.
-    And evaluate FHIRPath "Bundle.entry.resource.all($this is MedicationStatement)" on "lines" and expect "true"
+    And $lines at "Bundle.entry.resource.all($this is MedicationStatement)" should be true
 
     # Every returned line must be for the patient that was asked for —
     # catches a server that ignores the search parameter and returns
     # everything it has.
-    And evaluate FHIRPath "Bundle.entry.resource.subject.reference.all(endsWith('137202631'))" on "lines" and expect "true"
+    And $lines at "Bundle.entry.resource.subject.reference.all(endsWith('137202631'))" should be true
 
     # PHARM-11 profiles the response as MedicationTreatmentLine. A server
     # that claims the profile must say so in meta.profile.
-    And evaluate FHIRPath "Bundle.entry.resource.meta.profile.where($this.startsWith('https://profiles.ihe.net/PHARM/MEOW/StructureDefinition/MedicationTreatmentLine')).exists()" on "lines" and expect "true"
+    And $lines at "Bundle.entry.resource.meta.profile.where($this.startsWith('https://profiles.ihe.net/PHARM/MEOW/StructureDefinition/MedicationTreatmentLine')).exists()" should be true
 
   # ==================================================================
   # 2. PHARM-11 — optional search parameters
@@ -131,18 +130,18 @@ Feature: IHE MEOW Medication Overview Responder — server-side conformance
     # ------------------------------------------------------------------
     # status — narrow to active treatment lines.
     # ------------------------------------------------------------------
-    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement?patient=137202631&status=active" as "activeLines"
-    Then "response status" should be "200"
-    And evaluate FHIRPath "Bundle.type" on "activeLines" and expect "searchset"
+    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement?patient=137202631&status=active" as $activeLines
+    Then $response.status should be 200
+    And $activeLines at "Bundle.type" should be "searchset"
     # The filter must have been applied — no non-active line may come back.
-    And evaluate FHIRPath "Bundle.entry.resource.all(status = 'active')" on "activeLines" and expect "true"
+    And $activeLines at "Bundle.entry.resource.all(status = 'active')" should be true
 
     # ------------------------------------------------------------------
     # category — the medication list category / list type.
     # ------------------------------------------------------------------
-    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement?patient=137202631&category=community" as "categoryLines"
-    Then "response status" should be "200"
-    And evaluate FHIRPath "Bundle.type" on "categoryLines" and expect "searchset"
+    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement?patient=137202631&category=community" as $categoryLines
+    Then $response.status should be 200
+    And $categoryLines at "Bundle.type" should be "searchset"
 
     # ------------------------------------------------------------------
     # _lastUpdated — the incremental-sync parameter. A far-future instant
@@ -150,10 +149,10 @@ Feature: IHE MEOW Medication Overview Responder — server-side conformance
     # it. This proves the parameter is applied without depending on any
     # particular test data.
     # ------------------------------------------------------------------
-    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement?patient=137202631&_lastUpdated=gt2999-01-01" as "futureLines"
-    Then "response status" should be "200"
-    And evaluate FHIRPath "Bundle.type" on "futureLines" and expect "searchset"
-    And evaluate FHIRPath "Bundle.entry.exists()" on "futureLines" and expect "false"
+    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement?patient=137202631&_lastUpdated=gt2999-01-01" as $futureLines
+    Then $response.status should be 200
+    And $futureLines at "Bundle.type" should be "searchset"
+    And $futureLines at "Bundle.entry.exists()" should be false
 
   # ==================================================================
   # 3. PHARM-11 — the required parameter is enforced
@@ -164,17 +163,17 @@ Feature: IHE MEOW Medication Overview Responder — server-side conformance
   # pedantic one.
   Scenario: tc-meow-server-003 PHARM-11 rejects a query without the required patient
 
-    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement" as "unscoped"
+    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement" as $unscoped
 
     # Expect a client error. 400 is the usual answer; a server that uses
     # 422 instead is still refusing the query — change the expected code
     # here if that is your server's documented behaviour.
-    Then "response status" should be "400"
+    Then $response.status should be 400
 
     # FHIR requires an OperationOutcome to carry the refusal, and it must
     # be error-or-worse, not a warning the client could ignore.
-    And evaluate FHIRPath "OperationOutcome.issue.exists()" on "unscoped" and expect "true"
-    And evaluate FHIRPath "OperationOutcome.issue.where(severity in ('error' | 'fatal')).exists()" on "unscoped" and expect "true"
+    And $unscoped at "OperationOutcome.issue.exists()" should be true
+    And $unscoped at "OperationOutcome.issue.where(severity in ('error' | 'fatal')).exists()" should be true
 
   # ==================================================================
   # 4. PHARM-12 — Document Option
@@ -184,20 +183,19 @@ Feature: IHE MEOW Medication Overview Responder — server-side conformance
   Scenario: tc-meow-server-004 PHARM-12 returns a conformant MedicationOverview
 
     When MedicationOverviewConsumer loads IG "https://profiles.ihe.net/PHARM/MEOW/package.tgz" on FHIRValidator
-    Then "response status" should be "200"
 
     # ------------------------------------------------------------------
     # Patient-scoped document search. `patient` is required here too.
     # ------------------------------------------------------------------
-    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/Bundle?patient=137202631&type=document" as "docSearch"
-    Then "response status" should be "200"
-    And evaluate FHIRPath "Bundle.type" on "docSearch" and expect "searchset"
-    And evaluate FHIRPath "Bundle.entry.exists()" on "docSearch" and expect "true"
+    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/Bundle?patient=137202631&type=document" as $docSearch
+    Then $response.status should be 200
+    And $docSearch at "Bundle.type" should be "searchset"
+    And $docSearch at "Bundle.entry.exists()" should be true
 
     # The search wraps the overview: outer Bundle is the searchset, the
     # entry resource is the MedicationOverview document itself.
-    And evaluate FHIRPath "Bundle.entry.resource.all($this is Bundle)" on "docSearch" and expect "true"
-    And evaluate FHIRPath "Bundle.entry.resource.all(type = 'document')" on "docSearch" and expect "true"
+    And $docSearch at "Bundle.entry.resource.all($this is Bundle)" should be true
+    And $docSearch at "Bundle.entry.resource.all(type = 'document')" should be true
 
     # ------------------------------------------------------------------
     # Read the overview directly and hold the server to the profile.
@@ -207,18 +205,18 @@ Feature: IHE MEOW Medication Overview Responder — server-side conformance
     # literal will not interpolate a $variable into the path. Replace
     # `meow-test-overview` with a real Bundle id from your server.
     # ------------------------------------------------------------------
-    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/Bundle/meow-test-overview" as "overview"
-    Then "response status" should be "200"
+    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/Bundle/meow-test-overview" as $overview
+    Then $response.status should be 200
 
     # Cheap structural gate before the expensive profile validation, so a
     # wrong payload fails clearly instead of as a wall of validator output.
-    And evaluate FHIRPath "Bundle.type" on "overview" and expect "document"
+    And $overview at "Bundle.type" should be "document"
 
     # The conformance assertion proper — fails on any error-level issue.
-    And "overview" conforms to "https://profiles.ihe.net/PHARM/MEOW/StructureDefinition/MedicationOverview"
+    And $overview should conform to "https://profiles.ihe.net/PHARM/MEOW/StructureDefinition/MedicationOverview"
 
     # Content checks the profile alone will not catch: a Bundle can be
     # structurally valid and still be an empty overview.
-    And evaluate FHIRPath "Bundle.entry.resource.ofType(Composition).count()" on "overview" and expect "1"
-    And evaluate FHIRPath "Bundle.entry.resource.ofType(Patient).exists()" on "overview" and expect "true"
-    And evaluate FHIRPath "Bundle.entry.resource.ofType(MedicationStatement).exists()" on "overview" and expect "true"
+    And $overview at "Bundle.entry.resource.ofType(Composition).count()" should be 1
+    And $overview at "Bundle.entry.resource.ofType(Patient).exists()" should be true
+    And $overview at "Bundle.entry.resource.ofType(MedicationStatement).exists()" should be true

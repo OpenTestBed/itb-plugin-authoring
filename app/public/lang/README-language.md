@@ -1,279 +1,99 @@
-# FHIR Gherkin Language for ITB
+# OTB Gherkin — the test language
 
-This document describes the **FHIR Gherkin dialect** supported by the Test Workbench.
-It is designed for authoring **FHIR client and server test scenarios** that run both in **ITB** and (optionally) in **Karate**.
+Feature files here compile to GITB TDL test suites. One small **core
+language** fixes the sentence shapes; **dialects** (one per validator or
+service) add the verbs, actor kinds and value types for a domain — FHIR,
+health certificates, WHO GDHCN certificates, ArchiMate/EIRA.
 
----
+This is generation 2 of the language. Files written for generation 1 keep
+working when tagged `@lang:itb-core-en@^1`; `scripts/convert-v1-to-v2.mjs`
+in the language package rewrites them.
 
-## Key Features
-
-- **Standard Gherkin support** (`Feature:`, `Scenario:`, `Given/When/Then`).
-- **Actor declarations** with endpoint URLs and canonical definitions.
-- **FHIR-specific testing steps** for resource creation, submission, validation, and FHIRPath.
-- **Test data generation** from StructureDefinition profiles with FHIR path mappings.
-- **Match/comparison** for structural assertions on resources.
-- **User interaction steps** for manual workflows (user actions, monitor validation).
-- **Polling and proxying steps** for asynchronous workflows.
-- **Configurable language catalog** (`en.yml`) mapping phrases to actions.
-- **Requirements metadata** (`requires`) so authors know which ITB services/versions are needed.
-
----
-
-## Supported Functions
-
-### 1. Standard Gherkin
-- `Feature`, `Background`, `Scenario`, `Scenario Outline`
-- Step keywords: `Given`, `When`, `Then`, `And`, `But`
-- Step tables for structured input
-- Docstrings for JSON/XML snippets
-- Comments: lines starting with `#` are ignored; inline `# comments` after step text are stripped
-
-### 2. Actor Declarations
-
-Declare the participants in a test, optionally with endpoint URLs and canonical definitions (e.g. ActorDefinition, CapabilityStatement).
+## In one page
 
 ```gherkin
-Given Client is the system under test on http://localhost:9000/fhir as defined by http://hl7.org/fhir/ActorDefinition/client
-And FHIRServer is available on http://hapi.fhir.org/baseR4
-And Validator is available
-```
-
-### 3. Validation
-
-- **Validate against a profile URL**
-  ```gherkin
-  Then validate against http://hl7.org/fhir/StructureDefinition/AllergyIntolerance
-  And the validation summary shows 0 errors and 0 warnings
-  ```
-
-- **Actor-targeted validation** — route the validation request to a specific actor
-  ```gherkin
-  Then the validator validates it against http://hl7.org/fhir/StructureDefinition/AllergyIntolerance
-  ```
-
-- **Implicit validation** — validate using `meta.profile` or the base resource type (no profile URL needed)
-  ```gherkin
-  Then the resource is valid
-
-  # Or for a named variable:
-  Then "myPatient" is valid
-  ```
-
-- **Validate a named variable against a specific profile**
-  ```gherkin
-  Then validate "generatedPatient" against "http://hl7.org/fhir/StructureDefinition/Patient"
-  And the validation should pass
-  ```
-
-- **Assert validation failure**
-  ```gherkin
-  Then the validation should fail
-  And the validation issues should contain "minimum required"
-  ```
-
-- **Enhanced options** — best-practice level, resource id requirement
-  ```gherkin
-  Then validate against "http://hl7.org/fhir/StructureDefinition/Patient" with best practice "Error"
-  And the validation should have no "error" issues
-  ```
-
-*Requires: service `FHIR-validator` version >=1.0*
-
-### 4. FHIRPath Evaluation
-
-Evaluate FHIRPath expressions against the last payload or a named variable. Save results to variables or assert values directly.
-
-```gherkin
-And evaluate FHIRPath "AllergyIntolerance.code.coding.where(system='http://snomed.info/sct').code" as "snomedCodes"
-And evaluate FHIRPath "Patient.name.family" on "myPatient" and expect "Pansen"
-And evaluate FHIRPath "Patient.identifier" count is 2
-And evaluate FHIRPath "Patient.name.exists()" on "myPatient" and expect "true"
-```
-
-*Requires: service `FHIR-validator` version >=1.0*
-
-### 5. Resource Creation & Submission
-
-Create resources from tabular data (columns are FHIR element paths) and submit them to a server.
-
-```gherkin
-Given Client creates an allergy resource with:
-  | resourceType       | AllergyIntolerance.code.coding.code | AllergyIntolerance.code.coding.display | AllergyIntolerance.code.text |
-  | AllergyIntolerance | 762952008                           | Peanut (substance)                     | Allergic to peanuts          |
-When Client submits the created allergy
-Then the resource is correctly uploaded to the server
-And save the returned identifier as "allergyId"
-```
-
-### 6. Test Data Generation
-
-Generate synthetic FHIR resources from a StructureDefinition profile. Mappings use FHIR paths (e.g. `Patient.name`, `Patient.identifier:SSIN`).
-
-```gherkin
-# Simple inline generation with FHIR paths as columns
-Given generate test data from profile "http://hl7.org/fhir/StructureDefinition/Patient" with:
-  | Patient.name.given | Patient.name.family | Patient.birthDate | Patient.gender |
-  | Jan                | Pansen              | 1990-05-15        | male           |
-
-# Reusable mappings with parts for complex types
-Given define mappings "patientMappings" with parts:
-  | path                    | part   | expression                                                         |
-  | Patient.identifier:SSIN | system | 'https://www.ehealth.fgov.be/standards/fhir/core/NamingSystem/ssin' |
-  | Patient.identifier:SSIN | value  | column('ssin')                                                      |
-  | Patient.name            | family | column('family')                                                    |
-  | Patient.name            | given  | column('given')                                                     |
-```
-
-*Requires: service `FHIR-validator` version >=1.0*
-
-### 7. Match / Comparison
-
-Compare a resource against an expected pattern — full match, partial match, or mismatch detection.
-
-```gherkin
-Then partially match "generatedPatient" against expected:
-  | path                         | value                  |
-  | Patient.identifier[0].system | http://example.org/ids |
-  | Patient.identifier[0].value  | 12345                  |
-
-# Or with inline JSON doc strings:
-Then partially match "myPatient" against:
-  """
-  {"name": [{"family": "Pansen"}]}
-  """
-```
-
-### 8. User Interaction
-
-Support human-in-the-loop testing with user prompts and monitor approval workflows.
-
-```gherkin
-And inform the monitor "Please review the allergy submission for clinical correctness"
-And wait for monitor validation within 60 seconds
-And the monitor marks the submission as "Pass"
-```
-
-### 9. Proxy & Polling
-
-Observe HTTP traffic through a proxy and poll for expected requests or uploads.
-
-```gherkin
-Given capture initial traffic count
-When Client submits the created allergy
-Then wait for a new request with methods "POST" and filter "AllergyIntolerance" within 30 seconds every 5 seconds
-```
-
-### 10. Implementation Guide Loading
-
-Load FHIR IG packages into actors for validation and test data generation.
-
-```gherkin
-Given Validator is preloaded with package hl7.fhir.be.allergy#1.1.2
-And load implementation guide "hl7.fhir.us.core#6.1.0" and verify
-```
-
----
-
-## Requirements (`requires`)
-
-In `en.yml`, steps may declare requirements:
-
-```yaml
-requires:
-  service: FHIR-validator
-  version: ">=1.0"
-```
-
-- **`service`**: ITB service or module required.
-- **`version`**: Minimum version needed.
-- The parser checks these and issues warnings if unsupported.
-
-This ensures that authors only use steps that their ITB instance can run.
-
----
-
-## Example Scenario
-
-```gherkin
-Feature: Client submits and monitor validates an allergy
-  As a client
-  I want to submit an allergy, validate its syntax and have a monitor confirm my system handles it correctly.
+@lang:itb-core-en@^2 @dialect:fhir-validator@^2 @dialect:hcert-decoder@^2
+Feature: A health-certificate QR carries a valid IPS bundle
 
   Background:
-    Given Client is the system under test
-    And FHIRServer is available on http://hapi.fhir.org/baseR4
-    And Validator is available
-    And Validator is preloaded with package hl7.fhir.be.allergy#1.1.2
+    Given User is the system under test
+    And HCertDecoder is a hcert-decoder at "http://hcert-validator:8080"
+    And FHIRValidator is a fhir-validator at "http://fhir-validator:8080"
 
-  Scenario: tc-client-001 Client submission with monitor approval
-    Given Client creates an allergy resource with:
-      | resourceType       | AllergyIntolerance.code.coding.code | AllergyIntolerance.code.coding.display | AllergyIntolerance.code.text |
-      | AllergyIntolerance | 762952008                           | Peanut (substance)                     | Allergic to peanuts          |
-    When Client submits the created allergy
-    Then the resource is correctly uploaded to the server
-    And the resource is valid
-    And the validator validates it against http://hl7.org/fhir/StructureDefinition/AllergyIntolerance
-    And the validation summary shows 0 errors and 0 warnings
-    And evaluate FHIRPath "AllergyIntolerance.code.coding.where(system='http://snomed.info/sct').code" as "codes"
-    And inform the monitor "Please review the submission"
-    And wait for monitor validation within 60 seconds
-    And the monitor marks the submission as "Pass"
+  Scenario: tc-001 QR to verified bundle
+    When User uploads a file as $qrImage
+    And User scans $qrImage on HCertDecoder as $qrData
+    And User decodes $qrData on HCertDecoder as $hcert
+    And User verifies the signature of $hcert with:
+      | parameter | value |
+      | gdhcn_env | dev   |
+    And User is asked for $pin with "Enter the SHL PIN"
+    And User extracts the SHL link from $hcert as $link
+    And User authorizes $link with pin $pin as $manifest
+    And User fetches the FHIR content of $manifest as $bundle
+    And User loads IG "https://ig.racsel.org" on FHIRValidator
+    Then $bundle should conform to "http://racsel.org/StructureDefinition/LACBundleIPS" ignoring slicing errors
+    And $bundle at "Bundle.type" should be "document"
 ```
 
----
+Three things to know:
 
-## Versioning & the plugin manifest (`component.yml`)
+- **Actors** are bare names. `is the system under test` is measured;
+  `is infrastructure` is not; `is a <kind>` is a dialect service, and once
+  one is declared you can leave `on <Actor>` out.
+- **Variables** are `$name`. Write them with `as $x` or `set $x to …`, read
+  them anywhere a value goes. `$response.status`, `$received.body` and
+  `$validation.errors` are always there.
+- **Assertions** read `$value should …`, optionally `at "path"`: a `/…` JSON
+  pointer works on anything, a FHIRPath works on a FHIR resource. Conformance
+  is `$value should conform to "…"`, whatever the value is; the declared
+  validator decides how.
 
-Everything is versioned, along **three independent axes** that are routinely
-confused — keep them distinct:
+## The shapes
 
-| Axis | Where it lives | Example |
+| Shape | Looks like |
+|---|---|
+| Declaration | `FHIRValidator is a fhir-validator at "http://…"` |
+| Action | `User transforms $claim with map "…" on FHIRValidator as $bundle` |
+| Assertion | `$bundle at "Bundle.entry.count()" should be at least 1` |
+| Conformance | `$bundle should conform to "…" ignoring slicing errors` |
+| Binding | `extract "/id" from $response as $docId` |
+| Interaction | `User is asked for $pin with "Enter the PIN"` |
+
+Full grammar: [GRAMMAR.md](GRAMMAR.md). Every step with examples:
+[REFERENCE.md](REFERENCE.md).
+
+## Dialects loaded here
+
+| Dialect | Kinds | Adds |
 |---|---|---|
-| Component / app version | `component.yml` → `version` | `"1.0"` |
-| Dialect spec version | `component.yml` → `language.version` | `"1.0.0"` |
-| Core spec compatibility | `component.yml` → `language.baseVersion` | `">=1 <2"` |
-| Deployed service version | consumer-side services map, feeds step `requires` | `1.2.0` |
+| `fhir-validator` | `fhir-validator` | IG loading, validation, FHIRPath (`at`), StructureMap transforms, test data, matchetype |
+| `hcert-decoder` | `hcert-decoder` | scan, decode, signature check, SHL authorize and fetch |
+| `smart-helper` | `smart-helper` | IG upload, $validate, transforms through the helper |
+| `tng-certificate` | `tng-validator` | WHO GDHCN certificate governance checks |
+| `archimate` | `archimate-repository`, `eira-validator` | ArchiMate model queries and EIRA conformance (spec first; no image yet) |
 
-A dialect (language extension) declares which **core language spec** it extends
-(`lang/en.yml` carries `id: itb-core-en` + `specVersion`), and the **app** declares
-which **dialect spec** it implements:
+Each dialect is a `steps.yml` in its plugin repository, synced into
+`components/<id>/`. `steps-v1.yml` beside it is the generation-1 form, used
+only for `@lang:…@^1` files.
 
-```yaml
-id: fhir-validator
-version: "1.0"                 # the app/component build
-implementsDialect: "^1.0"      # dialect spec range this build satisfies (optional)
-language:
-  steps: steps.yml
-  version: "1.0.0"             # the dialect spec itself
-  base: itb-core-en            # base language this dialect extends
-  baseVersion: ">=1 <2"        # compatible core specVersion range
-```
+## Versioning
 
-Compatibility is checked in both directions:
+| Axis | Where | Example |
+|---|---|---|
+| Core spec version | `lang/en.yml` → `specVersion` | `2.0.0` |
+| Dialect spec version | `component.yml` → `language.version` | `2.0.0` |
+| Core compatibility | `component.yml` → `language.baseVersion` | `>=2 <3` |
+| App build → dialect drift | `component.yml` → `implementsDialect` | `^2.0` |
 
-```
-dialect ──language.baseVersion──▶ core spec     incompatible ⇒ steps REFUSED (red badge)
-app     ──implementsDialect─────▶ dialect spec  drift ⇒ REPORTED only (amber badge)
-```
-
-The dialect spec is **authoritative**: when app and dialect disagree, the app is
-out of date, and the diagnostic points at the app, never at the dialect. Both
-declarations are optional — a manifest without them loads exactly as before, with
-no checks and no warnings; an unparseable range means "cannot judge" and is
-skipped silently. Range syntax is the shared semver-lite subset: `^`, `~`, `>=`,
-`<=`, `>`, `<`, `=`, space-separated parts ANDed.
-
-The canonical `component.yml` lives in each plugin repo's `dialect/` folder;
-`itb-cli/src/sync-dialects.mjs` copies it verbatim into
-`public/components/<id>/` (fields must survive the sync — a dropped
-`implementsDialect` silently disables the drift check), and deployed services
-serve the same folder at the well-known `/gherkin-dialect` path.
-
----
+Any step-pattern change bumps the spec: minor for additions, major for a
+changed or removed pattern. A feature file declares what it was written for
+with `@lang:` and `@dialect:` tags; drift is reported by name.
 
 ## Files
 
-- `en.yml`: Catalog of supported steps + requirements
-- `REFERENCE.md`: Complete step-by-step language reference with examples
-- `gherkinParser.ts`: Parser that expands steps using the catalog
-- `xmlGenerator.ts`: Converts parsed scenarios to ITB XML
+- `GRAMMAR.md` — the formal grammar and the dialect contract
+- `REFERENCE.md` — step-by-step reference with examples
+- `../components/<id>/steps.yml` — each dialect
+- `@opentestbed/otb-gherkin/lang/en.yml` — the core language (bundled from the package; not copied here)
+- `@opentestbed/otb-gherkin/GOVERNANCE.md` — how the community changes the language

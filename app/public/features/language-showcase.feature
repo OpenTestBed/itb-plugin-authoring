@@ -5,8 +5,8 @@ Feature: Language Showcase — All FHIR Gherkin Dialect Features
   Background:
     # 1. ACTORS — declare SUT, validator, and FHIR server
     Given User is the system under test
-    And FHIRValidator is available at "http://itb-fhir-validator:8081"
-    And FHIRServer is available at "http://fhir-server:8080" as defined by "http://hl7.org/fhir"
+    And FHIRValidator is a fhir-validator at "http://itb-fhir-validator:8081"
+    And FHIRServer is infrastructure at "http://fhir-server:8080" as defined by "http://hl7.org/fhir"
     # Package loading (FHIR Validator extension)
     And FHIRValidator is loaded with package "hl7.fhir.be.core#2.1.2"
 
@@ -15,9 +15,9 @@ Feature: Language Showcase — All FHIR Gherkin Dialect Features
     # ------------------------------------------------------------------
     # VARIABLES — set values inline and via docstring
     # ------------------------------------------------------------------
-    Given set "profileUrl" to "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-patient"
-    And set "expectedFamily" to "Dupont"
-    And set "patientResource" to:
+    Given set $profileUrl to "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-patient"
+    And set $expectedFamily to "Dupont"
+    And set $patientResource to:
       """
       {"resourceType":"Patient","identifier":[{"system":"https://www.ehealth.fgov.be/standards/fhir/core/NamingSystem/ssin","value":"85031512345"}],"name":[{"family":"Dupont","given":["Marie"]}],"gender":"female","birthDate":"1985-03-15"}
       """
@@ -25,42 +25,44 @@ Feature: Language Showcase — All FHIR Gherkin Dialect Features
     # ------------------------------------------------------------------
     # EXTRACT — JSON pointer from a variable
     # ------------------------------------------------------------------
-    Then extract "/resourceType" from "patientResource" as "resourceType"
-    And "resourceType" should be "Patient"
-    And extract "/name/0/family" from "patientResource" as "familyName"
-    And "familyName" should be "Dupont"
+    Then extract "/resourceType" from $patientResource as $resourceType
+    And $resourceType should be "Patient"
+    And extract "/name/0/family" from $patientResource as $familyName
+    And $familyName should be "Dupont"
 
     # ------------------------------------------------------------------
     # ASSERTIONS — using reserved names and variable assertions
     # ------------------------------------------------------------------
-    And "familyName" should contain "Dupo"
-    And "familyName" should not be empty
+    And $familyName should contain "Dupo"
+    And $familyName should not be empty
 
     # ------------------------------------------------------------------
     # VALIDATION — validate against a profile
     # ------------------------------------------------------------------
-    When validate "patientResource" against "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-patient"
-    Then the validation should pass
-    And "validation errors" should be "0"
-    And "validation severity" should not be empty
+    When User validates $patientResource against "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-patient"
+    Then $validation.errors should be 0
+    And $validation.errors should be 0
+    And $validation.severity should not be empty
 
     # ------------------------------------------------------------------
     # VALIDATION with parameters
     # ------------------------------------------------------------------
-    When validate "patientResource" against "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-patient" with best practice "Warning"
-    Then "validation warnings" should not be empty
+    When User validates $patientResource against "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-patient" with:
+      | option       | value |
+      | bestPractice | Warning |
+    Then $validation.warnings should not be empty
 
     # ------------------------------------------------------------------
     # FHIRPATH — evaluate, expect, extract as variable
     # ------------------------------------------------------------------
-    When evaluate FHIRPath "Patient.name.family" on "patientResource" and expect "Dupont"
-    And evaluate FHIRPath "Patient.identifier.where(system='https://www.ehealth.fgov.be/standards/fhir/core/NamingSystem/ssin').value" on "patientResource" as "ssinValue"
-    Then "ssinValue" should be "85031512345"
+    When $patientResource at "Patient.name.family" should be "Dupont"
+    And extract "Patient.identifier.where(system='https://www.ehealth.fgov.be/standards/fhir/core/NamingSystem/ssin').value" from $patientResource as $ssinValue
+    Then $ssinValue should be 85031512345
 
     # ------------------------------------------------------------------
     # TEST DATA GENERATION — generate from profile with mappings
     # ------------------------------------------------------------------
-    Given define mappings "patientMappings" with parts:
+    Given set $patientMappings to mappings with parts:
       | path                    | part   | expression                                                                      |
       | Patient.identifier:SSIN | system | 'https://www.ehealth.fgov.be/standards/fhir/core/NamingSystem/ssin'              |
       | Patient.identifier:SSIN | value  | column('ssin')                                                                   |
@@ -68,17 +70,17 @@ Feature: Language Showcase — All FHIR Gherkin Dialect Features
       | Patient.name            | given  | column('given')                                                                  |
       | Patient.gender          |        | column('gender')                                                                 |
       | Patient.birthDate       |        | column('birthDate')                                                              |
-    And define data "patientData":
+    And set $patientData to data:
       | family  | given | gender | birthDate  | ssin        |
       | Janssen | Pieter| male   | 1990-07-20 | 90072012345 |
-    When generate test data from profile "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-patient" as "generatedPatient"
-    Then extract "/resourceType" from "generatedPatient" as "genType"
-    And "genType" should be "Patient"
+    When User generates test data from "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-patient" as $generatedPatient
+    Then extract "/resourceType" from $generatedPatient as $genType
+    And $genType should be "Patient"
 
     # ------------------------------------------------------------------
     # MATCHETYPE — partial and exact comparison with wildcards
     # ------------------------------------------------------------------
-    And partially match "patientResource" against:
+    And $patientResource should match pattern:
       """
       {"resourceType":"Patient","name":[{"family":"$string$"}],"gender":"$choice:male|female|other|unknown$"}
       """
@@ -94,12 +96,12 @@ Feature: Language Showcase — All FHIR Gherkin Dialect Features
       """
       {"resourceType":"Patient","name":[{"family":"TestPost"}]}
       """
-    Then "response status" should be "201"
-    And extract "/id" as "createdId"
-    And "createdId" should not be empty
+    Then $response.status should be 201
+    And extract "/id" as $createdId
+    And $createdId should not be empty
 
-    When User gets "http://fhir-server:8080/fhir/Patient?family=TestPost" as "searchResult"
-    Then "searchResult" should contain "TestPost"
+    When User gets "http://fhir-server:8080/fhir/Patient?family=TestPost" as $searchResult
+    Then $searchResult should contain "TestPost"
 
     # ------------------------------------------------------------------
     # HTTP — PUT, DELETE, PATCH, custom headers
@@ -109,21 +111,21 @@ Feature: Language Showcase — All FHIR Gherkin Dialect Features
       """
       {"resourceType":"Patient","id":"$createdId","name":[{"family":"Updated"}]}
       """
-    Then "response status" should be "200"
+    Then $response.status should be 200
 
     When User patches on FHIRServer at "/fhir/Patient/$createdId" with:
       """
       [{"op":"replace","path":"/name/0/family","value":"Patched"}]
       """
-    Then "response status" should not be "404"
+    Then $response.status should not be 404
 
     When User deletes on FHIRServer at "/fhir/Patient/$createdId"
-    Then "response status" should be "200"
+    Then $response.status should be 200
 
     # ------------------------------------------------------------------
     # CONDITIONALS — single-line guard
     # ------------------------------------------------------------------
-    And if "createdId" is not empty then "response status" should be "200"
+    # (v1 conditional removed — express it as a Rule or an explicit assertion) if "createdId" is not empty then "undefined" should response status "be"
     And if "validation errors" is "0" then "validation severity" should not be empty
 
     # ------------------------------------------------------------------
@@ -137,7 +139,7 @@ Feature: Language Showcase — All FHIR Gherkin Dialect Features
     # INTERACTION — inform and ask
     # ------------------------------------------------------------------
     And User is informed "All automated checks passed."
-    And Monitor is informed "Please review the test results." with "patientResource"
+    And Monitor is informed "Please review the test results." with $patientResource
 
     # ------------------------------------------------------------------
     # LOGGING

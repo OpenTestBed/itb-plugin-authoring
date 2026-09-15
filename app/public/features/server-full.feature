@@ -4,9 +4,9 @@ Feature: Server handles Belgian allergy resources
   So that conformance to the Belgian allergy IG is verified
 
   Background:
-    Given FHIRServer is the system under test on http://localhost:8080/fhir as defined by http://hl7.org/fhir/ActorDefinition/server
-    And Client is available on http://localhost:9000/fhir as defined by http://hl7.org/fhir/ActorDefinition/client
-    And Validator is available
+    Given FHIRServer is the system under test at "http://localhost:8080/fhir" as defined by "http://hl7.org/fhir/ActorDefinition/server"
+    And Client is infrastructure at "http://localhost:9000/fhir" as defined by "http://hl7.org/fhir/ActorDefinition/client"
+    And Validator is a fhir-validator
     And Validator is loaded with package "hl7.fhir.be.allergy#1.1.2"
     And FHIRServer is configured with data pool "default"
 
@@ -30,8 +30,8 @@ Feature: Server handles Belgian allergy resources
 
     # Inspect key elements with FHIRPath
     And evaluate FHIRPath "AllergyIntolerance.code.coding.where(system='http://snomed.info/sct').code" as "snomedCode"
-    And evaluate FHIRPath "AllergyIntolerance.code.coding.code" and expect "762952008"
-    And evaluate FHIRPath "AllergyIntolerance.reaction.substance.exists()" and expect "true"
+    And $response.body at "AllergyIntolerance.code.coding.code" should be 762952008
+    And $response.body at "AllergyIntolerance.reaction.substance.exists()" should be true
 
   # ------------------------------------------------------------------
   # Submit two resources, then verify both are persisted
@@ -70,7 +70,7 @@ Feature: Server handles Belgian allergy resources
   # Test data generation + validation round-trip
   # ------------------------------------------------------------------
   Scenario: tc-server-004 Generate and validate a Belgian patient
-    Given define mappings "patientMappings" with parts:
+    Given set $patientMappings to mappings with parts:
       | path                    | part   | expression                                                          |
       | Patient.identifier:SSIN | system | 'https://www.ehealth.fgov.be/standards/fhir/core/NamingSystem/ssin' |
       | Patient.identifier:SSIN | value  | column('ssin')                                                      |
@@ -78,7 +78,7 @@ Feature: Server handles Belgian allergy resources
       | Patient.name            | given  | column('given')                                                     |
       | Patient.gender          |        | column('gender')                                                    |
       | Patient.birthDate       |        | column('birthDate')                                                 |
-    And define data "patients":
+    And set $patients to data:
       | ssin        | family  | given | gender | birthDate  |
       | 79121539875 | Pansen  | Jan   | male   | 1979-12-15 |
     When generate test data from profile "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-patient" with mappings "patientMappings" and data "patients" as "bePatient"
@@ -86,9 +86,9 @@ Feature: Server handles Belgian allergy resources
     And "bePatient" is valid
 
     # Verify generated content
-    And evaluate FHIRPath "Patient.name.family" on "bePatient" and expect "Pansen"
-    And evaluate FHIRPath "Patient.name.given" on "bePatient" and expect "Jan"
-    And evaluate FHIRPath "Patient.identifier.where(system='https://www.ehealth.fgov.be/standards/fhir/core/NamingSystem/ssin').value" on "bePatient" and expect "79121539875"
+    And $bePatient at "Patient.name.family" should be "Pansen"
+    And $bePatient at "Patient.name.given" should be "Jan"
+    And $bePatient at "Patient.identifier.where(system='https://www.ehealth.fgov.be/standards/fhir/core/NamingSystem/ssin').value" should be 79121539875
 
     # Match structure
     And partially match "bePatient" against expected:

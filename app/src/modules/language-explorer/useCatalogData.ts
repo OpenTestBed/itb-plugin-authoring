@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { loadCatalog, loadAllComponents, mergeCatalog, Catalog, CatalogStep, ComponentInfo } from '../../parser/languageCatalog';
+import { describeText } from '@opentestbed/otb-gherkin';
 import { useAppContext } from '../../context/AppContext';
 
 export interface StepEntry {
@@ -98,9 +99,25 @@ const DOC_GROUPS: Record<string, { docPattern: string; matchers: RegExp[] }> = {
 
 /** Infer a category from the step pattern and actions */
 function inferCategory(step: CatalogStep): string {
-  const m = step.match;
+  const m = step.text ?? step.match;
   const actions = step.actions || [];
   const actionTypes = actions.map((a: any) => Object.keys(a)[0]);
+
+  // Generation-2 sentence shapes first.
+  if (step.text) {
+    if (step.dispatch === 'conforms' || /should (not )?conform to/.test(m)) return 'Conformance';
+    if (step.dispatch === 'type') return 'Variables & Data';
+    if (/^\{actor\} is (the system under test|infrastructure|available|a\/an)/.test(m)) return 'Actors';
+    if (/^\{ref\}( at \{path\})? should/.test(m)) return 'Assertions';
+    if (/^(set|extract) /.test(m)) return 'Variables & Data';
+    if (/ (posts|puts|patches|deletes|gets) /.test(m) || /^set (header|bearer)/.test(m)) return 'HTTP Requests';
+    if (/(waits for|is listening for|receives a request|replies to|stops listening|^wait )/.test(m)) return 'Wait / Receive';
+    if (/(is informed|is asked for|uploads a file)/.test(m)) return 'Interaction';
+    if (/^call scriptlet/.test(m)) return 'Scriptlets';
+    if (/^log /.test(m)) return 'Logging';
+    if (step._source) return step._source.componentName;
+    return 'General';
+  }
 
   // 1. Actors
   if (actionTypes.includes('declareActor')) return 'Actors';
@@ -205,8 +222,9 @@ export function useCatalogData() {
             : 'core';
           return {
             match: step.match,
-            humanPattern: toHumanPattern(step.match),
-            description: '', // Could be derived or added to YAML later
+            // Generation-2 entries carry their typed text; older ones only a regex.
+            humanPattern: step.text ? describeText(step.text) : toHumanPattern(step.match),
+            description: step.doc ?? '',
             category: inferCategory(step),
             source,
             actions: step.actions,

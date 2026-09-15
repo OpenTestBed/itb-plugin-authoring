@@ -6,9 +6,9 @@ Feature: Tutorial - Validating a Belgian Patient resource
 
   Background:
     Given Client is the system under test
-    And FHIRServer is available
-    And Validator is available as "FHIR Validation Service"
-    And FHIRValidator is available
+    And FHIRServer is infrastructure
+    And Validator is infrastructure as "FHIR Validation Service"
+    And FHIRValidator is a fhir-validator
     And FHIRValidator is loaded with package "hl7.fhir.be.core#2.1.2"
 
   Scenario: tutorial-001 Generate, validate, match, and assert
@@ -20,7 +20,7 @@ Feature: Tutorial - Validating a Belgian Patient resource
     # "with parts" means some paths have sub-elements (e.g. Identifier
     # has both 'system' and 'value').
 
-    Given define mappings "patientMappings" with parts:
+    Given set $patientMappings to mappings with parts:
       | path               | part   | expression          |
       | Patient.name       | family | column('family')    |
       | Patient.name       | given  | column('given')     |
@@ -32,7 +32,7 @@ Feature: Tutorial - Validating a Belgian Patient resource
     # A named data table that can be reused across scenarios.
     # Column names must match what the mappings reference.
 
-    And define data "patients":
+    And set $patients to data:
       | family  | given | gender | birthDate  |
       | Dupont  | Marie | female | 1985-03-15 |
 
@@ -43,15 +43,15 @@ Feature: Tutorial - Validating a Belgian Patient resource
     # The result is stored in a variable called "generatedResource".
 
     And generate test data from profile "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-patient" with mappings "patientMappings" and data "patients"
-    Then the generated resource type should be "Patient"
+    Then $generatedResource at "/resourceType" should be "Patient"
 
     # ── Step 4: Validate against the profile ─────────────────────
     #
     # Sends the resource to the FHIR Validator, which checks it
     # against the StructureDefinition. Returns an OperationOutcome.
 
-    And validate "generatedResource" against "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-patient"
-    And the validation should pass
+    And Client validates $generatedResource against "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-patient"
+    And $validation.errors should be 0
 
     # ── Step 5: Check structure with a partial match ─────────────
     #
@@ -61,7 +61,7 @@ Feature: Tutorial - Validating a Belgian Patient resource
     #   $choice:a|b|c$ = one of the listed values
     # "partially" means extra fields are allowed.
 
-    And partially match "generatedResource" against:
+    And $generatedResource should match pattern:
       """
       {"resourceType":"Patient","name":[{"family":"$string$","given":["$string$"]}],"gender":"$choice:male|female|other|unknown$","birthDate":"$date$"}
       """
@@ -71,11 +71,11 @@ Feature: Tutorial - Validating a Belgian Patient resource
     # FHIRPath expressions navigate the resource structure.
     # "as" saves the result to a variable; "and expect" asserts it.
 
-    And evaluate FHIRPath "Patient.name.family" on "generatedResource" and expect "Dupont"
-    And evaluate FHIRPath "Patient.gender" on "generatedResource" as "gender"
+    And $generatedResource at "Patient.name.family" should be "Dupont"
+    And extract "Patient.gender" from $generatedResource as $gender
     Then the value of "gender" is "female"
 
     # ── Step 7: Assert existence and count ───────────────────────
 
-    And evaluate FHIRPath "Patient.name" exists
-    And evaluate FHIRPath "Patient.name" count is 1
+    And $response.body at "(Patient.name).exists()" should be true
+    And $response.body at "(Patient.name).count()" should be 1

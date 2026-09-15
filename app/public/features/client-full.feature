@@ -4,9 +4,9 @@ Feature: Client submits allergies and a monitor validates them
   So that the client's conformance to the Belgian allergy IG is verified end-to-end
 
   Background:
-    Given Client is the system under test on http://localhost:9000/fhir as defined by http://hl7.org/fhir/ActorDefinition/client
-    And FHIRServer is available on http://hapi.fhir.org/baseR4 as defined by http://hl7.org/fhir/ActorDefinition/server
-    And Validator is available as defined by http://hl7.org/fhir/ActorDefinition/validator
+    Given Client is the system under test at "http://localhost:9000/fhir" as defined by "http://hl7.org/fhir/ActorDefinition/client"
+    And FHIRServer is infrastructure at "http://hapi.fhir.org/baseR4" as defined by "http://hl7.org/fhir/ActorDefinition/server"
+    And Validator is a fhir-validator as defined by "http://hl7.org/fhir/ActorDefinition/validator"
     And Validator is loaded with package "hl7.fhir.be.allergy#1.1.2"
     And FHIRServer is configured with data pool "default"
 
@@ -27,7 +27,7 @@ Feature: Client submits allergies and a monitor validates them
 
     # Inspect SNOMED coding
     And evaluate FHIRPath "AllergyIntolerance.code.coding.where(system='http://snomed.info/sct').code" as "snomedCode"
-    And evaluate FHIRPath "AllergyIntolerance.code.coding.count()" and expect "1"
+    And $response.body at "AllergyIntolerance.code.coding.count()" should be 1
 
     # Monitor reviews and approves
     And inform the monitor "Please review the allergy submission for clinical correctness"
@@ -65,16 +65,16 @@ Feature: Client submits allergies and a monitor validates them
     Given generate test data from profile "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-patient" with:
       | Patient.name.given | Patient.name.family | Patient.birthDate | Patient.gender |
       | Marie              | Dubois              | 1985-03-22        | female         |
-    Then the generated resource type should be "Patient"
+    Then $generatedResource at "/resourceType" should be "Patient"
 
     # Validate the generated resource
-    And validate "generatedResource" against "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-patient"
-    And the validation should pass
+    And Client validates $generatedResource against "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-patient"
+    And $validation.errors should be 0
 
     # FHIRPath assertions
-    And evaluate FHIRPath "Patient.name.family" on "generatedResource" and expect "Dubois"
-    And evaluate FHIRPath "Patient.name.given" on "generatedResource" and expect "Marie"
-    And evaluate FHIRPath "Patient.gender" on "generatedResource" and expect "female"
+    And $generatedResource at "Patient.name.family" should be "Dubois"
+    And $generatedResource at "Patient.name.given" should be "Marie"
+    And $generatedResource at "Patient.gender" should be "female"
 
     # Structural match
     And partially match "generatedResource" against expected:
@@ -85,25 +85,25 @@ Feature: Client submits allergies and a monitor validates them
   # Define reusable mappings + data, generate, validate, match
   # ------------------------------------------------------------------
   Scenario: tc-client-005 Generate patients with reusable mappings
-    Given define mappings "patientMappings" with parts:
+    Given set $patientMappings to mappings with parts:
       | path                    | part   | expression                                                          |
       | Patient.identifier:SSIN | system | 'https://www.ehealth.fgov.be/standards/fhir/core/NamingSystem/ssin' |
       | Patient.identifier:SSIN | value  | column('ssin')                                                      |
       | Patient.name            | family | column('family')                                                    |
       | Patient.name            | given  | column('given')                                                     |
       | Patient.gender          |        | column('gender')                                                    |
-    And define data "testPatients":
+    And set $testPatients to data:
       | ssin        | family  | given | gender |
       | 85032212345 | Dubois  | Marie | female |
     When generate test data from profile "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-patient" with mappings "patientMappings" and data "testPatients" as "bePatient"
     Then "bePatient" is valid
-    And evaluate FHIRPath "Patient.identifier.where(system='https://www.ehealth.fgov.be/standards/fhir/core/NamingSystem/ssin').value" on "bePatient" and expect "85032212345"
+    And $bePatient at "Patient.identifier.where(system='https://www.ehealth.fgov.be/standards/fhir/core/NamingSystem/ssin').value" should be 85032212345
 
   # ------------------------------------------------------------------
   # Inline resource definition + validation failure
   # ------------------------------------------------------------------
   Scenario: tc-client-006 Detect invalid resource with missing required fields
-    Given define resource "badAllergy" as:
+    Given set $badAllergy to:
       """
       {
         "resourceType": "AllergyIntolerance",
@@ -112,8 +112,8 @@ Feature: Client submits allergies and a monitor validates them
         }
       }
       """
-    When validate "badAllergy" against "https://www.ehealth.fgov.be/standards/fhir/allergy/StructureDefinition/be-allergyintolerance"
-    Then the validation should fail
+    When Client validates $badAllergy against "https://www.ehealth.fgov.be/standards/fhir/allergy/StructureDefinition/be-allergyintolerance"
+    Then $validation.errors should be greater than 0
     And the validation should have no "fatal" issues
 
   # ------------------------------------------------------------------
@@ -129,5 +129,5 @@ Feature: Client submits allergies and a monitor validates them
     And the value of "allergyId" is not empty
 
     # Set and verify a variable
-    And set "expectedCode" to "762952008"
+    And set $expectedCode to 762952008
     And the value of "expectedCode" is "762952008"

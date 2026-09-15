@@ -5,7 +5,7 @@ Feature: Client submits and monitor validates an allergy
 
   Background:
     Given Client is the system under test
-    And FHIRServer is available
+    And FHIRServer is infrastructure
     And FHIRServer is configured with data pool "default"
 
   Scenario: tc-client-001 Client submission with monitor approval
@@ -15,7 +15,7 @@ Feature: Client submits and monitor validates an allergy
     When Client submits the created allergy
     Then the resource is correctly uploaded to the server
     And validate against http://hl7.org/fhir/StructureDefinition/AllergyIntolerance  # GF1
-    And the validation summary should show 0 errors and 0 warnings                                            
+    And the validation summary should show 0 errors and 0 warnings
     And evaluate FHIRPath "AllergyIntolerance.code.coding.where(system='http://snomed.info/sct').code" as "codes" # GF3
     And inform the monitor "Please review the submission"                                                        # GF5
     And wait for monitor validation within 60 seconds                                                             # GF7/GF9

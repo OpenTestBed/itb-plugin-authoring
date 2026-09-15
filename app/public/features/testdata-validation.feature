@@ -5,8 +5,8 @@ Feature: Test data generation, validation, FHIRPath, and match
 
   Background:
     Given Client is the system under test
-    And FHIRServer is available
-    And FHIRValidator is available
+    And FHIRServer is infrastructure
+    And FHIRValidator is a fhir-validator
     And FHIRValidator is loaded with package "hl7.fhir.us.core#5.0.1"
 
   # ---------------------------------------------------------------
@@ -14,32 +14,32 @@ Feature: Test data generation, validation, FHIRPath, and match
   # ---------------------------------------------------------------
 
   Scenario: tc-gen-001 Generate and validate a Patient from a profile
-    Given generate test data from profile "http://hl7.org/fhir/StructureDefinition/Patient"
-    Then validate "generatedResource" against "http://hl7.org/fhir/StructureDefinition/Patient"
-    And the validation should pass
+    Given Client generates test data from "http://hl7.org/fhir/StructureDefinition/Patient" as $generatedResource
+    Then Client validates $generatedResource against "http://hl7.org/fhir/StructureDefinition/Patient"
+    And $validation.errors should be 0
 
   Scenario: tc-gen-002 Generate Patient with data table and mappings
-    Given define mappings "mappings":
+    Given set $mappings to mappings:
       | path              | expression              |
       | Patient.name      | column('familyName')    |
       | Patient.gender    | column('sex')           |
-    And define data "data":
+    And set $data to data:
       | familyName | sex    |
       | Doe        | male   |
     And generate test data from profile "http://hl7.org/fhir/StructureDefinition/Patient" with mappings "mappings" and data "data"
-    Then validate "generatedResource" against "http://hl7.org/fhir/StructureDefinition/Patient"
-    And the validation should pass
-    And evaluate FHIRPath "Patient.name.family" on "generatedResource" and expect "Doe"
-    And evaluate FHIRPath "Patient.gender" on "generatedResource" and expect "male"
+    Then Client validates $generatedResource against "http://hl7.org/fhir/StructureDefinition/Patient"
+    And $validation.errors should be 0
+    And $generatedResource at "Patient.name.family" should be "Doe"
+    And $generatedResource at "Patient.gender" should be "male"
 
   Scenario: tc-gen-003 Generate a Bundle of Patients from multiple data rows
-    Given define data "bundleData":
+    Given set $bundleData to data:
       | familyName | givenName | sex    |
       | Doe        | John      | male   |
       | Smith      | Jane      | female |
       | Wilson     | Bob       | male   |
     And generate test bundle from profile "http://hl7.org/fhir/StructureDefinition/Patient" with data "bundleData"
-    Then evaluate FHIRPath "Bundle.entry.count()" on "generatedBundle" and expect "3"
+    Then $generatedBundle at "Bundle.entry.count()" should be 3
 
   Scenario: tc-gen-004 Generate and validate in a single step
     When generate and validate test data from profile "http://hl7.org/fhir/StructureDefinition/Patient"
@@ -49,17 +49,17 @@ Feature: Test data generation, validation, FHIRPath, and match
   # ---------------------------------------------------------------
 
   Scenario: tc-fp-001 FHIRPath existence and count checks
-    Given generate test data from profile "http://hl7.org/fhir/StructureDefinition/Patient" as "patient"
-    Then evaluate FHIRPath "Patient.name" exists
-    And evaluate FHIRPath "Patient.name" count is 1
-    And evaluate FHIRPath "Patient.name.family" on "patient" as "familyName"
+    Given Client generates test data from "http://hl7.org/fhir/StructureDefinition/Patient" as $patient
+    Then $response.body at "(Patient.name).exists()" should be true
+    And $response.body at "(Patient.name).count()" should be 1
+    And extract "Patient.name.family" from $patient as $familyName
 
   # ---------------------------------------------------------------
   # Enhanced validation options
   # ---------------------------------------------------------------
 
   Scenario: tc-val-001 Validate with best practice warnings as errors
-    Given generate test data from profile "http://hl7.org/fhir/StructureDefinition/Patient" as "patient"
+    Given Client generates test data from "http://hl7.org/fhir/StructureDefinition/Patient" as $patient
     When validate against "http://hl7.org/fhir/StructureDefinition/Patient" with best practice "Error"
     Then the validation should have no "error" issues
 
@@ -69,7 +69,7 @@ Feature: Test data generation, validation, FHIRPath, and match
       | AllergyIntoleranceXXX | 762952008        | Peanut (substance)  | Allergic to peanut | 39579001      | Anaphylactic reaction |
     When Client submits the created allergy
     And validate against "http://hl7.org/fhir/StructureDefinition/AllergyIntolerance" with best practice "Warning"
-    Then the validation should fail
+    Then $validation.errors should be greater than 0
     And the validation issues should contain "resourceType"
 
   # ---------------------------------------------------------------
@@ -77,7 +77,7 @@ Feature: Test data generation, validation, FHIRPath, and match
   # ---------------------------------------------------------------
 
   Scenario: tc-match-001 Partial match with wildcards
-    Given generate test data from profile "http://hl7.org/fhir/StructureDefinition/Patient" as "patient"
+    Given Client generates test data from "http://hl7.org/fhir/StructureDefinition/Patient" as $patient
     Then partially match "patient" against expected:
       | resourceType | name                   |
       | Patient      | [{"family": "$string$"}] |

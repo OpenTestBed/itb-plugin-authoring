@@ -8,7 +8,7 @@ Feature: Spenser dispenses N dark chocolates and inventory drops by N
 
   Background:
     Given Spenser is the system under test at "http://spenser.local" as defined by "http://costateixeira.github.io/spenser"
-    And FHIRValidator is infrastructure at "http://fhir-validator:8081"
+    And FHIRValidator is a fhir-validator at "http://fhir-validator:8081"
     And Client is infrastructure
 
   Scenario: dispense-N-001 inventory delta matches dispense count
@@ -16,7 +16,7 @@ Feature: Spenser dispenses N dark chocolates and inventory drops by N
     # ------------------------------------------------------------------
     # Step 1: Ask the operator how many to dispense
     # ------------------------------------------------------------------
-    Given Client is asked for "N" with "How many dark chocolates to dispense?"
+    Given Client is asked for $N with "How many dark chocolates to dispense?"
 
     # ------------------------------------------------------------------
     # Step 2: Snapshot the dark-chocolate count BEFORE
@@ -25,9 +25,9 @@ Feature: Spenser dispenses N dark chocolates and inventory drops by N
     #   The dark-chocolate bin is index 0 in the device's response shape:
     #     inventoryListing[0].item[0] = dark, inventoryListing[1].item[0] = milk
     # ------------------------------------------------------------------
-    When Client gets from Spenser at "/InventoryReport" as "before"
-    Then "response status" should be "200"
-    And extract "/inventoryListing/0/item/0/quantity/value" from "before" as "X"
+    When Client gets from Spenser at "/InventoryReport" as $before
+    Then $response.status should be 200
+    And extract "/inventoryListing/0/item/0/quantity/value" from $before as $X
 
     # ------------------------------------------------------------------
     # Step 3: Build a single dark-chocolate MedicationRequest body
@@ -42,7 +42,7 @@ Feature: Spenser dispenses N dark chocolates and inventory drops by N
     # The Spenser firmware requires `id` to be non-empty (see main.cpp). We
     # use a fixed id for all N requests in this run; the device doesn't
     # enforce id-uniqueness at the MedicationRequest endpoint.
-    Given generate required test data as "darkOrder" from profile "http://hl7.org/fhir/StructureDefinition/MedicationRequest" with values:
+    Given Spenser generates required test data from "http://hl7.org/fhir/StructureDefinition/MedicationRequest" as $darkOrder with values:
       | path                                        | value                  | system | code           |
       | MedicationRequest.id                        | dispense-test          |        |                |
       | MedicationRequest.status                    | active                 |        |                |
@@ -53,7 +53,7 @@ Feature: Spenser dispenses N dark chocolates and inventory drops by N
     # The same body goes out N times below, so validate it once here — a
     # malformed order would otherwise fail N times with the device's error
     # rather than the validator's.
-    Then "darkOrder" should be a valid MedicationRequest resource
+    Then $darkOrder should be a valid MedicationRequest resource
 
     # ------------------------------------------------------------------
     # Step 4: POST the order N times. After each request the operator gets a
@@ -61,12 +61,12 @@ Feature: Spenser dispenses N dark chocolates and inventory drops by N
     # time to physically dispense before the next order. (TDL has no sleep
     # step in this ITB, so manual pacing is the deterministic option.)
     # ------------------------------------------------------------------
-    When Client posts "darkOrder" to Spenser at "/MedicationRequest" $N times, paced manually
+    When Client posts $darkOrder to Spenser at "/MedicationRequest" $N times, paced manually
 
     # ------------------------------------------------------------------
     # Step 5: Snapshot the dark-chocolate count AFTER and assert delta
     # ------------------------------------------------------------------
-    When Client gets from Spenser at "/InventoryReport" as "after"
-    Then "response status" should be "200"
-    And extract "/inventoryListing/0/item/0/quantity/value" from "after" as "Y"
-    And "Y" should equal "X" minus "$N"
+    When Client gets from Spenser at "/InventoryReport" as $after
+    Then $response.status should be 200
+    And extract "/inventoryListing/0/item/0/quantity/value" from $after as $Y
+    And $Y should equal $X minus $N

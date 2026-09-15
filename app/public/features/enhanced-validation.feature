@@ -2,8 +2,8 @@ Feature: Enhanced validation options
 
   Background:
     Given Client is the system under test
-    And FHIRServer is available
-    And FHIRValidator is available
+    And FHIRServer is infrastructure
+    And FHIRValidator is a fhir-validator
     And FHIRValidator is loaded with package "hl7.fhir.us.core#5.0.1"
 
   Scenario: Validate with best practice warnings as errors
@@ -15,6 +15,6 @@ Feature: Enhanced validation options
       | AllergyIntoleranceXXX | 762952008        | Peanut (substance)  | Allergic to peanut | 39579001      | Anaphylactic reaction |
     When Client submits the created allergy
     And validate against "http://hl7.org/fhir/StructureDefinition/AllergyIntolerance" with best practice "Warning"
-    Then the validation should fail
+    Then $validation.errors should be greater than 0
     And the validation issues should contain "resourceType"
     And the validation should have no "fatal" issues

@@ -1,297 +1,182 @@
-# FHIR Gherkin Dialect -- Language Reference
+# OTB Gherkin — Step Reference (generation 2)
 
-A Gherkin-based DSL for writing FHIR interoperability test cases. Steps are matched against patterns defined in the core language (`en.yml`) and component extensions.
+Every step the core and the bundled dialects provide, with an example.
+Optional parts are in `[brackets]`; `$x` is a variable; `<Actor>` is a bare name.
 
----
+## Declarations
 
-## 1. Actors
-
-```
-<Actor> is the system under test
-<Actor> is the system under test at "<endpoint>"
-<Actor> is the system under test at "<endpoint>" as defined by "<canonical>"
-<Actor> is the system under test as defined by "<canonical>"
-<Actor> is available
-<Actor> is available as "<name>"
-<Actor> is available at "<endpoint>"
-<Actor> is available at "<endpoint>" as defined by "<canonical>"
-<Actor> is available as defined by "<canonical>"
-<Actor> is infrastructure
-<Actor> is infrastructure at "<endpoint>"
-<Actor> is infrastructure at "<endpoint>" as defined by "<canonical>"
-<Actor> is infrastructure as defined by "<canonical>"
-```
-
-- `<Actor>` -- an identifier matching `[A-Za-z][A-Za-z0-9_]*`
-- `at` / `on` are interchangeable
-- Declaring an actor at an endpoint also sets `<Actor>Base` to that URL
-
-### Roles
-
-Each phrase assigns one of two roles:
-
-| Phrase | Role |
+| Step | Example |
 |---|---|
-| `is the system under test` | `SUT` — measured for conformance |
-| `is available` / `is infrastructure` | `infra` — required to run the test, not measured |
+| `<Actor> is the system under test [at "url"] [as defined by "canonical"]` | `Client is the system under test at "http://sut:8080/fhir"` |
+| `<Actor> is infrastructure [at "url"] [as defined by "canonical"]` | `AuthServer is infrastructure at "https://…/auth"` |
+| `<Actor> is available [as "name"] [at "url"] [as defined by "canonical"]` | `FHIRServer is available` |
+| `<Actor> is a <kind> [at "url"] [as defined by "canonical"]` | `FHIRValidator is a fhir-validator at "http://fhir-validator:8081"` |
+| `<Actor> is configured with data pool "id"` | `FHIRServer is configured with data pool "default"` |
 
-Multiple `SUT` actors are allowed in a single scenario (peer-to-peer testing).
+Kinds: `fhir-validator`, `hcert-decoder`, `smart-helper`, `tng-validator`,
+`archimate-repository`, `eira-validator`. With one actor of a kind declared,
+`on <Actor>` can be omitted from that dialect's steps.
 
-## 2. HTTP Requests
+## HTTP (raw transport — assert the status yourself)
 
-```
-<Actor> posts to <Actor> at "<path>" with:
-  """
-  <body>
-  """
-
-<Actor> gets "<url>" as "<variable>"
-```
-
-- `posts to` sends a POST with JSON headers and the docstring as body
-- `gets` sends a GET and stores the response body in `<variable>`
-
-## 3. Variables
-
-```
-set "<variable>" to "<value>"
-set "<variable>" to:
-  """
-  <content>
-  """
-extract "<jsonPointer>" from "<variable>" as "<variable>"
-extract "<jsonPointer>" as "<variable>"
-```
-
-- `extract` without `from` operates on the last HTTP response body
-- JSON Pointer syntax (e.g. `/resourceType`, `/entry/0/resource`)
-
-## 4. Assertions
-
-```
-"<name>" should be "<value>"
-"<name>" should contain "<value>"
-"<name>" should not be empty
-```
-
-### Reserved assertion names
-
-| Name | Value |
+| Step | Example |
 |---|---|
-| `response status` | HTTP status code of last request |
-| `response` | Full response body of last request |
-| `validation errors` | Count of error-level issues (`$validationErrors`) |
-| `validation warnings` | Count of warning-level issues (`$validationWarnings`) |
-| `validation outcome` | Raw OperationOutcome JSON (`$validationOutcome`) |
-| `validation severity` | Highest severity across all issues (`$validationSeverity`) |
+| `<Actor> posts to <Actor> at "path" [with id $x] with:` + doc string | `Client posts to Server at "/Patient" with:` |
+| `<Actor> posts to <Actor> at "path" [with id $x] with body $y` | `Source posts to Responder at "/DocumentReference" with body $doc` |
+| `<Actor> puts to …` / `<Actor> patches to …` (same forms) | `Source puts to Responder at "/DocumentReference/" with id $docId with body $update` |
+| `<Actor> deletes on <Actor> at "path" [with id $x]` | `User deletes on FHIRServer at "/Patient/" with id $id` |
+| `<Actor> gets from <Actor> at "path" [with id $x] as $y` | `Client gets from Spenser at "/metadata" as $metadata` |
+| `<Actor> gets "absolute url" as $y` | `Client gets "https://…/fixture.json" as $payload` |
+| `<Actor> posts $body to <Actor> at "path" N times, paced manually` | `Client posts $order to Spenser at "/MedicationRequest" $N times, paced manually` |
+| `set header "Name" to "value"` / `to $var` | `set header "Accept" to "application/fhir+json"` |
+| `set bearer token from $token` | `set bearer token from $iuaToken` |
 
-## 5. Interaction
+`with id $x` appends a run-time value to the path; keep the trailing slash in the path.
 
-```
-<Actor> is informed "<message>"
-<Actor> is informed "<message>" with "<content>"
-<Actor> is asked for "<variable>"
-<Actor> is asked for "<variable>" with "<message>"
-```
+## ITB as the peer
 
-- `is informed` displays a message to the user
-- `is asked for` prompts the user to upload/provide a value
+| Step | Example |
+|---|---|
+| `<Actor> waits for <Actor> [within N seconds]` | `Responder waits for Consumer within 300 seconds` |
+| `<Actor> is listening for <Actor>` | `Responder is listening for Source` |
+| `<Actor> receives a request from <Actor> [within N seconds]` | `Responder receives a request from Source within 300 seconds` |
+| `<Actor> replies to <Actor> with status N and:` + doc string / `and body $x` | `Responder replies to Source with status 200 and:` |
+| `<Actor> stops listening for <Actor>` | `Responder stops listening for Source` |
+| `wait N seconds` | `wait 5 seconds` (logged only) |
 
-## 6. Logging
+What arrived: `$received.method`, `$received.path`, `$received.headers.Accept`, `$received.body`.
 
-```
-log "<message or variable>"
-```
+## Binding
 
----
+| Step | Example |
+|---|---|
+| `set $x to "value"` / `to 42` / `to $y` | `set $tngCountry to "XXR"` |
+| `set $x to:` + doc string | `set $patient to:` |
+| `set $x to now [with format "pattern"]` | `set $nowTs to now` |
+| `extract "path" from $y as $x` | `extract "/name/0/family" from $patient as $family` — JSON pointer on anything; `extract "Patient.name.family" from $patient as $family` — FHIRPath on a FHIR resource |
+| `extract "/pointer" as $x` | from the last response body |
+| `$x is a <type name>` | `$received.body is a FHIR resource` — types an untyped value |
 
-## FHIR Validator Extension
+## Assertions
 
-Provided by the `fhir-validator` component. Requires a FHIR Validator actor with its base URL set.
+Every comparator works on `$x` and on `$x at "path"`.
 
-### Package Loading
+| Comparator | Example |
+|---|---|
+| `should be` / `should not be` | `$response.status should be 201`, `$fam should be "Dupont"`, `$m should be $n` |
+| `should contain` / `should not contain` | `$received.path should contain "patient="` |
+| `should be empty` / `should not be empty` / `should exist` / `should not exist` | `$docId should not be empty` |
+| `should match "regex"` | `$id should match "^[a-z0-9-]+$"` |
+| `should be one of "a, b"` | `$status should be one of "current, superseded"` |
+| `should be at least` / `at most` / `greater than` / `less than` | `$validation.errors should be greater than 0` |
+| `should equal $y minus N` | `$after should equal $before minus $N` |
+| at a path | `$bundle at "Bundle.type" should be "document"`, `$cert at "/keyUsage/digitalSignature" should be true` |
 
-```
-<Actor> is loaded with package "<package>"
-```
+Well-known: `$response.status`, `$response.body`, `$validation.errors`,
+`$validation.warnings`, `$validation.severity`, `$validation.outcome`.
 
-Loads an IG package into the validator (e.g. `hl7.fhir.be.vaccination#1.1.2`).
+## Conformance
 
-### Validation
+| Step | Example |
+|---|---|
+| `$x should conform to "canonical" [on <Actor>]` | `$bundle should conform to "https://profiles.ihe.net/PHARM/MEOW/StructureDefinition/MedicationOverview"` |
+| `… ignoring slicing errors` | `$bundle should conform to "…LACBundleIPS" ignoring slicing errors` |
+| `… ignoring errors matching "phrase"` | `$bundle should conform to "…" ignoring errors matching "max allowed = 1"` |
+| `… with:` + `\| option \| value \|` | `$model should conform to "https://eira.ec.europa.eu/eira/6.0" with:` |
+| `$x should not conform to "canonical"` | `$badAllergy should not conform to "…be-allergyintolerance"` |
 
-```
-validate "<resource>" against "<profiles>"
-validate "<resource>" against "<profiles>" with best practice "<level>"
-validate "<resource>" against "<profiles>" with resource id "<rule>"
-the validation should pass
-the validation should fail
-```
+After any conformance check, `$validation.errors` and friends are set.
 
-All `validate` steps produce: `$validationOutcome`, `$validationErrors`, `$validationWarnings`, `$validationSeverity`.
+## Interaction
 
-### FHIRPath Evaluation
-
-```
-evaluate FHIRPath "<expression>" on "<resource>" and expect "<value>"
-evaluate FHIRPath "<expression>" and expect "<value>"
-evaluate FHIRPath "<expression>" on "<resource>" as "<variable>"
-evaluate FHIRPath "<expression>" exists
-evaluate FHIRPath "<expression>" count is <number>
-```
-
-- `and expect` asserts the result equals the expected value
-- `as` stores the result in a variable
-- `exists` wraps the expression in `.exists()` and asserts `true`
-- `count is` wraps in `.count()` and asserts the number
-- Without `on`, uses the last submitted resource (`$submitResult{payload}`)
-
-### Matchetype Comparison
-
-```
-partially match "<resource>" against:
-  """
-  <expected JSON>
-  """
-
-exactly match "<resource>" against:
-  """
-  <expected JSON>
-  """
-
-"<resource>" should NOT match:
-  """
-  <expected JSON>
-  """
-```
-
-### Test Data Generation
-
-```
-generate test data from profile "<profileUrl>"
-generate test data from profile "<profileUrl>" as "<variable>"
-```
-
-Stores the result in `$generatedResource` or the named variable.
-
-### Data/Mapping Definitions
-
-```
-define mappings "<variable>":
-  | path | expression |
-  | ...  | ...        |
-
-define mappings "<variable>" with parts:
-  | path | part | expression |
-  | ...  | ...  | ...        |
-
-define data "<variable>":
-  | col1 | col2 | ... |
-  | ...  | ...  | ... |
-```
+| Step | Example |
+|---|---|
+| `<Actor> is informed "message" [with $content]` | `Monitor is informed "Please review." with $patient` |
+| `<Actor> is asked for $x [with "prompt"]` | `User is asked for $pin with "Enter the PIN"` |
+| `<Actor> uploads a file as $x` | `User uploads a file as $qrImage` |
+| `log "message"` / `log $x` | `log "checkpoint"` |
+| `call scriptlet "id" [as $x] [with: table] [doc string]` | see GRAMMAR.md |
 
 ---
 
-## Example: Belgian Vaccination Validation
+## Dialect: fhir-validator
 
-```gherkin
-Feature: Belgian Vaccination (BeVaccination) profile validation
-  Validates a user-provided Immunization resource against the BeVaccination profile
-  from hl7.fhir.be.vaccination#1.1.2, checking two business rules:
-    Rule 1 - Recorder/Performer identifier matching
-    Rule 2 - AdministeredProduct CNK-to-SNOMED consistency via Vitalink registry
+| Step | Example |
+|---|---|
+| `<Validator> is loaded with package "id#version"` | `FHIRValidator is loaded with package "hl7.fhir.be.core#2.1.2"` |
+| `<Actor> loads IG "id \| url \| path" [on <Validator>]` | `User loads IG "https://smart.who.int/icvp/package.tgz" on FHIRValidator` |
+| `<Actor> validates $x against "profile" [on <Validator>] [as $outcome]` | then `$validation.errors should be 0` |
+| `<Actor> validates $x against "profile" [on <Validator>] with:` `\| option \| value \|` (`bestPractice`, `resourceId`) | |
+| `$x should be a valid <Type> resource` | `$patient should be a valid Patient resource` |
+| `$x at "fhirpath" should …` | `$patient at "Patient.name.family" should be "Dupont"` |
+| `<Actor> evaluates "fhirpath" on $x [using <Validator>] as $y` | for values the compiler cannot type |
+| `$x should satisfy "fhirpath"` | `$patient should satisfy "Patient.id.exists()"` |
+| `$x should match pattern:` / `should not match pattern:` + doc string | matchetype comparison |
+| `<Actor> summarizes $outcome [on <Validator>] as $s` | then `$s.errors should be 0` |
+| `<Actor> generates test data from "profile" [on <Validator>] as $x` | |
+| `<Actor> generates required test data from "profile" [on <Validator>] as $x [with values:]` | `\| path \| value \| system \| code \|` |
+| `<Actor> generates required test data from "profile" with mappings $m [on <Validator>] as $x` | |
+| `set $m to mappings:` / `set $m to mappings with parts:` / `set $d to data:` | tables |
+| `<Actor> modifies $x [against "profile"] [on <Validator>] with operations:` | `\| op \| path \| value \| system \| code \|` |
+| `<Actor> transforms $in with map "canonical" [on <Validator>] as $out` | |
+| `<Actor> parses FML $text [on <Validator>] as $map` | |
+| `<Actor> registers StructureMap $map [on <Validator>]` | |
 
-  Background:
-    Given User is the system under test
-    And FHIRValidator is available at "http://itb-fhir-validator:8081"
-    And FHIRValidator is loaded with package "hl7.fhir.be.vaccination#1.1.2"
+Types: `FHIR resource`, `FHIR OperationOutcome` (path language: FHIRPath).
 
-  Scenario: be-vaccination-001 Validate BeVaccination business rules
+## Dialect: hcert-decoder
 
-    Given User is asked for "immunizationResource" with "Upload a BeVaccination Immunization JSON"
-    Then extract "/resourceType" from "immunizationResource" as "resourceType"
-    And "resourceType" should be "Immunization"
+| Step | Example |
+|---|---|
+| `<Actor> scans $image [on <Decoder>] as $qrData` | after `uploads a file as $image` |
+| `<Actor> decodes $qrData [on <Decoder>] as $hcert` | |
+| `<Actor> verifies the signature of $hcert [on <Decoder>] [with:]` `\| parameter \| value \|` | `gdhcn_env`, `usage`, `participant`, `domain`, … all defaulted |
+| `<Actor> extracts metadata from $hcert [on <Decoder>] as $meta` | |
+| `<Actor> extracts the SHL link from $hcert [on <Decoder>] as $link` | |
+| `<Actor> authorizes $link [on <Decoder>] with pin $pin as $manifest` | |
+| `<Actor> authorizes $link [on <Decoder>] with pin "0000" expecting status 401` | negative case |
+| `<Actor> fetches the FHIR content of $manifest [on <Decoder>] as $bundle` | binds the first resource, typed FHIR |
 
-    When evaluate FHIRPath "performer.actor.identifier.exists() implies (...)" on "immunizationResource" and expect "true"
+Type: `health certificate` (read with `/…` pointers, e.g. `extract "/payload/1" from $hcert as $issuer`).
 
-    And evaluate FHIRPath "extension.where(...).coding.where(system='...cnk-codes').code" on "immunizationResource" as "cnkCode"
+## Dialect: smart-helper
 
-    And set "expectedSnomed" to "871822003"
+| Step |
+|---|
+| `<Actor> loads IG "url" [targeting "fhir"] on <Helper>` |
+| `<Actor> validates $x against "profile" on <Helper>` |
+| `<Actor> validates $x against "profile" on <Helper> targeting <FHIRServer>` |
+| `<Actor> transforms $in with map "canonical" on <Helper> as $out` |
 
-    And evaluate FHIRPath "vaccineCode.coding.where(system='http://snomed.info/sct').code" on "immunizationResource" and expect "$expectedSnomed"
+## Dialect: tng-certificate
 
-    And User is informed "BeVaccination validated: recorder/performer match and CNK/SNOMED consistency checks passed."
-```
+| Step |
+|---|
+| `set $tngCountry to "XXR"` (the participant) |
+| `<Actor> inspects the participant material [on <TNG>] as $cert` |
+| `<Actor> inspects group "TLS" file "TLS" [on <TNG>] as $cert` / `inspects group "SCA" … as $cert` |
+| `<Actor> inspects the TLS end-entity [on <TNG>] as $tls` / `inspects the CA beside it … as $ca` / `inspects the DSC issued by $sca … as $dsc` |
+| `$cert should be placed at domain, group and filename` |
+| `$cert public key should satisfy the minimum size:` `\| algorithm \| minBits \|` |
+| `$cert public key algorithm should be one of "RSA, EC(P-256)"` |
+| `$cert extension "2.5.29.15" should be present` |
+| `$cert keyUsage "digitalSignature" should be true` |
+| `$cert EKU should include "1.3.6.1.5.5.7.3.2"` / `$cert EKU should not be required for groups "CA, SCA"` |
+| `$cert basicConstraints CA should be true` [`for groups:` table] / `$cert basicConstraints pathLen should be "0 or absent"` |
+| `$tls should be signed by $ca` / `$tls should be rejected by $ca` |
+| `$cert subject CN should not be empty` / `$cert subject country should be the participant country` |
+| `$cert validity should not exceed the limit for its group:` `\| group \| maxYears \|` |
+| `$dsc notAfter should not exceed $sca notAfter` |
 
----
+Type: `X.509 certificate` (facts; `$cert at "/keyUsage/keyCertSign" should be true` is the same check in core form).
 
-## Compilation API
+## Dialect: archimate
 
-The test workbench exposes a REST API for Gherkin-to-TDL compilation.
+| Step |
+|---|
+| `<Actor> loads model "name" [from <Repo>] as $model` |
+| `<Actor> lists the views of $model [on <Repo>] as $views` |
+| `$model at "<model query>" should …` |
+| `$model should conform to "<EIRA canonical>" [with: \| option \| value \|]` |
 
-**Base URL:** `http://localhost:3000/api`
-
-### POST /api/compile
-
-Compile a Gherkin feature file to an ITB TDL test suite ZIP.
-
-```
-POST /api/compile
-Content-Type: text/plain
-
-Feature: My Test
-  Scenario: test-001
-    Given User is the system under test
-    And log "hello"
-```
-
-**Success (200):** Returns `application/zip` with the TDL files.
-
-**Validation error (422):**
-```json
-{"error": "1 error(s) in Gherkin", "issues": [{"line": 3, "severity": "error", "message": "No mapping for step: ..."}]}
-```
-
-**Bad request (400):**
-```json
-{"error": "Empty Gherkin content"}
-```
-
-### POST /api/compile/testplan
-
-Compile from a FHIR TestPlan resource. Extracts the Gherkin feature file path from `suite[0].input[?name=gherkin-script].file`, loads the file from the server, compiles, and returns the ZIP.
-
-```
-POST /api/compile/testplan
-Content-Type: application/json
-
-{
-  "resourceType": "TestPlan",
-  "suite": [{
-    "input": [{"name": "gherkin-script", "file": "features/be-vaccination.feature"}],
-    "test": [...]
-  }]
-}
-```
-
-**Success (200):** Returns `application/zip`.
-
-**Feature not found (404):**
-```json
-{"error": "Feature file not found: features/missing.feature"}
-```
-
-### curl examples
-
-```bash
-# Compile a .feature file
-curl -X POST http://localhost:3000/api/compile \
-  -H "Content-Type: text/plain" \
-  --data-binary @my-test.feature \
-  -o output.zip
-
-# Compile from a TestPlan
-curl -X POST http://localhost:3000/api/compile/testplan \
-  -H "Content-Type: application/json" \
-  -d @TestPlan-be-vaccination-gherkin.json \
-  -o output.zip
-```
+Type: `ArchiMate model` (path language: the validator's model query).

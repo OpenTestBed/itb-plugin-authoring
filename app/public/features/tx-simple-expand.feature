@@ -15,7 +15,7 @@
 # be re-invented; the expected file can be used verbatim as the pattern.
 #
 # See ../README.md for what a full mechanical conversion would need.
-@lang:itb-core-en@^1.3 @dialect:fhir-validator@^1.0
+@lang:itb-core-en@^2 @dialect:fhir-validator@^2
 Feature: FHIR terminology server — simple expansion
   One test from the upstream `simple-cases` suite: expand a ValueSet that
   includes an entire CodeSystem, with excludeNested, and compare the result
@@ -23,7 +23,7 @@ Feature: FHIR terminology server — simple expansion
 
   Background:
     Given TxServer is the system under test at "https://tx.fhir.org/r5" as defined by "http://hl7.org/fhir/CapabilityStatement/terminology-server"
-    And FHIRValidator is infrastructure at "http://fhir-validator:8081"
+    And FHIRValidator is a fhir-validator at "http://fhir-validator:8081"
     And Client is infrastructure
 
   Scenario: tx-simple-001 simple-expand-all
@@ -34,15 +34,15 @@ Feature: FHIR terminology server — simple expansion
     # the test cannot drift from upstream — and so a converted suite stays
     # readable instead of carrying kilobytes of inlined JSON.
     # ------------------------------------------------------------------
-    When Client gets "https://raw.githubusercontent.com/HL7/fhir-tx-ecosystem-ig/main/tests/simple/codesystem-simple.json" as "csSimple"
-    Then "csSimple" should not be empty
+    When Client gets "https://raw.githubusercontent.com/HL7/fhir-tx-ecosystem-ig/main/tests/simple/codesystem-simple.json" as $csSimple
+    Then $csSimple should not be empty
     When Client posts to TxServer at "/CodeSystem" with:
       """
       $csSimple
       """
 
-    When Client gets "https://raw.githubusercontent.com/HL7/fhir-tx-ecosystem-ig/main/tests/simple/valueset-all.json" as "vsAll"
-    Then "vsAll" should not be empty
+    When Client gets "https://raw.githubusercontent.com/HL7/fhir-tx-ecosystem-ig/main/tests/simple/valueset-all.json" as $vsAll
+    Then $vsAll should not be empty
     When Client posts to TxServer at "/ValueSet" with:
       """
       $vsAll
@@ -63,7 +63,7 @@ Feature: FHIR terminology server — simple expansion
         ]
       }
       """
-    Then "response status" should be "200"
+    Then $response.status should be 200
 
     # ------------------------------------------------------------------
     # The comparison. Upstream this is the whole
@@ -74,7 +74,7 @@ Feature: FHIR terminology server — simple expansion
     # Abridged here to the parts that carry the meaning; a mechanical
     # conversion would embed the upstream file unchanged.
     # ------------------------------------------------------------------
-    And "response" matches pattern:
+    And $response should match pattern:
       """
       {
         "$optional-properties$": ["id", "date", "publisher", "compose"],
@@ -96,5 +96,5 @@ Feature: FHIR terminology server — simple expansion
 
     # A couple of FHIRPath assertions on top, for the parts worth stating
     # in the report rather than leaving inside a pattern match.
-    And evaluate FHIRPath "ValueSet.expansion.total" on "response" and expect "7"
-    And evaluate FHIRPath "ValueSet.expansion.contains.exists()" on "response" and expect "true"
+    And $response at "ValueSet.expansion.total" should be 7
+    And $response at "ValueSet.expansion.contains.exists()" should be true

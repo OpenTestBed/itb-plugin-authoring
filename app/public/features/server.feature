@@ -5,7 +5,7 @@ Feature: FHIR server allergy flows
 
   Background:
     Given Client is the system under test
-    And FHIRServer is available
+    And FHIRServer is infrastructure
     And FHIRServer is configured with data pool "default"
 
   Scenario: tc-server-001 Submit two allergies and verify

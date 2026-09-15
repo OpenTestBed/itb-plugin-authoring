@@ -7,6 +7,8 @@ import { setAssetBase, setCatalogSource, createBrowserSource } from '@opentestbe
 // which meant a step-pattern change had to be applied to both by hand and could
 // silently drift apart.
 import enYml from '@opentestbed/otb-gherkin/lang/en.yml?raw'
+// The previous generation, for feature files tagged `@lang:itb-core-en@^1`.
+import en1Yml from '@opentestbed/otb-gherkin/lang/en-1.yml?raw'
 import App from './App.tsx'
 import './index.css'
 
@@ -22,7 +24,7 @@ setAssetBase(import.meta.env.BASE_URL || '/')
 // Serve lang/en.yml from the bundle; everything else (component dialects, which
 // are genuinely external and synced from their plugin repos) still goes over
 // fetch, and enablement still comes from localStorage.
-setCatalogSource(createBrowserSource({ assets: { 'lang/en.yml': enYml } }))
+setCatalogSource(createBrowserSource({ assets: { 'lang/en.yml': enYml, 'lang/en-1.yml': en1Yml } }))
 // Plugin-dialect step colours for the Monaco decorations set in Editor.tsx.
 import './App.css'
 

@@ -5,7 +5,7 @@ Feature: Client submits and monitor validates an allergy
 
   Background:
     Given Client is the system under test
-    And FHIRServer is available
+    And FHIRServer is infrastructure
     And FHIRServer is configured with data pool "default"
 
   Scenario: tc-client-001 Client submission with monitor approval

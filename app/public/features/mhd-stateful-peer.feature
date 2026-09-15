@@ -9,7 +9,7 @@
 #
 # Every request below was executed by hand against hapi.fhir.org before the
 # assertions were written, so the expected values are observed, not assumed.
-@lang:itb-core-en@^1.5 @dialect:fhir-validator@^1.0
+@lang:itb-core-en@^2 @dialect:fhir-validator@^2
 Feature: MHD stateful peer — seed, act, verify against a real server
   Exercises the CH:MHD-1 shape (create a DocumentReference, update only its
   description, confirm the change landed) against a live FHIR server, to
@@ -18,6 +18,7 @@ Feature: MHD stateful peer — seed, act, verify against a real server
   Background:
     Given DocumentResponder is the system under test at "https://hapi.fhir.org/baseR4" as defined by "https://profiles.ihe.net/ITI/MHD/StructureDefinition/IHE.MHD.DocumentResponder"
     And DocumentSource is infrastructure as defined by "https://profiles.ihe.net/ITI/MHD/StructureDefinition/IHE.MHD.DocumentSource"
+    And FHIRValidator is a fhir-validator at "http://fhir-validator:8081"
     And set header "Accept" to "application/fhir+json"
 
   Scenario: mhd-peer-001 the description can be updated and nothing else moves
@@ -48,10 +49,10 @@ Feature: MHD stateful peer — seed, act, verify against a real server
     # ------------------------------------------------------------------
     # The peer is holding state — read it back and prove it.
     # ------------------------------------------------------------------
-    When DocumentSource gets from DocumentResponder at "/DocumentReference/otb-mhd-probe-001" as "seeded"
-    Then "response status" should be "200"
-    And evaluate FHIRPath "DocumentReference.description" on "seeded" and expect "Original description for -MedicationCard"
-    And evaluate FHIRPath "DocumentReference.status" on "seeded" and expect "current"
+    When DocumentSource gets from DocumentResponder at "/DocumentReference/otb-mhd-probe-001" as $seeded
+    Then $response.status should be 200
+    And $seeded at "DocumentReference.description" should be "Original description for -MedicationCard"
+    And $seeded at "DocumentReference.status" should be "current"
 
     # ------------------------------------------------------------------
     # CH:MHD-1 Update Document Metadata — change the description only.
@@ -68,19 +69,19 @@ Feature: MHD stateful peer — seed, act, verify against a real server
         "content": [{ "attachment": { "contentType": "application/pdf" } }]
       }
       """
-    Then "response status" should be "200"
+    Then $response.status should be 200
 
     # ------------------------------------------------------------------
     # Verify by querying the peer, not by trusting the response.
     # ------------------------------------------------------------------
-    When DocumentSource gets from DocumentResponder at "/DocumentReference/otb-mhd-probe-001" as "updated"
-    Then "response status" should be "200"
-    And evaluate FHIRPath "DocumentReference.description" on "updated" and expect "Corrected description for -MedicationCard"
+    When DocumentSource gets from DocumentResponder at "/DocumentReference/otb-mhd-probe-001" as $updated
+    Then $response.status should be 200
+    And $updated at "DocumentReference.description" should be "Corrected description for -MedicationCard"
 
     # The update must not have disturbed anything else.
-    And evaluate FHIRPath "DocumentReference.status" on "updated" and expect "current"
-    And evaluate FHIRPath "DocumentReference.content.attachment.contentType" on "updated" and expect "application/pdf"
+    And $updated at "DocumentReference.status" should be "current"
+    And $updated at "DocumentReference.content.attachment.contentType" should be "application/pdf"
 
     # A new version exists — the server really wrote, rather than accepting
     # and discarding.
-    And evaluate FHIRPath "DocumentReference.meta.versionId.toInteger() > 1" on "updated" and expect "true"
+    And $updated at "DocumentReference.meta.versionId.toInteger() > 1" should be true

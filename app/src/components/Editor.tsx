@@ -201,34 +201,31 @@ export const Editor = forwardRef<EditorHandle, EditorProps>((
         stepContent: [
           [/$/, '', '@pop'],
 
-          // Quoted strings — check for reserved names
-          [/"(response status|response body|response|validation errors|validation warnings|validation outcome|validation severity)"/, 'variable.reserved'],
+          // Well-known references: $response.status, $received.body, $validation.errors
+          [/\$(response|received|validation)(\.[A-Za-z0-9_-]+)*/, 'variable.reserved'],
 
-          // Regular quoted strings
+          // Variable references: $name, $a.b.c
+          [/\$[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_-]+)*/, 'variable.ref'],
+
+          // Quoted strings
           [/"[^"]*"/, 'string'],
 
-          // URLs
-          [/https?:\/\/[^\s"]+/, 'url'],
+          // Booleans
+          [/\b(true|false)\b/, 'number'],
 
-          // Dialect verbs (bold keywords within steps)
-          [/\b(is the system under test|is available|is loaded with package|is informed|is asked for)\b/, 'keyword.verb'],
-          [/\b(posts to|puts to|deletes on|patches on|gets)\b/, 'keyword.verb'],
-          [/\b(should be|should not be|should contain|should not be empty|should NOT match)\b/, 'keyword.verb'],
-          [/\b(set|extract|from|as|at|with|to)\b/, 'keyword.minor'],
-          [/\b(validate|evaluate FHIRPath|on|and expect|exists|count is)\b/, 'keyword.verb'],
-          [/\b(partially match|exactly match|against)\b/, 'keyword.verb'],
-          [/\b(generate test data from profile|define mappings|define data|with parts)\b/, 'keyword.verb'],
-          [/\b(the validation should pass|the validation should fail)\b/, 'keyword.verb'],
-          [/\b(if|then|is not empty|is empty)\b/, 'keyword.verb'],
-          [/\b(set header|log|inform)\b/, 'keyword.verb'],
+          // Sentence-shape keywords (bold)
+          [/\b(is the system under test|is infrastructure|is available|is an?|is loaded with package|is informed|is asked for|uploads a file|is listening for|receives a request from|replies to|stops listening for|waits for)\b/, 'keyword.verb'],
+          [/\b(posts|puts|patches|deletes|gets)\b/, 'keyword.verb'],
+          [/\b(should (?:not )?(?:be (?:empty|one of|at least|at most|greater than|less than|a valid)|contain|exist|match(?: pattern)?|satisfy|conform to|equal|be))\b/, 'keyword.verb'],
+          [/\b(ignoring (?:slicing errors|errors matching))\b/, 'keyword.verb'],
+          [/\b(set|extract|call scriptlet|log|wait)\b/, 'keyword.verb'],
+          [/\b(loads IG|validates|evaluates|transforms|generates(?: required)? test data|modifies|parses FML|registers StructureMap|summarizes|scans|decodes|verifies the signature of|extracts (?:metadata|the SHL link) from|authorizes|fetches the FHIR content of|inspects|loads model)\b/, 'keyword.verb'],
+          [/\b(from|as|at|with|to|on|using|against|targeting|minus|with pin|with id|with body|with map|times, paced manually)\b/, 'keyword.minor'],
           [/\b(as defined by)\b/, 'keyword.minor'],
 
-          // Actor names: capitalized words at start of step or before verbs
-          [/[A-Z][A-Za-z0-9_]*(?=\s+(?:is |posts |puts |deletes |patches |gets |calls ))/, 'variable.actor'],
-          [/(?<=to\s+)[A-Z][A-Za-z0-9_]*(?=\s+at\b)/, 'variable.actor'],
-
-          // Variable references: $varName
-          [/\$[A-Za-z_][A-Za-z0-9_]*/, 'variable.ref'],
+          // Actor names: PascalCase word at start of step or after on/to/from/using
+          [/[A-Z][A-Za-z0-9_]*(?=\s+(?:is |posts |puts |deletes |patches |gets |loads |validates |evaluates |transforms |generates |modifies |parses |registers |summarizes |scans |decodes |verifies |extracts |authorizes |fetches |inspects |uploads |waits |replies |receives |stops ))/, 'variable.actor'],
+          [/(?<=\b(?:on|to|from|using|targeting)\s+)[A-Z][A-Za-z0-9_]*\b/, 'variable.actor'],
 
           // Numbers
           [/\b[0-9]+\b/, 'number'],
