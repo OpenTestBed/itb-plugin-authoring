@@ -143,16 +143,20 @@ Feature: IHE MEOW Medication Overview Consumer — client-side conformance
   Scenario: tc-meow-client-002 Submitted overview conforms to MedicationOverview
 
     # ------------------------------------------------------------------
-    # 1) Load IHE MEOW from the local package server.
-    #    1.0.0-preview2 — the FIXED Bundle.entry slicing. The official
-    #    1.0.0-preview mis-slices every entry into the Patient slice,
-    #    which is why RACSEL-track3 carries a 10-clause exact-error mask.
-    #    preview2 is why this scenario needs none of that.
-    #    URL form per the package-server resolution contract: the trailing
-    #    /package.tgz is required — format-sniffing loaders need the .tgz
-    #    extension.
+    # 1) Load IHE MEOW 1.0.0-preview, the official IHE publication — the
+    #    only version published. No local package server involved. The URL
+    #    must end in .tgz: the validator sniffs format from the extension,
+    #    and the extensionless packages.fhir.org form makes it parse gzip
+    #    bytes as XML ("Invalid byte 1 of 1-byte UTF-8 sequence").
+    #
+    #    KNOWN: this build mis-slices every Bundle.entry into the Patient
+    #    slice, which is why RACSEL-track3 carries a 10-clause exact-error
+    #    mask. The `conforms to` below is expected to report errors against
+    #    it, and is deliberately left unmasked — the errors come from the
+    #    real published profile, and masking them would hide genuine
+    #    findings alongside the known ones.
     # ------------------------------------------------------------------
-    When MedicationOverviewConsumer loads IG "http://package-server:8000/ihe.pharm.meow/1.0.0-preview2/package.tgz" on FHIRValidator
+    When MedicationOverviewConsumer loads IG "https://profiles.ihe.net/PHARM/MEOW/package.tgz" on FHIRValidator
     Then "response status" should be "200"
 
     # ------------------------------------------------------------------

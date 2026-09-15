@@ -21,7 +21,12 @@
   "language-showcase.feature",
   "matchetype-comparison.feature",
   "meow-client.feature",
+  "meow-server-compact.feature",
   "meow-server.feature",
+  "mhd-document-source.feature",
+  "mhd-immutable-metadata.feature",
+  "mhd-nominal-update.feature",
+  "mhd-stateful-peer.feature",
   "modify-resource.feature",
   "openehr-composition.feature",
   "ph4h-medication-overview.feature",
@@ -29,6 +34,7 @@
   "server.feature",
   "smart-anc-workflow.feature",
   "smart-immunization.feature",
+  "spenser-dispense-n-compact.feature",
   "spenser-dispense-n.feature",
   "spenser-smoke.feature",
   "testdata-bundle.feature",
@@ -37,5 +43,6 @@
   "tng-certificate-governance.feature",
   "transform-icvp.feature",
   "tutorial.feature",
+  "tx-simple-expand.feature",
   "validate-patient.feature"
 ]

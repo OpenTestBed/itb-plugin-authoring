@@ -31,21 +31,34 @@ Feature: IHE MEOW Medication Overview Responder — server-side conformance
     MedicationAdministration — read.
 
   # ==================================================================
-  # BEFORE THE FIRST RUN — two values to set
+  # POINTED AT A PUBLIC FHIR SERVER — NOT A CONFORMANCE RUN
   # ==================================================================
-  # 1. The Responder base URL in the Background below.
-  # 2. The test patient id, which appears inline in every request path as
-  #    `patient=meow-test-patient`.
+  # The SUT is https://hapi.fhir.org/baseR4 with patient 137202631, picked
+  # because it actually holds data: 10 MedicationStatements, all for that
+  # subject, all status=active. That makes the test EXECUTE end to end,
+  # which is what it is for right now.
+  #
+  # hapi is a plain FHIR server, NOT a MEOW Responder, so expect:
+  #   001  passes except the meta.profile check — nothing there claims
+  #        MedicationTreatmentLine
+  #   002  passes: status=active filters, _lastUpdated=gt2999 is empty
+  #   003  FAILS: hapi answers 200 to an unscoped query instead of 400
+  #   004  FAILS: no MEOW document Bundles, and /Bundle/meow-test-overview
+  #        does not exist
+  #
+  # Those failures are the test working correctly against a server that
+  # does not implement the profile. Point the Background at a real
+  # Responder for an actual conformance run.
   #
   # The patient id CANNOT be lifted into a variable: `gets from <Actor> at
   # "<path>"` compiles the path to a TDL string literal inside concat(),
   # and TDL string literals do not interpolate $variables (the same caveat
   # en.yml documents on the absolute `gets "<url>"` form). So it is a
-  # find-and-replace on `meow-test-patient`, or reach for `call scriptlet`
-  # with an inline body if you need a genuinely dynamic path.
+  # find-and-replace on the id, or reach for `call scriptlet` with an
+  # inline body if you need a genuinely dynamic path.
 
   Background:
-    Given MedicationOverviewResponder is the system under test at "http://meow-responder:8080/fhir" as defined by "https://profiles.ihe.net/PHARM/MEOW/CapabilityStatement/MedicationOverviewResponder"
+    Given MedicationOverviewResponder is the system under test at "https://hapi.fhir.org/baseR4" as defined by "https://profiles.ihe.net/PHARM/MEOW/CapabilityStatement/MedicationOverviewResponder"
     # ITB plays the Consumer — it originates every request below.
     And MedicationOverviewConsumer is infrastructure as defined by "https://profiles.ihe.net/PHARM/MEOW/CapabilityStatement/MedicationOverviewConsumer"
     # GITB-compatible FHIR validator (validator_cli.jar). Same actor the
@@ -57,18 +70,31 @@ Feature: IHE MEOW Medication Overview Responder — server-side conformance
   # ==================================================================
   Scenario: tc-meow-server-001 PHARM-11 query by patient returns treatment lines
 
-    # IHE MEOW 1.0.0-preview2 — the FIXED Bundle.entry slicing. The official
-    # 1.0.0-preview mis-slices every entry into the Patient slice, which is
-    # why RACSEL-track3 carries a 10-clause exact-error mask. Served by the
-    # local package server; the trailing /package.tgz is required because
-    # format-sniffing loaders need the .tgz extension.
-    When MedicationOverviewConsumer loads IG "http://package-server:8000/ihe.pharm.meow/1.0.0-preview2/package.tgz" on FHIRValidator
+    # IHE MEOW 1.0.0-preview, the official IHE publication — the only
+    # version published (packages.fhir.org lists 1.0.0-preview and nothing
+    # else). No local package server involved.
+    #
+    # The URL MUST end in .tgz. The validator sniffs format from the
+    # extension, so the registry form
+    # https://packages.fhir.org/ihe.pharm.meow/1.0.0-preview — which serves
+    # the identical 187,692-byte tarball but carries no extension — makes it
+    # read gzip bytes as XML and die with
+    # "[Fatal Error] :1:1: Invalid byte 1 of 1-byte UTF-8 sequence".
+    #
+    # KNOWN: this build has broken Bundle.entry slicing — it mis-slices every
+    # entry into the Patient slice, which is why RACSEL-track3 carries a
+    # 10-clause exact-error mask. The `conforms to` in tc-meow-server-004 is
+    # expected to report errors against it. Deliberately NOT masked here: the
+    # errors are real output from the real published profile, and masking
+    # them would hide genuine findings alongside the known ones. Remove this
+    # note once 1.0.0-preview2 (fixed slicing) is published.
+    When MedicationOverviewConsumer loads IG "https://profiles.ihe.net/PHARM/MEOW/package.tgz" on FHIRValidator
     Then "response status" should be "200"
 
     # ------------------------------------------------------------------
     # The one mandatory PHARM-11 query: patient and nothing else.
     # ------------------------------------------------------------------
-    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement?patient=meow-test-patient" as "lines"
+    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement?patient=137202631" as "lines"
     Then "response status" should be "200"
     And "lines" should not be empty
 
@@ -88,7 +114,7 @@ Feature: IHE MEOW Medication Overview Responder — server-side conformance
     # Every returned line must be for the patient that was asked for —
     # catches a server that ignores the search parameter and returns
     # everything it has.
-    And evaluate FHIRPath "Bundle.entry.resource.subject.reference.all(endsWith('meow-test-patient'))" on "lines" and expect "true"
+    And evaluate FHIRPath "Bundle.entry.resource.subject.reference.all(endsWith('137202631'))" on "lines" and expect "true"
 
     # PHARM-11 profiles the response as MedicationTreatmentLine. A server
     # that claims the profile must say so in meta.profile.
@@ -105,7 +131,7 @@ Feature: IHE MEOW Medication Overview Responder — server-side conformance
     # ------------------------------------------------------------------
     # status — narrow to active treatment lines.
     # ------------------------------------------------------------------
-    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement?patient=meow-test-patient&status=active" as "activeLines"
+    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement?patient=137202631&status=active" as "activeLines"
     Then "response status" should be "200"
     And evaluate FHIRPath "Bundle.type" on "activeLines" and expect "searchset"
     # The filter must have been applied — no non-active line may come back.
@@ -114,7 +140,7 @@ Feature: IHE MEOW Medication Overview Responder — server-side conformance
     # ------------------------------------------------------------------
     # category — the medication list category / list type.
     # ------------------------------------------------------------------
-    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement?patient=meow-test-patient&category=community" as "categoryLines"
+    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement?patient=137202631&category=community" as "categoryLines"
     Then "response status" should be "200"
     And evaluate FHIRPath "Bundle.type" on "categoryLines" and expect "searchset"
 
@@ -124,7 +150,7 @@ Feature: IHE MEOW Medication Overview Responder — server-side conformance
     # it. This proves the parameter is applied without depending on any
     # particular test data.
     # ------------------------------------------------------------------
-    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement?patient=meow-test-patient&_lastUpdated=gt2999-01-01" as "futureLines"
+    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/MedicationStatement?patient=137202631&_lastUpdated=gt2999-01-01" as "futureLines"
     Then "response status" should be "200"
     And evaluate FHIRPath "Bundle.type" on "futureLines" and expect "searchset"
     And evaluate FHIRPath "Bundle.entry.exists()" on "futureLines" and expect "false"
@@ -157,13 +183,13 @@ Feature: IHE MEOW Medication Overview Responder — server-side conformance
   # this scenario for a Responder that supports PHARM-11 alone.
   Scenario: tc-meow-server-004 PHARM-12 returns a conformant MedicationOverview
 
-    When MedicationOverviewConsumer loads IG "http://package-server:8000/ihe.pharm.meow/1.0.0-preview2/package.tgz" on FHIRValidator
+    When MedicationOverviewConsumer loads IG "https://profiles.ihe.net/PHARM/MEOW/package.tgz" on FHIRValidator
     Then "response status" should be "200"
 
     # ------------------------------------------------------------------
     # Patient-scoped document search. `patient` is required here too.
     # ------------------------------------------------------------------
-    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/Bundle?patient=meow-test-patient&type=document" as "docSearch"
+    When MedicationOverviewConsumer gets from MedicationOverviewResponder at "/Bundle?patient=137202631&type=document" as "docSearch"
     Then "response status" should be "200"
     And evaluate FHIRPath "Bundle.type" on "docSearch" and expect "searchset"
     And evaluate FHIRPath "Bundle.entry.exists()" on "docSearch" and expect "true"

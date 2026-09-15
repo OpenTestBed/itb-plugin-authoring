@@ -24,7 +24,8 @@
     "lucide-react": "^0.263.1",
     "monaco-editor": "^0.44.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "@opentestbed/otb-gherkin": "file:../../itb-cli/packages/gherkin"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
