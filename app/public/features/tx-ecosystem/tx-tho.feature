@@ -66,47 +66,9 @@ Feature: Terminology server — tho
     # tests for proper handling of excluded codes
     @operation:expand
     Scenario: act-exclusion
-      When Client expands on TxServer with:
-        """
-        {
-          "resourceType": "Parameters",
-          "parameter": [
-            {
-              "name": "valueSet",
-              "resource": {
-                "resourceType": "ValueSet",
-                "id": "ExclusionCodesVS",
-                "url": "http://johnmoehrke.github.io/testexclusion/ValueSet/ExclusionCodesVS",
-                "title": "Example Exclusion Codes ValueSet",
-                "description": "Example ValueSet for exclusion codes for completeness sake. No actual use of this ValueSet other than an example.\n\nThis one is expanding from THO, excluding those that are not selectable. So this should NOT have  _ActAccommodationReason.",
-                "experimental": false,
-                "status": "active",
-                "name": "ExclusionCodesVS",
-                "compose": {
-                  "include": [
-                    {
-                      "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason"
-                    }
-                  ],
-                  "exclude": [
-                    {
-                      "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
-                      "filter": [
-                        {
-                          "property": "notSelectable",
-                          "op": "=",
-                          "value": "true"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              }
-            },
-            { "name": "uuid", "valueUuid": "urn:uuid:8acdbfdc-e9d2-11ed-a05b-0242ac120003" }
-          ]
-        }
-        """
+      # The request holds a character an ITB expression cannot carry, so it is
+      # fetched from the test material rather than written out here.
+      When Client expands on TxServer with the request in "tho/expand-vs-act-exclusion-request.json" and the parameters in "parameters-default.json"
       Then $response.status should be 200
       And $response should match the pattern in "tho/expand-vs-act-exclusion-response.json"
 

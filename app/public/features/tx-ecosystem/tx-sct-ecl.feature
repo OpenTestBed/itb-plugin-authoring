@@ -4254,43 +4254,9 @@ Feature: Terminology server — sct-ecl
     # must return an error.
     @operation:expand @http-code:4xx
     Scenario: snomed-expand-ecl-ambiguous-precedence
-      When Client expands on TxServer with:
-        """
-        {
-          "resourceType": "Parameters",
-          "parameter": [
-            {
-              "name": "valueSet",
-              "resource": {
-                "resourceType": "ValueSet",
-                "url": "http://hl7.org/fhir/test/ValueSet/sct-ecl-ambiguous-precedence",
-                "version": "5.0.0",
-                "status": "active",
-                "experimental": false,
-                "date": "2025-09-05",
-                "publisher": "FHIR Project",
-                "description": "Invalid ECL: mixing AND/OR without explicit grouping is forbidden by the ECL specification. Per ECL 6.4: \u0027Where a conjunction and disjunction are both used together, it is mandatory to use round brackets to disambiguate the meaning.\u0027 Example of invalid syntax from spec: \u0027< 19829001 AND < 301867009 OR ^ 700043003\u0027.",
-                "compose": {
-                  "include": [
-                    {
-                      "system": "http://snomed.info/sct",
-                      "version": "http://snomed.info/xsct/31000003106/version/20250909",
-                      "filter": [
-                        {
-                          "property": "constraint",
-                          "op": "=",
-                          "value": "<< 128045006 OR << 10200004 AND << 64572001"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              }
-            },
-            { "name": "uuid", "valueUuid": "urn:uuid:8acdbfdc-e9d2-11ed-a05b-0242ac120003" }
-          ]
-        }
-        """
+      # The request holds a character an ITB expression cannot carry, so it is
+      # fetched from the test material rather than written out here.
+      When Client expands on TxServer with the request in "sct/ecl/expand-ecl-ambiguous-precedence-request.json" and the parameters in "parameters-default.json"
       Then $response.status should match "^4"
       And $response should match the pattern in "sct/ecl/expand-ecl-ambiguous-precedence-response.json"
 

@@ -53,17 +53,26 @@ const defaultProfile = readJson('parameters-default.json');
 // The words for each upstream operation.
 // ---------------------------------------------------------------------------
 const OPS = {
-  'expand':           { rule: 'ValueSet $expand',                 step: 'Client expands on TxServer with:' },
-  'validate-code':    { rule: 'ValueSet $validate-code',          step: 'Client validates a code on TxServer with:' },
-  'cs-validate-code': { rule: 'CodeSystem $validate-code',        step: 'Client validates a code against the code system on TxServer with:' },
-  'lookup':           { rule: 'CodeSystem $lookup',               step: 'Client looks up a code on TxServer with:' },
-  'subsumes':         { rule: 'CodeSystem $subsumes',             step: 'Client tests subsumption on TxServer with:' },
-  'translate':        { rule: 'ConceptMap $translate',            step: 'Client translates on TxServer with:' },
-  'compare':          { rule: 'ValueSet $compare',                step: 'Client compares value sets on TxServer with:' },
-  'batch-validate':   { rule: 'ValueSet $batch-validate-code',    step: 'Client validates a batch on TxServer with:' },
-  'metadata':         { rule: 'Capability statement',             step: 'Client reads the capability statement of TxServer as $capabilities', get: true },
-  'term-caps':        { rule: 'Terminology capabilities',         step: 'Client reads the terminology capabilities of TxServer as $capabilities', get: true },
+  'expand':           { rule: 'ValueSet $expand',              verb: 'expands on' },
+  'validate-code':    { rule: 'ValueSet $validate-code',       verb: 'validates a code on' },
+  'cs-validate-code': { rule: 'CodeSystem $validate-code',     verb: 'validates a code against the code system on' },
+  'lookup':           { rule: 'CodeSystem $lookup',            verb: 'looks up a code on' },
+  'subsumes':         { rule: 'CodeSystem $subsumes',          verb: 'tests subsumption on' },
+  'translate':        { rule: 'ConceptMap $translate',         verb: 'translates on' },
+  'compare':          { rule: 'ValueSet $compare',             verb: 'compares value sets on' },
+  'batch-validate':   { rule: 'ValueSet $batch-validate-code', verb: 'validates a batch on' },
+  'metadata':          { rule: 'Capability statement',     step: 'Client reads the capability statement of TxServer as $capabilities', get: true },
+  'term-caps':         { rule: 'Terminology capabilities', step: 'Client reads the terminology capabilities of TxServer as $capabilities', get: true },
 };
+for (const o of Object.values(OPS)) if (o.verb) o.step = `Client ${o.verb} TxServer with:`;
+
+/**
+ * An ITB expression carries no backslash at all (TDL-042), and a JSON payload
+ * written into a feature ends up inside one. A payload holding an apostrophe
+ * (which would close the literal) or any JSON escape therefore cannot be
+ * inlined: the test names the upstream file instead and the dialect fetches it.
+ */
+const inlinable = json => !/['\\]/.test(json);
 
 // ---------------------------------------------------------------------------
 // JSON the way a reader wants it: one parameter per line where it fits.
@@ -94,9 +103,11 @@ function formatParameters(p, indent) {
 
 // The runner appends the profile parameters to every request. Say so in the
 // request itself, so the reader sees what the server receives.
+const profileOf = test => test.profile ?? 'parameters-default.json';
+
 function requestFor(test) {
   const req = readJson(test.request);
-  const profile = test.profile ? readJson(test.profile) : defaultProfile;
+  const profile = readJson(profileOf(test));
   req.parameter = [...(req.parameter ?? []), ...(profile.parameter ?? [])];
   if (test['lenient-display'] !== undefined) {
     req.parameter.push({ name: 'lenient-display-validation', valueBoolean: !!test['lenient-display'] });
@@ -171,10 +182,21 @@ function feature(suite) {
       if (words.get) {
         L.push(`      When ${words.step}`);
       } else {
-        L.push(`      When ${words.step}`);
-        L.push(`        """`);
-        L.push(formatParameters(requestFor(t), 8));
-        L.push(`        """`);
+        const json = formatParameters(requestFor(t), 8);
+        if (inlinable(json)) {
+          L.push(`      When ${words.step}`);
+          L.push(`        """`);
+          L.push(json);
+          L.push(`        """`);
+        } else {
+          // Named, not written out. Say why, or the next reader will "fix" it.
+          L.push(`      # The request holds a character an ITB expression cannot carry, so it is`);
+          L.push(`      # fetched from the test material rather than written out here.`);
+          if (t['lenient-display'] !== undefined) {
+            throw new Error(`${t.name}: lenient-display is merged into the request, which this test cannot inline`);
+          }
+          L.push(`      When Client ${words.verb} TxServer with the request in "${t.request}" and the parameters in "${profileOf(t)}"`);
+        }
       }
       if (t['http-code']) {
         L.push(`      Then $response.status should match "^${String(t['http-code']).replace(/x+$/i, '')}"`);
