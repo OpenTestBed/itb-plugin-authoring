@@ -4,17 +4,35 @@
 //
 //   node scripts/build-test-ig.mjs <config.json> [--package]
 //
-// The config names the IG, the specification under test and its actors, and
-// which feature file tests each actor. From that this writes:
+// The config names the IG, the specification under test, and the plans. A plan
+// is one TestPlan: one thing under test (its `scope`) and the test cases for
+// it. It takes its test cases in one of two shapes, and which one follows from
+// how the specification is organised:
+//
+//   "feature": "x.feature"        ONE plan per actor, and that feature's `Rule:`
+//                                 groupings become its suites. For a specification
+//                                 that defines actors, each with its own test cases
+//                                 (IPS: Creator, Consumer, Server).
+//
+//   "features": "folder"          ONE plan over many feature files, and each FILE
+//   "features": ["a.feature", …]  becomes a suite. For one system under test whose
+//                                 test cases are already grouped into suites (the
+//                                 HL7 terminology-ecosystem set: one terminology
+//                                 server, 38 suites).
+//
+// From that this writes:
 //
 //   <out>/sushi-config.yaml               IG metadata, dependencies, resources, pages, parameters
-//   <out>/input/fsh/testplan-<actor>.fsh  one TestPlan per actor: a suite per Rule, a test
-//                                         per Scenario, an assertion per Then step, and the
+//   <out>/input/fsh/testplan-<plan>.fsh   the TestPlan: a suite per Rule or per feature file, a
+//                                         test per Scenario, an assertion per Then step, and the
 //                                         @covers: obligations in each test's description
 //   <out>/input/fsh/binary-gherkin.fsh    the Binary that renders each feature on the site
 //   <out>/input/testing/gherkin/*.feature the features, as shipped to runners (path-test)
 //   <out>/input/pagecontent/index.md, testing.md, README.md
 //   + the scaffolding vendored in scripts/test-ig-scaffold/ (build scripts, template, CI)
+//
+// Hand-authored FSH in <out>/input/fsh (a requirements CapabilityStatement, say)
+// is left alone; list it under "extraResources" to give it a name on the site.
 //
 // --package then runs the scaffold's _package.py (SUSHI + resourceDefinition
 // repair + tarball) so <out>/dist/package.tgz is ready to hand to a runner.
@@ -100,24 +118,76 @@ const fshBlock = s => `"""\n${String(s).replace(/"""/g, '\\"\\"\\"')}\n"""`;
 const idOf = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 const nameOf = s => s.replace(/[^A-Za-z0-9]+/g, ' ').trim().split(' ').map(w => w[0].toUpperCase() + w.slice(1)).join('');
 
-function testPlanFsh(actor, feature) {
-  const id = `${actor.id}-tests`;
-  const covered = feature.rules.flatMap(r => r.scenarios).flatMap(s => s.covers).length;
+// ─────────────────────────────────────────────────────────────────────
+// The plan model: whichever shape the config uses, a plan ends up as
+// { id, title, scope, suites: [{ name, description, file, scenarios }] }.
+// ─────────────────────────────────────────────────────────────────────
+
+/** The suite name a feature file carries: what follows the last dash of its
+ *  title ("Terminology server — simple-cases" → "simple-cases"), else the title. */
+const suiteNameOf = title => (title.split(/\s+[—–-]\s+/).pop() || title).trim();
+
+function featureFilesOf(plan) {
+  if (plan.feature) return [plan.feature];
+  if (Array.isArray(plan.features)) return plan.features;
+  if (typeof plan.features === 'string') {
+    const dir = path.join(FEATURES, plan.features);
+    return fs.readdirSync(dir).filter(f => f.endsWith('.feature')).sort()
+      .map(f => path.posix.join(plan.features, f));
+  }
+  throw new Error(`plan "${plan.id}" names neither "feature" nor "features"`);
+}
+
+function buildPlan(plan) {
+  const files = featureFilesOf(plan);
+  const parsed = files.map(f => parseFeature(path.join(FEATURES, f)));
+  const multi = !plan.feature;
+  const suites = multi
+    // One suite per feature file: the file is the grouping. A Rule inside it is
+    // a heading within that suite, so it goes into each test's description.
+    ? parsed.map(f => ({
+        name: suiteNameOf(f.title),
+        description: f.description.join(' '),
+        file: f.file,
+        scenarios: f.rules.flatMap(r => r.scenarios.map(s => ({ ...s, rule: r.title }))),
+      })).filter(s => s.scenarios.length)
+    // One suite per Rule of the single feature.
+    : parsed[0].rules.filter(r => r.scenarios.length).map(r => ({
+        name: r.title,
+        description: `Rule: ${r.title} — the scenarios grouped under it in the feature file.`,
+        file: parsed[0].file,
+        scenarios: r.scenarios,
+      }));
+  const scenarios = suites.flatMap(s => s.scenarios);
+  return {
+    ...plan, multi, files, parsed, suites,
+    description: plan.description ?? parsed[0].description.join('\n'),
+    scenarioCount: scenarios.length,
+    coversCount: scenarios.flatMap(s => s.covers).length,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// FSH: the TestPlan, and the Binaries that render the scripts
+// ─────────────────────────────────────────────────────────────────────
+
+function testPlanFsh(plan) {
+  const id = `${plan.id}-tests`;
   const lines = [];
-  lines.push(`// GENERATED by build-test-ig.mjs from ${feature.file}. Edit the feature, not this file.`);
+  lines.push(`// GENERATED by build-test-ig.mjs from ${plan.files.length === 1 ? path.basename(plan.files[0]) : `${plan.files.length} feature files`}. Edit the feature, not this file.`);
   lines.push(`//`);
   lines.push(`// TestPlan comes from hl7.fhir.uv.testing (an "additional resource" for this FHIR`);
   lines.push(`// version); _package.py injects the root-level resourceDefinition after SUSHI runs.`);
   lines.push(`Instance: ${id}`);
   lines.push(`InstanceOf: TestPlan`);
   lines.push(`Usage: #definition`);
-  lines.push(`Title: "${fsh(actor.title)} Test Plan"`);
-  lines.push(`Description: "${fsh(actor.description ?? `Test plan for the ${actor.title} actor of ${cfg.spec.title}.`)}"`);
+  lines.push(`Title: "${fsh(plan.title)} Test Plan"`);
+  lines.push(`Description: "${fsh(plan.planDescription ?? `Test plan for the ${plan.title} actor of ${cfg.spec.title}.`)}"`);
   lines.push('');
   lines.push(`* url = "${cfg.canonical}/TestPlan/${id}"`);
   lines.push(`* version = "${cfg.version}"`);
-  lines.push(`* name = "${nameOf(actor.title)}TestPlan"`);
-  lines.push(`* title = "${fsh(actor.title)} Test Plan"`);
+  lines.push(`* name = "${nameOf(plan.title)}TestPlan"`);
+  lines.push(`* title = "${fsh(plan.title)} Test Plan"`);
   lines.push(`* status = #draft`);
   lines.push(`* experimental = true`);
   lines.push(`* date = "${today}"`);
@@ -126,38 +196,47 @@ function testPlanFsh(actor, feature) {
   lines.push(`  * name = "${fsh(cfg.publisher.name)}"`);
   if (cfg.publisher.url) { lines.push(`  * telecom`); lines.push(`    * system = #url`); lines.push(`    * value = "${cfg.publisher.url}"`); }
   lines.push('');
+  const shape = plan.multi
+    ? "Each `suite` below is one suite of the test set, carried by the feature file its `suite.input.file` names, and each `suite.test` one of that file's `Scenario:` lines. The assertions are the scenario's `Then` steps, verbatim."
+    : "Each `suite` below is a `Rule:` of the Gherkin feature named by `suite.input.file`, and each `suite.test` one of its `Scenario:` lines, matched by the scenario's identifier. The assertions are the scenario's `Then` steps, verbatim.";
   const desc = [
-    `Test plan for the **${actor.title}** actor of [${cfg.spec.title}](${cfg.spec.site}).`,
+    plan.intro ?? `Test plan for the **${plan.title}** actor of [${cfg.spec.title}](${cfg.spec.site}).`,
     '',
-    ...feature.description.map(l => l),
+    plan.description,
     '',
-    `Each \`suite\` below is a \`Rule:\` of the Gherkin feature named by \`suite.input.file\`, and each \`suite.test\` one of its \`Scenario:\` lines, matched by the scenario's identifier. The assertions are the scenario's \`Then\` steps, verbatim.`,
-    covered ? `The tests declare which specification obligations they cover (${covered} element obligations across the plan); the coverage matrix is checked mechanically against the specification package.` : '',
+    shape,
+    plan.multi ? `${plan.scenarioCount} test cases across ${plan.suites.length} suites.` : '',
+    plan.coversCount ? `The tests declare which specification obligations they cover (${plan.coversCount} element obligations across the plan); the coverage matrix is checked mechanically against the specification package.` : '',
+    plan.note ?? '',
   ].filter(Boolean).join('\n');
   lines.push(`* description = ${fshBlock(desc)}`);
-  lines.push(`* purpose = "To declare, in a machine-readable and runnable form, which behaviours a system claiming conformance to the ${fsh(actor.title)} actor must demonstrate."`);
+  lines.push(`* purpose = "${fsh(plan.purpose ?? `To declare, in a machine-readable and runnable form, which behaviours a system claiming conformance to the ${plan.title} actor must demonstrate.`)}"`);
   lines.push('');
   lines.push(`// What is under test.`);
   lines.push(`* scope`);
-  lines.push(`  * reference = "${actor.scope}"`);
-  lines.push(`  * description = "${fsh(actor.scopeDescription ?? `${actor.title} — the system under test.`)}"`);
+  lines.push(`  * reference = "${plan.scope}"`);
+  lines.push(`  * description = "${fsh(plan.scopeDescription ?? `${plan.title} — the system under test.`)}"`);
   lines.push('');
   lines.push(`* runner = "${cfg.runner ?? 'https://www.itb.ec.europa.eu/docs/guides/latest/'}"`);
   let si = 0;
-  for (const rule of feature.rules) {
-    if (!rule.scenarios.length) continue;
+  for (const suite of plan.suites) {
     lines.push('');
+    if (plan.multi) lines.push(`// ── ${suite.name}: ${suite.scenarios.length} test case(s)`);
     lines.push(`* suite[${si === 0 ? '0' : '+'}]`);
-    lines.push(`  * name = "${fsh(rule.title)}"`);
-    lines.push(`  * description = "Rule: ${fsh(rule.title)} — the scenarios grouped under it in the feature file."`);
+    lines.push(`  * name = "${fsh(suite.name)}"`);
+    if (suite.description) lines.push(`  * description = "${fsh(suite.description)}"`);
     lines.push(`  * input`);
     lines.push(`    * name = "gherkin-script"`);
-    lines.push(`    * file = "${feature.file}"`);
+    lines.push(`    * file = "${path.basename(suite.file)}"`);
     let ti = 0;
-    for (const sc of rule.scenarios) {
+    for (const sc of suite.scenarios) {
       lines.push(`  * test[${ti === 0 ? '0' : '+'}]`);
       lines.push(`    * name = "${fsh(sc.title)}"`);
-      const d = [sc.description, sc.covers.length ? `Covers ${sc.profile ? sc.profile + ': ' : ''}${sc.covers.join(', ')}.` : ''].filter(Boolean).join(' ');
+      const d = [
+        sc.rule ? `${sc.rule}.` : '',
+        sc.description,
+        sc.covers.length ? `Covers ${sc.profile ? sc.profile + ': ' : ''}${sc.covers.join(', ')}.` : '',
+      ].filter(Boolean).join(' ');
       if (d) lines.push(`    * description = "${fsh(d)}"`);
       lines.push(`    * operation = #gherkin/Scenario`);
       let ai = 0;
@@ -181,13 +260,31 @@ function testPlanFsh(actor, feature) {
   return lines.join('\n') + '\n';
 }
 
-function binaryFsh(actors) {
+/** Every feature file of every plan, with the identity its Binary carries. */
+function featureIndex(plans) {
+  const out = new Map();
+  for (const plan of plans) {
+    plan.files.forEach((f, i) => {
+      const file = path.basename(f);
+      out.set(file, {
+        file, source: f, id: file.replace(/\.feature$/, ''),
+        name: plan.multi ? `Gherkin: ${suiteNameOf(plan.parsed[i].title)}` : `${plan.title} Gherkin Script`,
+        description: plan.multi
+          ? `Gherkin feature file with the test cases of one suite of ${cfg.spec.title}.`
+          : `Gherkin feature file with the test scenarios for the ${plan.title} actor.`,
+      });
+    });
+  }
+  return [...out.values()];
+}
+
+function binaryFsh(featureFiles) {
   const out = [`// ===== RENDERING ONLY — delete with the Binary resource entries in sushi-config.yaml =====`,
     `// The Gherkin ships to runners as raw .feature files under package/tests/ via the`,
     `// path-test parameter. These Binaries only make each script render as a`,
     `// syntax-highlighted page on the IG site ("ig-loader-<file>" inlines the file).`];
-  for (const a of actors) {
-    out.push('', `Instance: ${a.id}-gherkin-script`, `InstanceOf: Binary`, `Usage: #definition`, `* language = #en`, `* contentType = #text/x-gherkin`, `* data = "ig-loader-${a.feature}"`);
+  for (const f of featureFiles) {
+    out.push('', `Instance: ${f.id}-gherkin-script`, `InstanceOf: Binary`, `Usage: #definition`, `* language = #en`, `* contentType = #text/x-gherkin`, `* data = "ig-loader-${f.file}"`);
   }
   return out.join('\n') + '\n';
 }
@@ -196,7 +293,7 @@ function binaryFsh(actors) {
 // sushi-config.yaml and pages
 // ─────────────────────────────────────────────────────────────────────
 
-function sushiConfig(actors) {
+function sushiConfig(plans, featureFiles) {
   const y = [];
   y.push(`# GENERATED by build-test-ig.mjs. Regenerate rather than edit.`);
   y.push(`id: ${cfg.id}`);
@@ -234,17 +331,24 @@ function sushiConfig(actors) {
   y.push(`resources:`);
   y.push(`  # TestPlan is an "additional resource": the publisher needs a root-level`);
   y.push(`  # resourceDefinition that FSH cannot emit; _package.py injects it after SUSHI.`);
-  for (const a of actors) {
-    y.push(`  TestPlan/${a.id}-tests:`);
-    y.push(`    name: ${a.title} Test Plan`);
-    y.push(`    description: Declares the Gherkin test cases for the ${a.title} actor of ${cfg.spec.title}.`);
+  for (const p of plans) {
+    y.push(`  TestPlan/${p.id}-tests:`);
+    y.push(`    name: ${p.title} Test Plan`);
+    y.push(`    description: ${p.resourceDescription ?? `Declares the Gherkin test cases for the ${p.title} actor of ${cfg.spec.title}.`}`);
+    y.push(`    exampleBoolean: false`);
+  }
+  // Hand-authored FSH this guide also publishes (a requirements CapabilityStatement, say).
+  for (const r of cfg.extraResources ?? []) {
+    y.push(`  ${r.reference}:`);
+    y.push(`    name: ${r.name}`);
+    y.push(`    description: ${r.description}`);
     y.push(`    exampleBoolean: false`);
   }
   y.push(`  # ===== RENDERING ONLY — delete this block, path-binary below, and input/fsh/binary-gherkin.fsh together`);
-  for (const a of actors) {
-    y.push(`  Binary/${a.id}-gherkin-script:`);
-    y.push(`    name: ${a.title} Gherkin Script`);
-    y.push(`    description: Gherkin feature file with the test scenarios for the ${a.title} actor.`);
+  for (const f of featureFiles) {
+    y.push(`  Binary/${f.id}-gherkin-script:`);
+    y.push(`    name: ${/[:#]/.test(f.name) ? `"${f.name}"` : f.name}`);
+    y.push(`    description: ${f.description}`);
     y.push(`    exampleBoolean: false`);
     y.push(`    extension:`);
     y.push(`      - url: http://hl7.org/fhir/tools/StructureDefinition/implementationguide-resource-format`);
@@ -281,16 +385,23 @@ function sushiConfig(actors) {
   return y.join('\n') + '\n';
 }
 
-function indexMd(actors, features) {
-  const rows = actors.map(a => `* **[${a.title} Test Plan](TestPlan-${a.id}-tests.html)** — ${a.summary ?? ''} ([Gherkin](Binary-${a.id}-gherkin-script.html))`).join('\n');
+/** A config text block: a string, or an array of lines. */
+const block = (v, dflt) => (v === undefined ? dflt : Array.isArray(v) ? v.join('\n') : v);
+/** Extra prose sections a config adds to a page. */
+const sections = list => (list ?? []).map(s =>
+  `<a name="${s.anchor}"> </a>\n\n### ${s.title}\n\n${block(s.body, '')}\n`).join('\n');
+
+function indexMd(plans) {
+  const rows = plans.map(p => `* **[${p.title} Test Plan](TestPlan-${p.id}-tests.html)** — ${p.summary ?? ''}` +
+    (p.multi ? '' : ` ([Gherkin](Binary-${path.basename(p.files[0]).replace(/\.feature$/, '')}-gherkin-script.html))`)).join('\n');
   return `<a name="scope"> </a>
 
 ${cfg.description}
 
 <blockquote class="stu-note">
 <strong>${cfg.disclaimer ?? 'This is not an approved test specification.'}</strong>
-It exists to exercise the tooling: the TestPlan resource, the Gherkin scripts, the
-mechanical coverage of the specification's obligations, and the packaging of all three.
+${block(cfg.blurb, `It exists to exercise the tooling: the TestPlan resource, the Gherkin scripts, the
+mechanical coverage of the specification's obligations, and the packaging of all three.`)}
 </blockquote>
 
 ### What is here
@@ -298,40 +409,43 @@ mechanical coverage of the specification's obligations, and the packaging of all
 
 | | |
 | --- | --- |
-| [Testing](testing.html) | How the test plans are derived from the specification's actors and obligations, how the Gherkin scripts are pointed at and packaged, and how they are rendered here. |
-${cfg.processPage ? '| [Method](process.html) | The step-by-step record of how these tests were produced and checked. |\n' : ''}| [Artifacts](artifacts.html) | The TestPlan resources, one per actor, and the Gherkin scripts they name. |
+| [Testing](testing.html) | ${cfg.testingPageSummary ?? "How the test plans are derived from the specification's actors and obligations, how the Gherkin scripts are pointed at and packaged, and how they are rendered here."} |
+${cfg.processPage ? '| [Method](process.html) | The step-by-step record of how these tests were produced and checked. |\n' : ''}| [Artifacts](artifacts.html) | ${cfg.artifactsSummary ?? 'The TestPlan resources, one per actor, and the Gherkin scripts they name.'} |
 | [Downloads](downloads.html) | The published package, including the raw \`.feature\` files under \`tests/gherkin/\`. |
 
-One test plan per actor of [${cfg.spec.title}](${cfg.spec.site}):
+${block(cfg.planIntro, `One test plan per actor of [${cfg.spec.title}](${cfg.spec.site}):`)}
 
 ${rows}
 
-All are written for the [Interoperability Test Bed](https://www.itb.ec.europa.eu/docs/guides/latest/) in the OTB Gherkin language (generation 2).
+${plans.length === 1 ? 'It is' : 'All are'} written for the [Interoperability Test Bed](${cfg.runner ?? 'https://www.itb.ec.europa.eu/docs/guides/latest/'}) in the OTB Gherkin language (generation 2).
 
-<a name="navigation"> </a>
+${sections(cfg.indexSections)}<a name="navigation"> </a>
 
 The top menu navigates the sections, and a [Table of Contents](toc.html) lists the full content.
 `;
 }
 
-function testingMd(actors, features) {
-  const rows = actors.map(a => {
-    const f = features[a.id];
-    const n = f.rules.flatMap(r => r.scenarios).length;
-    const cov = f.rules.flatMap(r => r.scenarios).flatMap(s => s.covers).length;
-    return `| [${a.title} Test Plan](TestPlan-${a.id}-tests.html) | [${a.title}](${a.scope}) | ${n} scenarios${cov ? `, ${cov} element obligations covered` : ''} | \`${a.feature}\` |`;
+function testingMd(plans) {
+  const rows = plans.map(p => {
+    const content = p.multi
+      ? `${p.suites.length} suites, ${p.scenarioCount} test cases`
+      : `${p.scenarioCount} scenarios${p.coversCount ? `, ${p.coversCount} element obligations covered` : ''}`;
+    const files = p.multi ? `${p.files.length} files` : `\`${path.basename(p.files[0])}\``;
+    return `| [${p.title} Test Plan](TestPlan-${p.id}-tests.html) | [${p.title}](${p.scope}) | ${content} | ${files} |`;
   }).join('\n');
-  return `<a name="scope"> </a>
+  // When a plan's suites are whole feature files, list them: that table is the
+  // map from the test set's own grouping to what is published here.
+  const suiteTables = plans.filter(p => p.multi).map(p => `
+<a name="suites"> </a>
 
-### Testing the ${cfg.spec.title} actors
+### The suites
 
-This guide declares its tests with the [TestPlan](https://build.fhir.org/ig/HL7/fhir-testing-ig/en/StructureDefinition-TestPlan.html) resource from the [FHIR Testing IG](https://build.fhir.org/ig/HL7/fhir-testing-ig/en/) (\`hl7.fhir.uv.testing\`), one plan per actor the specification defines. Each plan's \`scope\` names the actor — what is under test — and each of its tests is one \`Scenario:\` of a Gherkin feature file that the plan points at through \`suite.input.file\`.
+| Suite | Test cases | Feature file |
+| ----- | ---------- | ------------ |
+${p.suites.map(s => `| [${s.name}](Binary-${path.basename(s.file).replace(/\.feature$/, '')}-gherkin-script.html) | ${s.scenarios.length} | \`${path.basename(s.file)}\` |`).join('\n')}
+`).join('\n');
 
-| Test plan | Actor under test | Content | Feature file |
-| --------- | ---------------- | ------- | ------------ |
-${rows}
-
-<a name="obligations"> </a>
+  const obligations = cfg.obligationsSection === false ? '' : `<a name="obligations"> </a>
 
 ### From obligations to test cases
 
@@ -348,17 +462,30 @@ The specification states its expectations as **obligations** on profile elements
 
 Every scenario declares the profile and elements it covers (\`@profile:\`, \`@covers:\` tags) and must mention each element in a step; a script checks both against the specification package, so an obligation cannot be silently dropped when the specification or the tests change. The assertions themselves are self-tested against the specification's own example documents before they are published.
 
-<a name="gherkin"> </a>
+`;
+
+  return `<a name="scope"> </a>
+
+### ${cfg.testingTitle ?? `Testing the ${cfg.spec.title} actors`}
+
+${block(cfg.testingIntro, `This guide declares its tests with the [TestPlan](https://build.fhir.org/ig/HL7/fhir-testing-ig/en/StructureDefinition-TestPlan.html) resource from the [FHIR Testing IG](https://build.fhir.org/ig/HL7/fhir-testing-ig/en/) (\`hl7.fhir.uv.testing\`), one plan per actor the specification defines. Each plan's \`scope\` names the actor — what is under test — and each of its tests is one \`Scenario:\` of a Gherkin feature file that the plan points at through \`suite.input.file\`.`)}
+
+| Test plan | Under test | Content | Feature file |
+| --------- | ---------- | ------- | ------------ |
+${rows}
+${suiteTables}
+${sections(cfg.testingSections)}${obligations}<a name="gherkin"> </a>
 
 ### The Gherkin feature files
 
-The executable test cases live under \`input/testing/gherkin/\`, one feature per actor. They ship **as Gherkin, not as a FHIR resource**: the \`path-test\` parameter mirrors the test tree into the published package under \`package/tests/gherkin/\`, which is what a test runner consumes. \`TestPlan.suite.input.file\` names the file, and each \`suite.test\` matches a \`Scenario:\` by its identifier.
+The executable test cases live under \`input/testing/gherkin/\`. They ship **as Gherkin, not as a FHIR resource**: the \`path-test\` parameter mirrors the test tree into the published package under \`package/tests/gherkin/\`, which is what a test runner consumes. \`TestPlan.suite.input.file\` names the file, and each \`suite.test\` matches a \`Scenario:\` by its identifier.
 
 The Binary resources on this site exist only so the scripts render as syntax-highlighted pages; removing them changes nothing for a runner.
 `;
 }
 
-function readmeMd(actors) {
+function readmeMd(plans) {
+  const extra = (cfg.extraResources ?? []).map(r => `| \`input/fsh/${r.fsh}\` | ${r.description} Hand-authored; the generator leaves it alone. |`).join('\n');
   return `${cfg.title}
 ---
 
@@ -372,8 +499,8 @@ GENERATED by \`itb-plugin-authoring/app/scripts/build-test-ig.mjs\` from the fea
 
 | Path | |
 | --- | --- |
-${actors.map(a => `| \`input/fsh/testplan-${a.id}.fsh\` | TestPlan for the ${a.title} |`).join('\n')}
-| \`input/testing/gherkin/*.feature\` | The Gherkin scripts the plans point at, for the [Interoperability Test Bed](https://www.itb.ec.europa.eu/docs/guides/latest/) |
+${plans.map(p => `| \`input/fsh/testplan-${p.id}.fsh\` | TestPlan for the ${p.title}${p.multi ? ` (${p.suites.length} suites, ${p.scenarioCount} test cases)` : ''} |`).join('\n')}
+${extra}${extra ? '\n' : ''}| \`input/testing/gherkin/*.feature\` | The Gherkin scripts the plans point at, for the [Interoperability Test Bed](https://www.itb.ec.europa.eu/docs/guides/latest/) |
 | \`input/fsh/binary-gherkin.fsh\` | Binaries that render the scripts on the IG site (presentational only) |
 | \`_package.py\` | Builds \`dist/package.tgz\` from SUSHI output without the IG Publisher |
 
@@ -396,9 +523,8 @@ function copyDir(src, dst) {
   }
 }
 
-const actors = cfg.actors;
-const features = {};
-for (const a of actors) features[a.id] = parseFeature(path.join(FEATURES, a.feature));
+const plans = (cfg.plans ?? cfg.actors).map(buildPlan);
+const featureFiles = featureIndex(plans);
 
 fs.mkdirSync(OUT, { recursive: true });
 copyDir(SCAFFOLD, OUT);
@@ -406,20 +532,31 @@ fs.mkdirSync(path.join(OUT, 'input', 'fsh'), { recursive: true });
 fs.mkdirSync(path.join(OUT, 'input', 'testing', 'gherkin'), { recursive: true });
 for (const d of ['examples', 'extensions', 'images', 'images-source', 'models', 'profiles', 'resources', 'vocabulary']) fs.mkdirSync(path.join(OUT, 'input', d), { recursive: true });
 
-fs.writeFileSync(path.join(OUT, 'sushi-config.yaml'), sushiConfig(actors));
-for (const a of actors) {
-  fs.writeFileSync(path.join(OUT, 'input', 'fsh', `testplan-${a.id}.fsh`), testPlanFsh(a, features[a.id]));
-  fs.copyFileSync(path.join(FEATURES, a.feature), path.join(OUT, 'input', 'testing', 'gherkin', a.feature));
+// Feature files and plans this guide no longer publishes (a reused folder, a
+// renamed suite) must not travel in the package.
+const wanted = new Set(featureFiles.map(f => f.file));
+for (const f of fs.readdirSync(path.join(OUT, 'input', 'testing', 'gherkin'))) {
+  if (f.endsWith('.feature') && !wanted.has(f)) fs.unlinkSync(path.join(OUT, 'input', 'testing', 'gherkin', f));
 }
-fs.writeFileSync(path.join(OUT, 'input', 'fsh', 'binary-gherkin.fsh'), binaryFsh(actors));
-fs.writeFileSync(path.join(OUT, 'input', 'pagecontent', 'index.md'), indexMd(actors, features));
-fs.writeFileSync(path.join(OUT, 'input', 'pagecontent', 'testing.md'), testingMd(actors, features));
+for (const f of fs.readdirSync(path.join(OUT, 'input', 'fsh'))) {
+  if (/^testplan-.*\.fsh$/.test(f) && !plans.some(p => `testplan-${p.id}.fsh` === f)) fs.unlinkSync(path.join(OUT, 'input', 'fsh', f));
+}
+
+fs.writeFileSync(path.join(OUT, 'sushi-config.yaml'), sushiConfig(plans, featureFiles));
+for (const p of plans) fs.writeFileSync(path.join(OUT, 'input', 'fsh', `testplan-${p.id}.fsh`), testPlanFsh(p));
+for (const f of featureFiles) fs.copyFileSync(path.join(FEATURES, f.source), path.join(OUT, 'input', 'testing', 'gherkin', f.file));
+fs.writeFileSync(path.join(OUT, 'input', 'fsh', 'binary-gherkin.fsh'), binaryFsh(featureFiles));
+fs.writeFileSync(path.join(OUT, 'input', 'pagecontent', 'index.md'), indexMd(plans));
+fs.writeFileSync(path.join(OUT, 'input', 'pagecontent', 'testing.md'), testingMd(plans));
 if (cfg.processPage) fs.copyFileSync(path.resolve(path.dirname(configPath), cfg.processPage), path.join(OUT, 'input', 'pagecontent', 'process.md'));
-fs.writeFileSync(path.join(OUT, 'README.md'), readmeMd(actors));
+else if (fs.existsSync(path.join(OUT, 'input', 'pagecontent', 'process.md'))) fs.unlinkSync(path.join(OUT, 'input', 'pagecontent', 'process.md'));
+fs.writeFileSync(path.join(OUT, 'README.md'), readmeMd(plans));
 // The scaffold's ig.ini names the IG file by id.
 fs.writeFileSync(path.join(OUT, 'ig.ini'), fs.readFileSync(path.join(SCAFFOLD, 'ig.ini'), 'utf8').replace(/ImplementationGuide-[^\s]+\.json/, `ImplementationGuide-${cfg.id}.json`));
 
-console.log(`wrote ${path.relative(process.cwd(), OUT) || OUT}: sushi-config.yaml, ${actors.length} TestPlan(s), ${actors.length} feature(s), pages`);
+const caseCount = plans.reduce((n, p) => n + p.scenarioCount, 0);
+console.log(`wrote ${path.relative(process.cwd(), OUT) || OUT}: sushi-config.yaml, ${plans.length} TestPlan(s) with ${caseCount} test case(s), ${featureFiles.length} feature(s), pages`);
+for (const r of cfg.extraResources ?? []) console.log(`  left alone (hand-authored): input/fsh/${r.fsh}`);
 
 if (args.includes('--package')) {
   console.log('== _package.py ==');

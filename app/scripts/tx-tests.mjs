@@ -6,8 +6,7 @@
 //
 //   --source <dir>     a checkout of https://github.com/HL7/fhir-tx-ecosystem-ig, its tests/ folder
 //   --out <dir>        where the features go           (default public/features/tx-ecosystem)
-//   --commit <sha>     the upstream commit the material is fetched from at run time
-//                      (default: the checkout's HEAD, else "main")
+//   --commit <sha>     pin the material to one upstream commit instead of the "main" branch
 //   --material <url>   where the test material is fetched from at run time
 //                      (default: raw GitHub at --commit)
 //   --server <url>     the terminology server under test
@@ -21,7 +20,6 @@
 // with the runner's profile parameters (uuid, version handling) merged in.
 import fs from 'node:fs';
 import path from 'node:path';
-import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const appDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -39,14 +37,15 @@ const fhirVersion = opt('--fhir-version', '4.0');
 // Upstream binds a test to a server version with "version": "4.0", "5.0" or "!4.0".
 const appliesToVersion = t => !t.version || (t.version.startsWith('!') ? t.version.slice(1) !== fhirVersion : t.version === fhirVersion);
 
-let commit = opt('--commit');
-if (!commit) {
-  try { commit = execSync('git rev-parse HEAD', { cwd: source, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(); }
-  catch { commit = 'main'; }
-}
+// The IG lives at https://github.com/HL7/fhir-tx-ecosystem-ig; its tests/ folder
+// is what a run reads. Follow "main" unless a commit is pinned with --commit.
+const commit = opt('--commit', 'main');
 const material = opt('--material', `https://raw.githubusercontent.com/HL7/fhir-tx-ecosystem-ig/${commit}/tests/`);
 
 const cases = JSON.parse(fs.readFileSync(path.join(source, 'test-cases.json'), 'utf8'));
+
+/** A suite's name as a file/id fragment: lowercase, only letters, digits, hyphens. */
+export const slug = name => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 const readJson = rel => JSON.parse(fs.readFileSync(path.join(source, rel), 'utf8'));
 const defaultProfile = readJson('parameters-default.json');
 
@@ -205,7 +204,7 @@ fs.mkdirSync(out, { recursive: true });
 let files = 0, count = 0;
 for (const suite of cases.suites) {
   if (suites.length && !suites.includes(suite.name)) continue;
-  const file = path.join(out, `tx-${suite.name}.feature`);
+  const file = path.join(out, `tx-${slug(suite.name)}.feature`);
   fs.writeFileSync(file, feature(suite));
   files++; count += suite.tests.filter(appliesToVersion).length;
 }

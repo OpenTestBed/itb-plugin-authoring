@@ -1,0 +1,133 @@
+{
+  "id": "hl7.fhir.uv.tx-ecosystem.test",
+  "canonical": "http://example.com/fhir/hl7.fhir.uv.tx-ecosystem.test",
+  "name": "TxEcosystemTesting",
+  "title": "Terminology Ecosystem Tests: a TestPlan and Gherkin for the HL7 terminology server test set",
+  "description": "A test guide for FHIR terminology servers. It declares, as one TestPlan and 38 Gherkin feature files, the test cases of the HL7 terminology-ecosystem test set, and states what is under test as a requirements CapabilityStatement. The test cases are generated from the upstream tests/test-cases.json and fetch the upstream expected responses at run time, so they cannot drift from the source.",
+  "disclaimer": "This is not an approved HL7 test specification.",
+  "blurb": [
+    "The test cases are HL7's, taken from the Terminology Ecosystem IG. What this guide adds is their",
+    "expression as a TestPlan and as Gherkin for the Interoperability Test Bed, so that they can be run",
+    "from a test bed rather than only from the FHIR validator's built-in runner."
+  ],
+  "version": "0.1.0",
+  "fhirVersion": "6.0.0-ballot5",
+  "license": "CC0-1.0",
+  "publisher": { "name": "Jose Costa Teixeira", "url": "https://github.com/costateixeira" },
+  "spec": {
+    "id": "hl7.fhir.uv.tx-ecosystem",
+    "alias": "txecosystem",
+    "version": "1.9.3",
+    "uri": "http://hl7.org/fhir/uv/tx-ecosystem/ImplementationGuide/hl7.fhir.uv.tx-ecosystem",
+    "title": "HL7 Terminology Ecosystem IG",
+    "site": "https://github.com/HL7/fhir-tx-ecosystem-ig"
+  },
+  "runner": "https://www.itb.ec.europa.eu/docs/guides/latest/",
+  "features": "public/features",
+  "out": "../../../../../ImplementationGuides/tx-ecosystem-test",
+
+  "obligationsSection": false,
+  "testingPageSummary": "What is under test, how the upstream test set maps onto the plan, how a test decides, and how the scripts are packaged.",
+  "artifactsSummary": "The test plan, the requirements CapabilityStatement that says what is under test, and the Gherkin scripts.",
+  "planIntro": "One plan, because there is one thing under test:",
+
+  "extraResources": [
+    {
+      "reference": "CapabilityStatement/tx-server-requirements",
+      "name": "FHIR Terminology Server Requirements",
+      "description": "What a terminology server must offer for this test plan to apply to it - the system under test.",
+      "fsh": "capabilitystatement-tx-server.fsh"
+    }
+  ],
+
+  "testingTitle": "One plan, one system under test",
+  "testingIntro": [
+    "This guide declares its tests with the [TestPlan](https://build.fhir.org/ig/HL7/fhir-testing-ig/en/StructureDefinition-TestPlan.html) resource from the [FHIR Testing IG](https://build.fhir.org/ig/HL7/fhir-testing-ig/en/) (`hl7.fhir.uv.testing`). There is **one** plan, because there is one thing under test: a FHIR terminology server. Its `scope` points at the [requirements CapabilityStatement](CapabilityStatement-tx-server-requirements.html), which is what a system has to offer for the plan to apply to it.",
+    "",
+    "The upstream test set is already grouped into suites, and those groupings become `TestPlan.suite`."
+  ],
+
+  "testingSections": [
+    {
+      "anchor": "mapping",
+      "title": "From the upstream test set to this plan",
+      "body": [
+        "| Upstream | Here |",
+        "| -------- | ---- |",
+        "| A suite of `test-cases.json` | `TestPlan.suite`, with `suite.input.file` naming its feature file |",
+        "| A test | `suite.test`, matched to a `Scenario:` by name |",
+        "| The scenario's `Then` steps | `suite.test.assertion.human` |",
+        "| The suite's `setup` resources | a table in the feature's `Background:`, sent with every request as `tx-resource` parameters |",
+        "| `http-code` | an assertion that the status matches that class, rather than 200 |",
+        "| `Accept-Language`, a custom `header` | a `set header` step before the operation |",
+        "| `profile`, `lenient-display` | merged into the request `Parameters`, so the reader sees what the server receives |",
+        "| `version` (4.0, 5.0, !4.0) | a generator filter; the tests left out are named in each feature's header |",
+        "",
+        "The four upstream tests bound to a FHIR 5.0 server are left out: these features are generated for",
+        "a FHIR 4.0 server. Regenerating with `--fhir-version 5.0` swaps them back in."
+      ]
+    },
+    {
+      "anchor": "deciding",
+      "title": "How a test decides",
+      "body": [
+        "The upstream expected-response files are **matchetypes**: they use `$id$`, `$uuid$`, `$instant$`,",
+        "`$choice:...$` and `$optional-properties$` for what may legitimately differ between servers and runs.",
+        "",
+        "A test does not carry a copy of the expected response. It fetches the upstream file at run time from",
+        "[the Terminology Ecosystem IG](https://github.com/HL7/fhir-tx-ecosystem-ig) and asks the FHIR",
+        "validator's matchetype service to compare the server's answer with it. So the expectations cannot",
+        "drift from the source, and taking up a newer test set means re-running the generator rather than",
+        "editing this guide.",
+        "",
+        "Where upstream accepts more than one answer - a flat expansion, a second error shape, or",
+        "tx.fhir.org's own - the test lists each acceptable file and one match is enough.",
+        "",
+        "A suite with an upstream **mode** other than `general` is expected only of a server that supports",
+        "it: the `tx.fhir.org` suites are that server's internal quality assurance, and `snomed`, `omop`,",
+        "`icd-11` and `mimetypes` apply where the server carries that content."
+      ]
+    },
+    {
+      "anchor": "running",
+      "title": "Running the tests",
+      "body": [
+        "The scripts are written in the OTB Gherkin language (generation 2) for the",
+        "[Interoperability Test Bed](https://www.itb.ec.europa.eu/docs/guides/latest/). A run needs three",
+        "things to reach each other: the terminology server under test, a FHIR validator that serves the",
+        "matchetype comparison, and the upstream test material over HTTP.",
+        "",
+        "The same test cases run without a test bed, straight from the FHIR validator, which carries its own",
+        "runner:",
+        "",
+        "```",
+        "java -jar validator_cli.jar txTests -tx {server url} -output {folder}",
+        "```",
+        "",
+        "The two runners judge a response differently today. The validator's own runner normalises the",
+        "server's answer before comparing (it sorts parameters by name, expansion codes by code, and issues",
+        "by severity, and strips `issue.diagnostics`); the matchetype service the Gherkin calls does not, and",
+        "does not honour `$optional-properties$` either. A server that is right but answers in another order",
+        "therefore fails here and passes there. That gap belongs to the matchetype service, not to these",
+        "test cases."
+      ]
+    }
+  ],
+
+  "plans": [
+    {
+      "id": "tx-server",
+      "title": "Terminology Server",
+      "features": "tx-ecosystem",
+      "scope": "http://example.com/fhir/hl7.fhir.uv.tx-ecosystem.test/CapabilityStatement/tx-server-requirements",
+      "scopeDescription": "A FHIR terminology server: the operations of the terminology module, as the requirements CapabilityStatement of this guide states them.",
+      "summary": "a FHIR terminology server, tested with the HL7 terminology-ecosystem test set",
+      "planDescription": "The HL7 terminology-ecosystem test cases for a FHIR terminology server, as Gherkin.",
+      "resourceDescription": "The HL7 terminology-ecosystem test cases for a FHIR terminology server, grouped into the suites the test set defines.",
+      "intro": "Test plan for a **FHIR terminology server**, as described by the [requirements CapabilityStatement](CapabilityStatement-tx-server-requirements.html) this guide publishes.",
+      "description": "The test cases are the HL7 terminology-ecosystem test set ([Terminology Ecosystem IG](https://github.com/HL7/fhir-tx-ecosystem-ig), `tests/test-cases.json`), expressed as Gherkin for the [Interoperability Test Bed](https://www.itb.ec.europa.eu/docs/guides/latest/).",
+      "note": "The expected responses are not copied into this guide: a test fetches the upstream file at run time and compares the server's answer with it as a matchetype, so the expectations cannot drift from the source.",
+      "purpose": "To declare, in a machine-readable and runnable form, the behaviour a FHIR terminology server must demonstrate to be considered conformant with the HL7 terminology-ecosystem test set."
+    }
+  ]
+}
