@@ -320,13 +320,26 @@ function sushiConfig(plans, featureFiles) {
   y.push(`# TestPlan lives in the FHIR Testing IG (removed from R6 core at 6.0.0-ballot5).`);
   y.push(`dependencies:`);
   y.push(`  hl7.fhir.uv.testing: current`);
-  y.push(`  # The specification whose actors these plans test — tracking only, so the`);
-  y.push(`  # canonicals the plans point at resolve. A cross-version reference when the`);
-  y.push(`  # spec is R4: only canonicals are used, no profiles are derived.`);
-  y.push(`  ${cfg.spec.id}:`);
-  y.push(`    id: ${cfg.spec.alias ?? 'spec'}`);
-  y.push(`    uri: ${cfg.spec.uri}`);
-  y.push(`    version: ${cfg.spec.version}`);
+  // Extra dependencies a guide needs, "package: version". Typically a newer
+  // hl7.fhir.uv.tools.r5 than the testing IG pins, so that the publisher
+  // validates IG parameters against a CodeSystem that knows them.
+  for (const [pkg, ver] of Object.entries(cfg.dependencies ?? {})) y.push(`  ${pkg}: ${ver}`);
+  // "dependency": false leaves the specification out of the dependency list. Its
+  // package may ship files the IG Publisher refuses to load (the terminology
+  // ecosystem package carries its test cases, which are matchetypes with $instant$
+  // and $id$ placeholders, not valid FHIR), and a plan that only quotes canonicals
+  // in prose does not need the package to resolve.
+  if (cfg.spec.dependency !== false) {
+    y.push(`  # The specification whose actors these plans test — tracking only, so the`);
+    y.push(`  # canonicals the plans point at resolve. A cross-version reference when the`);
+    y.push(`  # spec is R4: only canonicals are used, no profiles are derived.`);
+    y.push(`  ${cfg.spec.id}:`);
+    y.push(`    id: ${cfg.spec.alias ?? 'spec'}`);
+    y.push(`    uri: ${cfg.spec.uri}`);
+    y.push(`    version: ${cfg.spec.version}`);
+  } else {
+    y.push(`  # ${cfg.spec.id} is deliberately NOT a dependency: ${cfg.specDependencyNote ?? 'its package carries content the publisher cannot load'}.`);
+  }
   y.push('');
   y.push(`resources:`);
   y.push(`  # TestPlan is an "additional resource": the publisher needs a root-level`);

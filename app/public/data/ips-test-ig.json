@@ -8,7 +8,10 @@
   "version": "0.1.0",
   "fhirVersion": "6.0.0-ballot5",
   "license": "CC0-1.0",
-  "publisher": { "name": "Jose Costa Teixeira", "url": "https://github.com/costateixeira" },
+  "publisher": {
+    "name": "Jose Costa Teixeira",
+    "url": "https://github.com/costateixeira"
+  },
   "spec": {
     "id": "hl7.fhir.uv.ips",
     "alias": "ips",
@@ -49,5 +52,8 @@
       "summary": "the $summary operation returns a conformant IPS document; the Creator plan then applies to it",
       "feature": "ips-server.feature"
     }
-  ]
+  ],
+  "dependencies": {
+    "hl7.fhir.uv.tools.r5": "1.2.0"
+  }
 }

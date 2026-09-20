@@ -13,40 +13,53 @@
   "version": "0.1.0",
   "fhirVersion": "6.0.0-ballot5",
   "license": "CC0-1.0",
-  "publisher": { "name": "Jose Costa Teixeira", "url": "https://github.com/costateixeira" },
+  "publisher": {
+    "name": "Jose Costa Teixeira",
+    "url": "https://github.com/costateixeira"
+  },
   "spec": {
     "id": "hl7.fhir.uv.tx-ecosystem",
     "alias": "txecosystem",
     "version": "1.9.3",
     "uri": "http://hl7.org/fhir/uv/tx-ecosystem/ImplementationGuide/hl7.fhir.uv.tx-ecosystem",
     "title": "HL7 Terminology Ecosystem IG",
-    "site": "https://github.com/HL7/fhir-tx-ecosystem-ig"
+    "site": "https://github.com/HL7/fhir-tx-ecosystem-ig",
+    "dependency": false
   },
+  "specDependencyNote": "its package ships the test cases themselves under package/tests, and those are matchetypes ($id$, $instant$, $uuid$), which the IG Publisher refuses as FHIR resources. Nothing here resolves against that package: the plan quotes its canonicals in prose, and a test fetches the test material over HTTP at run time",
   "runner": "https://www.itb.ec.europa.eu/docs/guides/latest/",
   "features": "public/features",
   "out": "../../../../../ImplementationGuides/tx-ecosystem-test",
-
   "obligationsSection": false,
   "testingPageSummary": "What is under test, how the upstream test set maps onto the plan, how a test decides, and how the scripts are packaged.",
   "artifactsSummary": "The test plan, the requirements CapabilityStatement that says what is under test, and the Gherkin scripts.",
   "planIntro": "One plan, because there is one thing under test:",
-
   "extraResources": [
     {
       "reference": "CapabilityStatement/tx-server-requirements",
       "name": "FHIR Terminology Server Requirements",
       "description": "What a terminology server must offer for this test plan to apply to it - the system under test.",
       "fsh": "capabilitystatement-tx-server.fsh"
+    },
+    {
+      "reference": "OperationDefinition/ValueSet-compare",
+      "name": "ValueSet compare (as tested)",
+      "description": "A transcription of the non-core $compare operation from the test material, so the requirements statement can name a definition.",
+      "fsh": "operationdefinition-tx-extras.fsh"
+    },
+    {
+      "reference": "OperationDefinition/ValueSet-batch-validate-code",
+      "name": "ValueSet batch-validate-code (as tested)",
+      "description": "A transcription of the non-core $batch-validate-code operation from the test material.",
+      "fsh": "operationdefinition-tx-extras.fsh"
     }
   ],
-
   "testingTitle": "One plan, one system under test",
   "testingIntro": [
     "This guide declares its tests with the [TestPlan](https://build.fhir.org/ig/HL7/fhir-testing-ig/en/StructureDefinition-TestPlan.html) resource from the [FHIR Testing IG](https://build.fhir.org/ig/HL7/fhir-testing-ig/en/) (`hl7.fhir.uv.testing`). There is **one** plan, because there is one thing under test: a FHIR terminology server. Its `scope` points at the [requirements CapabilityStatement](CapabilityStatement-tx-server-requirements.html), which is what a system has to offer for the plan to apply to it.",
     "",
     "The upstream test set is already grouped into suites, and those groupings become `TestPlan.suite`."
   ],
-
   "testingSections": [
     {
       "anchor": "mapping",
@@ -114,7 +127,6 @@
       ]
     }
   ],
-
   "plans": [
     {
       "id": "tx-server",
@@ -130,5 +142,8 @@
       "note": "The expected responses are not copied into this guide: a test fetches the upstream file at run time and compares the server's answer with it as a matchetype, so the expectations cannot drift from the source.",
       "purpose": "To declare, in a machine-readable and runnable form, the behaviour a FHIR terminology server must demonstrate to be considered conformant with the HL7 terminology-ecosystem test set."
     }
-  ]
+  ],
+  "dependencies": {
+    "hl7.fhir.uv.tools.r5": "1.2.0"
+  }
 }
