@@ -462,9 +462,13 @@ function writeCreator(model, pkg) {
     }
     if (sc.attest.length) {
       out.push(`      # The reference data does not exercise these; the Creator attests the capability.`);
-      out.push(`      When Creator is asked for $canPopulate with "The reference patient has no data for these ${model.profiles[sc.profile].type} elements. Can your system populate each of them when the information is known: ${sc.attest.map(e => `[${e.split('.').slice(1).join('.')}]`).join(', ')}? Answer yes, or list the ones it cannot."`);
-      out.push(`      And Creator submits evidence of "${model.profiles[sc.profile].type} ${sc.attest.map(e => `[${e.split('.').slice(1).join('.')}]`).join(', ')} being entered or exported (screenshot or a document carrying them)" as $canPopulateEvidence`);
-      out.push(`      Then $canPopulate should be "yes"`);
+      const t = model.profiles[sc.profile].type;
+      const names = sc.attest.map(e => e.split('.').slice(1).join('.'));
+      out.push(`      When Creator submits evidence of "${t} ${names.map(n => `[${n}]`).join(', ')} being entered or exported (screenshot or a document carrying them)" as $canPopulateEvidence`);
+      out.push(`      Then Creator confirms each of these is supported for "${t}, when the information is known":`);
+      const w = Math.max(...names.map(n => n.length), 4);
+      out.push(`        | ${'item'.padEnd(w)} | detail           |`);
+      for (const n of names) out.push(`        | ${n.padEnd(w)} | can be populated |`);
     }
     for (const m of sc.mays) {
       out.push(`      And log "${m} MAY be populated — recorded, not asserted"`);
@@ -513,12 +517,10 @@ function writeConsumer(model, pkg) {
   out.push(`# A Consumer's obligations are behaviours, not document content, so the test`);
   out.push(`# bed hands the Consumer the IG's own all-sections example and a tester confirms`);
   out.push(`# what the system did with it:`);
-  out.push(`#   SHALL:handle     the document, with every listed element, was accepted and`);
-  out.push(`#                    processed without error — the operator answers and attaches`);
-  out.push(`#                    the import result (log or screenshot) as evidence`);
-  out.push(`#   SHOULD:display   the operator is instructed to display the listed elements and`);
-  out.push(`#                    attaches a screenshot as evidence; then names the ones NOT`);
-  out.push(`#                    shown, and every element is asserted separately`);
+  out.push(`#   SHALL:handle     the operator attaches the import result (log or screenshot)`);
+  out.push(`#                    and confirms, element by element, that it was accepted`);
+  out.push(`#   SHOULD:display   the operator displays the elements, attaches a screenshot,`);
+  out.push(`#                    and confirms each one from a list — one verdict per element`);
   out.push(`# Evidence files are kept by the test bed in the session report, beside the step.`);
   out.push(`# A Consumer that is a FHIR server accepting documents can be driven without a`);
   out.push(`# tester: see the last Rule.`);
@@ -549,8 +551,8 @@ function writeConsumer(model, pkg) {
       const shortEl = element.split('.').slice(1).join('.');
       const value = sel.kind === 'bundle' || sel.kind === 'datatype' ? '' : sample(ref, sel, segs);
       const item = `[${shortEl}]${value ? ` = ${value}` : ''}`;
-      if (list.some(o => kind(o.code) === 'handle')) handle.push({ element, shortEl, item });
-      if (list.some(o => kind(o.code) === 'display')) display.push({ element, shortEl, item });
+      if (list.some(o => kind(o.code) === 'handle')) handle.push({ element, shortEl, item, value });
+      if (list.some(o => kind(o.code) === 'display')) display.push({ element, shortEl, item, value });
     }
     n++;
     const rule = ruleFor(pid);
@@ -560,16 +562,20 @@ function writeConsumer(model, pkg) {
     out.push(`    Scenario: ips-consumer-${String(n).padStart(3, '0')} ${profile.title ?? pid} — the Consumer handles ${handle.length} element${handle.length === 1 ? '' : 's'}${display.length ? ` and displays ${display.length}` : ''}`);
     const what = sel.kind === 'datatype' ? `every ${profile.type} in the document` : sel.kind === 'bundle' ? 'the document' : `the ${profile.type} resource${sel.cat || sel.code || sel.codes ? 's of this kind' : 's'}`;
     const slug = short(pid).replace(/[^A-Za-z0-9]+/g, '');
-    // SHALL:handle — the operator reports and proves the import outcome.
-    out.push(`      When Consumer is asked for $handled with "For ${what}: were these elements accepted and processed without error — ${handle.map(h => h.item).join(', ')}? Answer yes, or name the ones that caused an error."`);
-    out.push(`      And Consumer submits evidence of "the import of ${what} completing without error (import log or screenshot)" as $handled${slug}Evidence`);
-    out.push(`      Then $handled should be "yes"`);
+    const table = list => {
+      const w = Math.max(...list.map(x => x.shortEl.length), 4);
+      return [`        | ${'item'.padEnd(w)} | detail |`, ...list.map(x => `        | ${x.shortEl.padEnd(w)} | ${x.value ? x.value.replace(/\|/g, '/') : ''} |`)];
+    };
+    // SHALL:handle — the operator proves the import outcome, then confirms each element was accepted.
+    out.push(`      When Consumer submits evidence of "the import of ${what} completing without error (import log or screenshot)" as $handled${slug}Evidence`);
+    out.push(`      Then Consumer confirms each of these is accepted for "${what}":`);
+    out.push(...table(handle));
     if (display.length) {
-      // SHOULD:display — the operator displays the elements, attaches a screenshot, then reports what is missing.
-      out.push(`      When Consumer is informed "Open ${refName}'s summary in the system under test and display ${what}, showing: ${display.map(d => d.item).join(', ')}"`);
-      out.push(`      And Consumer submits evidence of "${what} displayed with ${display.map(d => `[${d.shortEl}]`).join(', ')} (screenshot)" as $displayed${slug}Evidence`);
-      out.push(`      And Consumer is asked for $notDisplayed with "Of these, which are NOT displayed to the user (copy the bracketed names, or answer none): ${display.map(d => d.item).join(', ')}"`);
-      for (const d of display) out.push(`      Then $notDisplayed should not contain "[${d.shortEl}]"`);
+      // SHOULD:display — the operator displays the elements, attaches a screenshot, then confirms each one.
+      out.push(`      When Consumer is informed "Open ${refName}'s summary in the system under test and display ${what}."`);
+      out.push(`      And Consumer submits evidence of "${what} displayed (screenshot)" as $displayed${slug}Evidence`);
+      out.push(`      Then Consumer confirms each of these is displayed for "${what}":`);
+      out.push(...table(display));
     }
     out.push('');
   }
@@ -580,14 +586,16 @@ function writeConsumer(model, pkg) {
   out.push(`    Scenario: ips-consumer-900 Required sections with an emptyReason and a minimal document are accepted`);
   out.push(`      When Tester gets "${IPS_URL}/Bundle-${NO_INFO}.json" as $ipsNoInfo`);
   out.push(`      And Consumer is informed "Import this IPS, whose problems, allergies and medications sections carry an emptyReason instead of entries." with $ipsNoInfo`);
-  out.push(`      And Consumer is asked for $handledNoInfo with "Was the document with emptyReason on [section:sectionProblems.emptyReason], [section:sectionAllergies.emptyReason] and [section:sectionMedications.emptyReason] accepted without error, and are the three sections shown as having no information? (yes/no)"`);
   out.push(`      And Consumer submits evidence of "the three required sections shown with no information (screenshot)" as $noInfoEvidence`);
-  out.push(`      Then $handledNoInfo should be "yes"`);
+  out.push(`      Then Consumer confirms each of these is accepted for "a document whose required sections carry an emptyReason":`);
+  out.push(`        | item                                   | detail                  |`);
+  for (const s of Object.keys(REQUIRED_SECTIONS)) out.push(`        | ${`section:${s}.emptyReason`.padEnd(38)} | shown as no information |`);
   out.push(`      When Tester gets "${IPS_URL}/Bundle-${MINIMAL}.json" as $ipsMinimal`);
   out.push(`      And Consumer is informed "Import this minimal IPS (required sections only, no optional elements)." with $ipsMinimal`);
-  out.push(`      And Consumer is asked for $handledMinimal with "Was the minimal document accepted without error? (yes/no)"`);
   out.push(`      And Consumer submits evidence of "the minimal document imported without error (import log or screenshot)" as $minimalEvidence`);
-  out.push(`      Then $handledMinimal should be "yes"`);
+  out.push(`      Then Consumer confirms each of these is accepted for "the minimal document":`);
+  out.push(`        | item         | detail                 |`);
+  out.push(`        | the document | imported without error |`);
   out.push('');
   out.push(`  Rule: A Consumer that is a FHIR server is driven directly`);
   out.push('');
@@ -650,6 +658,9 @@ function parseFeature(file) {
     if (/^Scenario:/.test(line)) { cur = { title: line.replace(/^Scenario:\s*/, ''), tags: pending, steps: [] }; scenarios.push(cur); pending = []; continue; }
     if (/^(Rule|Background):/.test(line)) { cur = null; pending = []; continue; }
     if (cur && /^(Given|When|Then|And|But)\s/.test(line)) cur.steps.push(line);
+    // A data table belongs to the step above it: its rows are where a
+    // checklist names the elements.
+    else if (cur && line.startsWith('|') && cur.steps.length) cur.steps[cur.steps.length - 1] += '\n' + line;
   }
   const tag = (tags, name) => tags.filter(t => t.startsWith(`@${name}:`)).flatMap(t => t.slice(name.length + 2).split(','));
   return {

@@ -94,6 +94,7 @@ After any conformance check, `$validation.errors` and friends are set.
 | `<Actor> is informed "message" [with $content]` | `Monitor is informed "Please review." with $patient` |
 | `<Actor> is asked for $x [with "prompt"]` | `User is asked for $pin with "Enter the PIN"` |
 | `<Actor> uploads a file as $x [with "prompt"]` | `User uploads a file as $qrImage` |
+| `<Actor> confirms each of these is <word> [for "what"]:` + table `\| item \| detail \|` | `Consumer confirms each of these is displayed for "the allergy list":` — one dialog, a Yes/No per row, one verdict per row |
 | `<Actor> submits evidence of "what" as $x` | `Consumer submits evidence of "the allergy list displayed" as $allergyEvidence` — one dialog: instruction, required file, optional note in `$allergyEvidence_note` |
 | `log "message"` / `log $x` | `log "checkpoint"` |
 | `call scriptlet "id" [as $x] [with: table] [doc string]` | see GRAMMAR.md |

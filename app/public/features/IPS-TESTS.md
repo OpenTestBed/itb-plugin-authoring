@@ -48,8 +48,8 @@ One test pattern per obligation code, applied to every element:
 | `SHALL:populate-if-known` | exists wherever the reference dataset has it | — |
 | `SHALL/SHOULD:able-to-populate` | exists in the produced document; attested when the reference data cannot exercise it | — |
 | `MAY:able-to-populate` | logged | — |
-| `SHALL:handle` | — | the operator reports the import outcome (yes/no per profile) and attaches the import log or a screenshot as evidence |
-| `SHOULD:display` | — | the operator is instructed to display the listed elements, attaches a screenshot as evidence, then names the ones not shown; one assertion per element |
+| `SHALL:handle` | — | the operator attaches the import log or a screenshot as evidence, then confirms each element from a list (one Yes/No per element, one verdict per element) |
+| `SHOULD:display` | — | the operator is instructed to display the elements, attaches a screenshot as evidence, then confirms each one from a list; one verdict per element |
 
 Decisions taken:
 
@@ -71,6 +71,10 @@ Decisions taken:
   no-information and minimal examples.
 - **Every test case asks for the document once.** ITB runs each scenario as an
   independent test case; a Server is tested without pasting.
+- **Checklists.** Per-element confirmations use one core construct,
+  `confirms each of these is <displayed|accepted|supported> for "…":` with a
+  table of items: one ITB dialog with a Yes/No choice per row, one pass/fail
+  per row in the report. No dialect needs its own way of asking.
 - **Evidence.** Behavioural obligations end with an ITB interaction that
   instructs the operator, requires a file (screenshot, export or log) and
   takes an optional note; the test bed keeps the file in the session report

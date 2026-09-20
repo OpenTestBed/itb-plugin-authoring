@@ -56,8 +56,8 @@ Each obligation code has one test pattern:
 | `SHALL:populate-if-known` | present wherever the reference dataset has it: `all(...)` when every reference instance has it, `where(...).exists()` when some do, tester attestation when none does |
 | `SHALL/SHOULD:able-to-populate` | present in the produced document, else attested |
 | `MAY:able-to-populate` | `log`, no assertion |
-| `SHALL:handle` | the Consumer accepts a document carrying the element without error: the operator answers yes/no and attaches the import log or a screenshot (`submits evidence of … as $x`) |
-| `SHOULD:display` | the operator is instructed to display the elements, attaches a screenshot as evidence, then names the ones NOT displayed; one assertion per element |
+| `SHALL:handle` | the operator attaches the import log or a screenshot (`submits evidence of … as $x`), then `confirms each of these is accepted for "…":` with the elements as table rows — one verdict per row |
+| `SHOULD:display` | the operator displays the elements, attaches a screenshot, then `confirms each of these is displayed for "…":` — one verdict per row |
 
 Rules that keep the tests meaningful:
 
@@ -67,10 +67,12 @@ Rules that keep the tests meaningful:
 - Every scenario carries `@profile:<id>` and `@covers:<element>` tags and
   mentions every covered element in a step (an assertion path, or the prompt
   text). `check` fails otherwise.
-- Every behavioural obligation (display, handle, attested capability) ends
-  with `<Actor> submits evidence of "…" as $x`: an ITB interaction with the
-  instruction, a required file and an optional note, kept in the session
-  report. A yes/no answer alone is not a test.
+- Every behavioural obligation (display, handle, attested capability) is
+  proved with `<Actor> submits evidence of "…" as $x` (instruction, required
+  file, optional note, kept in the session report) and judged with
+  `<Actor> confirms each of these is <word> for "…":` plus a table of items.
+  Those two core constructs are the whole vocabulary for operator-judged
+  behaviour; a dialect adds rows, never a new way of asking.
 - A derived actor gets a feature for its transport only; its inherited
   obligations are the base actor's feature run on the transport's output.
 - Prefer the generator (`generate`) over hand-writing; hand-write only the

@@ -66,7 +66,14 @@ function parseFeature(file) {
     }
     if (inPreamble) { f.description.push(line); continue; }
     const m = /^(Given|When|Then|And|But)\s+(.*)$/.exec(line);
-    if (m && sc) { sc.steps.push({ kw: m[1], text: m[2], note: comments.join(' ') }); comments = []; continue; }
+    if (m && sc) { sc.steps.push({ kw: m[1], text: m[2], note: comments.join(' '), rows: [] }); comments = []; continue; }
+    // A data table belongs to the step above it (a checklist's items).
+    if (line.startsWith('|') && sc && sc.steps.length) {
+      const cells = line.replace(/^\||\|$/g, '').split('|').map(c => c.trim());
+      const last = sc.steps[sc.steps.length - 1];
+      if (!last.header) last.header = cells; else last.rows.push(Object.fromEntries(last.header.map((h, i) => [h, cells[i] ?? ''])));
+      continue;
+    }
     if (m && !sc) { f.background.push({ kw: m[1], text: m[2] }); comments = []; }
   }
   return f;
@@ -155,10 +162,17 @@ function testPlanFsh(actor, feature) {
       lines.push(`    * operation = #gherkin/Scenario`);
       let ai = 0;
       for (const a of assertions(sc)) {
-        lines.push(`    * assertion[${ai === 0 ? '0' : '+'}]`);
-        lines.push(`      * severity = #error`);
-        lines.push(`      * human = "${fsh(a.note ? `${a.note}: ${a.text}` : a.text)}"`);
-        ai++;
+        // A checklist step yields one assertion per row, so the plan lists
+        // every item the operator judges.
+        const humans = a.rows?.length
+          ? a.rows.map(r => `${r.item ?? Object.values(r)[0]}${r.detail ? ` (${r.detail})` : ''} — ${a.text.replace(/:$/, '')}`)
+          : [a.note ? `${a.note}: ${a.text}` : a.text];
+        for (const h of humans) {
+          lines.push(`    * assertion[${ai === 0 ? '0' : '+'}]`);
+          lines.push(`      * severity = #error`);
+          lines.push(`      * human = "${fsh(h)}"`);
+          ai++;
+        }
       }
       ti++;
     }

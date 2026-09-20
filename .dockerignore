@@ -1,0 +1,7 @@
+# Keep host-only trees out of the image build context. app/node_modules in
+# particular: it links the language package to a host path that does not
+# exist inside the image, and would overwrite the freshly installed tree.
+**/node_modules
+app/dist
+**/.git
+**/.cache

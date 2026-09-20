@@ -8,6 +8,11 @@ services:
     build:
       context: ${AUTHORING_PLUGIN_SRC:-../itb-plugin-authoring}
       dockerfile: Dockerfile
+      # The language package lives in the sibling itb-cli checkout; the image
+      # compiles it in rather than installing whatever the registry has, so the
+      # workbench in the container speaks the same language as the host tools.
+      additional_contexts:
+        gherkin-src: ${OTB_GHERKIN_SRC:-../itb-cli/packages/gherkin}
     # Always rebuild on `up` (cached = seconds) so a stale image is never
     # silently reused when someone forgets --build.
     pull_policy: build

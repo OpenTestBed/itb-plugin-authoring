@@ -154,6 +154,7 @@ inform = Actor , "is informed" , Literal , [ "with" , Value ] ;
 ask    = Actor , "is asked for" , Var , [ "with" , Literal ] ;
 upload = Actor , "uploads a file as" , Var , [ "with" , Literal ] ;
 evidence = Actor , "submits evidence of" , Literal , "as" , Var ;   (* instruction + required file + optional note ($x_note) *)
+confirm  = Actor , "confirms each of these is" , Word , [ "for" , Literal ] , ":" , DataTable ;   (* | item | detail | ; one Yes/No per row, one verdict per row *)
 ```
 
 ---
