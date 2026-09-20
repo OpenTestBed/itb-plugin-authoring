@@ -12,7 +12,6 @@
 //                      (default: raw GitHub at --commit)
 //   --server <url>     the terminology server under test
 //   --validator <url>  the FHIR validator that runs the matchetype comparison
-//   --flat             a server that returns flat expansions: use the "response:flat" file where there is one
 //   --fhir-version <v> the FHIR version the server speaks, 4.0 or 5.0 (default 4.0); tests bound to another version are left out
 //   --suite <name>     only this suite (repeatable)
 //
@@ -36,7 +35,6 @@ if (!source) { console.error('--source <tests folder> is required'); process.exi
 const out = opt('--out', path.join(appDir, 'public', 'features', 'tx-ecosystem'));
 const server = opt('--server', 'https://178.104.103.200.sslip.io/tx/r4');
 const validator = opt('--validator', 'http://fhir-validator:8080');
-const flat = flag('--flat');
 const fhirVersion = opt('--fhir-version', '4.0');
 // Upstream binds a test to a server version with "version": "4.0", "5.0" or "!4.0".
 const appliesToVersion = t => !t.version || (t.version.startsWith('!') ? t.version.slice(1) !== fhirVersion : t.version === fhirVersion);
@@ -185,12 +183,18 @@ function feature(suite) {
         L.push(`      Then $response.status should be 200`);
       }
       const subject = words.get ? '$capabilities' : '$response';
-      let expected = t.response;
-      if (flat && t['response:flat']) expected = t['response:flat'];
-      L.push(`      And ${subject} should match the expected response "${expected}"`);
-      if (!flat && t['response:flat']) L.push(`      # A server that returns flat expansions is compared with "${t['response:flat']}" instead (generate with --flat).`);
-      if (t['response:tx.fhir.org']) L.push(`      # tx.fhir.org itself is compared with "${t['response:tx.fhir.org']}".`);
-      if (t.response2) L.push(`      # Upstream also accepts "${t.response2}".`);
+      // Upstream accepts more than one answer for some tests: the flat form of
+      // an expansion, tx.fhir.org's own, or a second error shape. List them all;
+      // one match is enough.
+      const alternatives = [t.response, t['response:flat'], t['response:tx.fhir.org'], t.response2].filter(Boolean);
+      if (alternatives.length === 1) {
+        L.push(`      And ${subject} should match the expected response "${alternatives[0]}"`);
+      } else {
+        L.push(`      And ${subject} should match one of the expected responses:`);
+        const w = Math.max(...alternatives.map(a => a.length), 8);
+        L.push(`        | ${'response'.padEnd(w)} |`);
+        for (const a of alternatives) L.push(`        | ${a.padEnd(w)} |`);
+      }
     }
   }
   L.push('');

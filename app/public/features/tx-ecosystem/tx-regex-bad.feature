@@ -56,8 +56,10 @@ Feature: Terminology server — regex-bad
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "regex-bad/expand-regex-bad-2-response.json"
-      # Upstream also accepts "regex-bad/expand-regex-bad-2-error.json".
+      And $response should match one of the expected responses:
+        | response                                   |
+        | regex-bad/expand-regex-bad-2-response.json |
+        | regex-bad/expand-regex-bad-2-error.json    |
 
   Rule: ValueSet $validate-code
 
@@ -95,5 +97,7 @@ Feature: Terminology server — regex-bad
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "regex-bad/validate-regex-bad-2-response.json"
-      # Upstream also accepts "regex-bad/validate-regex-bad-2-error.json".
+      And $response should match one of the expected responses:
+        | response                                     |
+        | regex-bad/validate-regex-bad-2-response.json |
+        | regex-bad/validate-regex-bad-2-error.json    |

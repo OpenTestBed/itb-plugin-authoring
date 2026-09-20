@@ -63,8 +63,10 @@ Feature: Terminology server — big
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "big/expand-zero-fifty-limit-valueset.json"
-      # tx.fhir.org itself is compared with "big/expand-zero-fifty-limit-valueset-precise.json".
+      And $response should match one of the expected responses:
+        | response                                          |
+        | big/expand-zero-fifty-limit-valueset.json         |
+        | big/expand-zero-fifty-limit-valueset-precise.json |
 
     @operation:expand
     Scenario: big-echo-fifty-fifty-limit
@@ -81,8 +83,10 @@ Feature: Terminology server — big
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "big/expand-fifty-fifty-limit-valueset.json"
-      # tx.fhir.org itself is compared with "big/expand-fifty-fifty-limit-valueset-precise.json".
+      And $response should match one of the expected responses:
+        | response                                           |
+        | big/expand-fifty-fifty-limit-valueset.json         |
+        | big/expand-fifty-fifty-limit-valueset-precise.json |
 
     @operation:expand @http-code:4xx
     Scenario: big-circle-bang

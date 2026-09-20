@@ -40,8 +40,10 @@ Feature: Terminology server — search
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "search/search-expand-all-yes-response.json"
-      # A server that returns flat expansions is compared with "search/search-expand-all-yes-flat-response.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                        |
+        | search/search-expand-all-yes-response.json      |
+        | search/search-expand-all-yes-flat-response.json |
 
     # Test a simple search that returns no results
     @operation:expand
@@ -75,8 +77,10 @@ Feature: Terminology server — search
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "search/search-expand-filter-yes-response.json"
-      # A server that returns flat expansions is compared with "search/search-expand-filter-yes-flat-response.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                           |
+        | search/search-expand-filter-yes-response.json      |
+        | search/search-expand-filter-yes-flat-response.json |
 
     # Test a simple search that returns no results
     @operation:expand

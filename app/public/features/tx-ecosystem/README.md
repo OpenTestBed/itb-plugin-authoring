@@ -10,7 +10,7 @@ Upstream: <https://github.com/HL7/fhir-tx-ecosystem-ig/tree/main/tests>,
 Generated — do not edit these files. Regenerate with:
 
 ```
-node scripts/tx-tests.mjs --source <checkout>/tests [--server URL] [--validator URL] [--material URL] [--flat] [--fhir-version 4.0|5.0]
+node scripts/tx-tests.mjs --source <checkout>/tests [--server URL] [--validator URL] [--material URL] [--fhir-version 4.0|5.0]
 ```
 
 ## What a test looks like
@@ -39,7 +39,7 @@ node scripts/tx-tests.mjs --source <checkout>/tests [--server URL] [--validator 
             { "name": "uuid", "valueUuid": "urn:uuid:8acdbfdc-e9d2-11ed-a05b-0242ac120003" } ] }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-all-response-valueSet.json"
+      And $response should match the expectedwith a table of `response` rows"simple/simple-expand-all-response-valueSet.json"
 ```
 
 The request is the upstream Parameters with the runner's profile parameters
@@ -47,7 +47,7 @@ merged in (the default `uuid`, or the `version/parameters-*.json` profile the
 test names, plus `lenient-display-validation` where the test sets it), so the
 reader sees exactly what the server receives. The resources a suite depends on
 travel with every request as `tx-resource` parameters, as the HL7 runner sends
-them. The expected response is the upstream file, fetched at run time and
+them. The expectedwith a table of `response` rowsis the upstream file, fetched at run time and
 compared as a matchetype by the FHIR validator.
 
 Upstream modifiers and where they went:
@@ -59,18 +59,19 @@ Upstream modifiers and where they went:
 | `profile`, `lenient-display` | merged into the request Parameters |
 | suite/test `mode` | tags `@mode:…`; a sentence in the feature description |
 | `version` (4.0, 5.0, !4.0) | generator filter `--fhir-version`; the left-out tests are listed in the file header |
-| `response:flat` | comment; `--flat` selects the flat file for a flat-expansion server |
-| `response:tx.fhir.org`, `response2` | comments (the language has no "one of these expected files" yet) |
+| `response:flat`, `response:tx.fhir.org`, `response2` | `should match one of the expected responses:` with a table of `response` rows\| response \|` table; one match is enough (24 tests) |
 | `full-set` | tag only (the runner's handling was not found) |
 
 ## Dialect
 
-`components/fhir-terminology/steps.yml`: kind `terminology-server` and 13 verbs,
+`components/fhir-terminology/steps.yml`: kind `terminology-server` and 14 verbs,
 no change to the core language. Operations: expands, validates a code, validates
 a code against the code system, looks up a code, tests subsumption, translates,
 compares value sets, validates a batch, reads the capability statement, reads
 the terminology capabilities; plus `fetches the test material from`, `is given
-the resources:` and `should match the expected response`.
+the resources:`, `should match the expected response` and `should match one of
+the expected responses:` (each candidate is compared, one `verify` judges them
+with an ExpressionValidator `or`).
 
 Endpoints, taken from the HL7 runner and its terminology client: `ValueSet/$expand`,
 `ValueSet/$validate-code`, `CodeSystem/$validate-code`, `CodeSystem/$lookup`,
@@ -79,7 +80,7 @@ Endpoints, taken from the HL7 runner and its terminology client: `ValueSet/$expa
 
 ## Verified
 
-- All 38 features compile clean (`check-features.mjs`); two are in the
+- All 38 features compile clean (`check-features.mjs`); three are in the
   compiler's golden corpus.
 - The composed request is what the TDL sends: replayed the simple-cases
   expand/lookup/subsumes tests and `/metadata` against
@@ -133,9 +134,10 @@ then, a test here fails where the HL7 runner would pass.
 - Naming the server on every verb (`on TxServer`) is forced by "is the system
   under test" carrying no kind. A core option `… is the system under test as a
   terminology-server at …` would let a suite say `Client expands with:`.
-- Alternative expected responses (`response2`, `response:flat`) have no
-  sentence. A core assertion `should match one of the expected responses "a", "b"`
-  would cover them; the generator leaves comments for now.
+- Alternative expected responses (`response2`, `response:flat`) needed a
+  sentence of their own; a table verb covers it without a core change. The
+  verdict is accumulated row by row because table rows are unrolled at compile
+  time, so the final expression cannot name N variables.
 - Reader cost that remains: the uuid/profile parameters in every request are
   noise for a human but are what the server receives, and the expected file is a
   name, not content — which is right for 1182 files but means the feature does

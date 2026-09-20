@@ -49,8 +49,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-all-hierarchy-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-all-hierarchy-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                               |
+        | parameters/parameters-expand-all-hierarchy-response-valueSet.json      |
+        | parameters/parameters-expand-all-hierarchy-response-flat-valueSet.json |
 
     # Expand an enumerated value set - no hierarchy in this case
     @operation:expand
@@ -84,8 +86,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-isa-hierarchy-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-isa-hierarchy-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                               |
+        | parameters/parameters-expand-isa-hierarchy-response-valueSet.json      |
+        | parameters/parameters-expand-isa-hierarchy-response-flat-valueSet.json |
 
     # expand all the active codes - hierarchy is preserved
     @operation:expand
@@ -103,8 +107,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-all-active-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-all-active-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                            |
+        | parameters/parameters-expand-all-active-response-valueSet.json      |
+        | parameters/parameters-expand-all-active-response-flat-valueSet.json |
 
     # Expand all the active codes, and specify active codes in a parameter
     @operation:expand
@@ -122,8 +128,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-active-active-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-active-active-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                               |
+        | parameters/parameters-expand-active-active-response-valueSet.json      |
+        | parameters/parameters-expand-active-active-response-flat-valueSet.json |
 
     # Expand all the codes, including inactive ones, but specify active codes only in a parameter
     @operation:expand
@@ -141,8 +149,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-inactive-active-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-inactive-active-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                                 |
+        | parameters/parameters-expand-inactive-active-response-valueSet.json      |
+        | parameters/parameters-expand-inactive-active-response-flat-valueSet.json |
 
     # Expand an enumerated value set, with active codes only in a parameter
     @operation:expand
@@ -178,8 +188,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-isa-active-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-isa-active-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                            |
+        | parameters/parameters-expand-isa-active-response-valueSet.json      |
+        | parameters/parameters-expand-isa-active-response-flat-valueSet.json |
 
     # expand all the active codes, including inactive codes - hierarchy is preserved
     @operation:expand
@@ -197,8 +209,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-all-inactive-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-all-inactive-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                              |
+        | parameters/parameters-expand-all-inactive-response-valueSet.json      |
+        | parameters/parameters-expand-all-inactive-response-flat-valueSet.json |
 
     @operation:expand
     Scenario: parameters-expand-active-inactive
@@ -215,8 +229,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-active-inactive-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-active-inactive-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                                 |
+        | parameters/parameters-expand-active-inactive-response-valueSet.json      |
+        | parameters/parameters-expand-active-inactive-response-flat-valueSet.json |
 
     @operation:expand
     Scenario: parameters-expand-inactive-inactive
@@ -233,8 +249,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-inactive-inactive-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-inactive-inactive-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                                   |
+        | parameters/parameters-expand-inactive-inactive-response-valueSet.json      |
+        | parameters/parameters-expand-inactive-inactive-response-flat-valueSet.json |
 
     @operation:expand
     Scenario: parameters-expand-enum-inactive
@@ -268,8 +286,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-isa-inactive-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-isa-inactive-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                              |
+        | parameters/parameters-expand-isa-inactive-response-valueSet.json      |
+        | parameters/parameters-expand-isa-inactive-response-flat-valueSet.json |
 
     @operation:expand
     Scenario: parameters-expand-all-designations
@@ -286,8 +306,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-all-designations-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-all-designations-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                                  |
+        | parameters/parameters-expand-all-designations-response-valueSet.json      |
+        | parameters/parameters-expand-all-designations-response-flat-valueSet.json |
 
     @operation:expand
     Scenario: parameters-expand-enum-designations
@@ -321,8 +343,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-isa-designations-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-isa-designations-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                                  |
+        | parameters/parameters-expand-isa-designations-response-valueSet.json      |
+        | parameters/parameters-expand-isa-designations-response-flat-valueSet.json |
 
     @operation:expand
     Scenario: parameters-expand-all-definitions
@@ -340,8 +364,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-all-definitions-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-all-definitions-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                                 |
+        | parameters/parameters-expand-all-definitions-response-valueSet.json      |
+        | parameters/parameters-expand-all-definitions-response-flat-valueSet.json |
 
     @operation:expand
     Scenario: parameters-expand-enum-definitions
@@ -377,8 +403,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-isa-definitions-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-isa-definitions-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                                 |
+        | parameters/parameters-expand-isa-definitions-response-valueSet.json      |
+        | parameters/parameters-expand-isa-definitions-response-flat-valueSet.json |
 
     @operation:expand
     Scenario: parameters-expand-all-definitions2
@@ -397,8 +425,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-all-definitions2-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-all-definitions2-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                                  |
+        | parameters/parameters-expand-all-definitions2-response-valueSet.json      |
+        | parameters/parameters-expand-all-definitions2-response-flat-valueSet.json |
 
     @operation:expand
     Scenario: parameters-expand-enum-definitions2
@@ -456,8 +486,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-isa-definitions2-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-isa-definitions2-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                                  |
+        | parameters/parameters-expand-isa-definitions2-response-valueSet.json      |
+        | parameters/parameters-expand-isa-definitions2-response-flat-valueSet.json |
 
     @operation:expand
     Scenario: parameters-expand-all-property
@@ -474,8 +506,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-all-property-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-all-property-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                              |
+        | parameters/parameters-expand-all-property-response-valueSet.json      |
+        | parameters/parameters-expand-all-property-response-flat-valueSet.json |
 
     @operation:expand
     Scenario: parameters-expand-enum-property
@@ -509,8 +543,10 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-isa-property-response-valueSet.json"
-      # A server that returns flat expansions is compared with "parameters/parameters-expand-isa-property-response-flat-valueSet.json" instead (generate with --flat).
+      And $response should match one of the expected responses:
+        | response                                                              |
+        | parameters/parameters-expand-isa-property-response-valueSet.json      |
+        | parameters/parameters-expand-isa-property-response-flat-valueSet.json |
 
     # Base line for supplement tests
     @operation:expand
