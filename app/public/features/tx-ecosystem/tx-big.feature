@@ -3,8 +3,8 @@
 # Suite "big": 5 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:big @mode:general
 Feature: Terminology server — big
   Testing handling a big code system
@@ -46,7 +46,7 @@ Feature: Terminology server — big
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "big/expand-no-limit-outcome.json"
+      And $response should match the pattern in "big/expand-no-limit-outcome.json"
 
     @operation:expand
     Scenario: big-echo-zero-fifty-limit
@@ -63,8 +63,8 @@ Feature: Terminology server — big
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                          |
+      And $response should match one of the patterns in:
+        | pattern                                           |
         | big/expand-zero-fifty-limit-valueset.json         |
         | big/expand-zero-fifty-limit-valueset-precise.json |
 
@@ -83,8 +83,8 @@ Feature: Terminology server — big
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                           |
+      And $response should match one of the patterns in:
+        | pattern                                            |
         | big/expand-fifty-fifty-limit-valueset.json         |
         | big/expand-fifty-fifty-limit-valueset-precise.json |
 
@@ -101,7 +101,7 @@ Feature: Terminology server — big
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "big/expand-circle-outcome.json"
+      And $response should match the pattern in "big/expand-circle-outcome.json"
 
   Rule: ValueSet $validate-code
 
@@ -125,4 +125,4 @@ Feature: Terminology server — big
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "big/validation-big-circle-response-outcome.json"
+      And $response should match the pattern in "big/validation-big-circle-response-outcome.json"

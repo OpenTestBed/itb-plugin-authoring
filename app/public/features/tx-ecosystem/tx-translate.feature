@@ -3,8 +3,8 @@
 # Suite "translate": 10 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:translate @mode:general
 Feature: Terminology server — translate
   Tests for ConceptMap.$translate
@@ -41,7 +41,7 @@ Feature: Terminology server — translate
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "translate/translate-1-response-parameters.json"
+      And $response should match the pattern in "translate/translate-1-response-parameters.json"
 
     # The same translation, but naming the source concept with sourceCoding
     @operation:translate
@@ -64,7 +64,7 @@ Feature: Terminology server — translate
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "translate/translate-1-coding-response-parameters.json"
+      And $response should match the pattern in "translate/translate-1-coding-response-parameters.json"
 
     # The same translation, but naming the source concept with sourceCodeableConcept
     @operation:translate
@@ -91,7 +91,7 @@ Feature: Terminology server — translate
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "translate/translate-1-codeableconcept-response-parameters.json"
+      And $response should match the pattern in "translate/translate-1-codeableconcept-response-parameters.json"
 
     # The same translation, using the R4 input names: code + system, and targetsystem
     @operation:translate @fhir-version:4.0
@@ -109,7 +109,7 @@ Feature: Terminology server — translate
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "translate/translate-1-r4-response-parameters.json"
+      And $response should match the pattern in "translate/translate-1-r4-response-parameters.json"
 
     # The same translation, using the R4 input names: coding, and targetsystem
     @operation:translate @fhir-version:4.0
@@ -132,7 +132,7 @@ Feature: Terminology server — translate
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "translate/translate-1-r4-response-parameters.json"
+      And $response should match the pattern in "translate/translate-1-r4-response-parameters.json"
 
     # The same translation, using the R4 input names: codeableConcept, and targetsystem
     @operation:translate @fhir-version:4.0
@@ -159,7 +159,7 @@ Feature: Terminology server — translate
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "translate/translate-1-r4-response-parameters.json"
+      And $response should match the pattern in "translate/translate-1-r4-response-parameters.json"
 
     # Testing different relationship types
     @operation:translate
@@ -177,7 +177,7 @@ Feature: Terminology server — translate
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "translate/translate-2-response-parameters.json"
+      And $response should match the pattern in "translate/translate-2-response-parameters.json"
 
     # Testing different relationship types
     @operation:translate
@@ -195,7 +195,7 @@ Feature: Terminology server — translate
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "translate/translate-2b-response-parameters.json"
+      And $response should match the pattern in "translate/translate-2b-response-parameters.json"
 
     # Testing different relationship types
     @operation:translate
@@ -213,7 +213,7 @@ Feature: Terminology server — translate
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "translate/translate-3-response-parameters.json"
+      And $response should match the pattern in "translate/translate-3-response-parameters.json"
 
     # Testing nomap functionality. In R4 the ConceptMap states this with a codeless 'unmatched'
     # target; either way the response reports noMap and no concept
@@ -232,4 +232,4 @@ Feature: Terminology server — translate
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "translate/translate-4-response-parameters.json"
+      And $response should match the pattern in "translate/translate-4-response-parameters.json"

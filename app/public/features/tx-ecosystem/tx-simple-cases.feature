@@ -3,8 +3,8 @@
 # Suite "simple-cases": 37 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:simple-cases @mode:general
 Feature: Terminology server — simple-cases
   basic tests, setting up for the API tests to come
@@ -48,7 +48,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-all-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-all-response-valueSet.json"
 
     # Expansion containing only the active codes in the code system
     @operation:expand
@@ -65,7 +65,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-active-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-active-response-valueSet.json"
 
     # Expansion containing only the inactive codes in the code system
     @operation:expand
@@ -82,7 +82,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-inactive-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-inactive-response-valueSet.json"
 
     # Expansion containing an enumerated set of codes in the code system
     @operation:expand
@@ -99,7 +99,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-enum-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-enum-response-valueSet.json"
 
     # Expansion containing an enumerated set of codes in the code system, including invalid codes
     @operation:expand
@@ -116,7 +116,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-enum-bad-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-enum-bad-response-valueSet.json"
 
     # Expansion containing a filter on the code system using is-a relationship
     @operation:expand
@@ -133,7 +133,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-isa-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-isa-response-valueSet.json"
 
     # Expansion containing a filter on the code system using child-of relationship. This is testing
     # R5/R4 transformation
@@ -151,7 +151,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-child-of-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-child-of-response-valueSet.json"
 
     # Expansion containing a filter on the code system using is-a relationship with paging
     # (tx.fhir.org internal test)
@@ -170,7 +170,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-isa-o2-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-isa-o2-response-valueSet.json"
 
     # Expansion containing a filter on the code system using is-a relationship with paging
     # (tx.fhir.org internal test)
@@ -189,7 +189,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-isa-c2-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-isa-c2-response-valueSet.json"
 
     # Expansion containing a filter on the code system using is-a relationship with paging
     # (tx.fhir.org internal test)
@@ -209,7 +209,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-isa-o2c2-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-isa-o2c2-response-valueSet.json"
 
     # Expansion containing a filter on the code system using a property value
     @operation:expand
@@ -226,7 +226,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-prop-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-prop-response-valueSet.json"
 
     # A concept may carry several values for one property (CodeSystem.concept.property is 0..*). code3
     # has dup=alpha and dup=beta; filtering on beta - which is not its first value - must still select
@@ -245,7 +245,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-repeating-prop-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-repeating-prop-response-valueSet.json"
 
     # expansion.contains.property is 0..* as well: a concept carrying several values for one property
     # must report all of them, not just one
@@ -264,7 +264,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-repeating-prop-values-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-repeating-prop-values-response-valueSet.json"
 
     # Expansion containing a filter on the code system using regex on the codes
     @operation:expand
@@ -281,7 +281,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-regex-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-regex-response-valueSet.json"
 
     # Expansion containing a filter on the code system using regex on the codes using a regex known to
     # cause a problem on at least one server
@@ -299,7 +299,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-regex2-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-regex2-response-valueSet.json"
 
     # Expansion containing a filter on the code system using regex on the property values of prop
     @operation:expand
@@ -316,7 +316,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-regex-prop-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-regex-prop-response-valueSet.json"
 
     # Expansion containing a filter on the code system using a valid regex on the codes that matches
     # none of them. The expansion is empty - an include whose filter selects nothing must not be
@@ -335,7 +335,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-regex-none-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-regex-none-response-valueSet.json"
 
     # Expansion containing all the code system, but only a count
     @operation:expand
@@ -353,7 +353,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-all-count-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-all-count-response-valueSet.json"
 
     # Expansion where the compose refers to a contained value set
     @operation:expand
@@ -407,7 +407,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-contained-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-contained-response-valueSet.json"
 
   Rule: CodeSystem $lookup
 
@@ -428,7 +428,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-lookup-response-parameters.json"
+      And $response should match the pattern in "simple/simple-lookup-response-parameters.json"
 
     # Check that $lookup works (there's not many tests for $lookup because it's not used much by the
     # tools)
@@ -447,7 +447,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-lookup2-response-parameters.json"
+      And $response should match the pattern in "simple/simple-lookup2-response-parameters.json"
 
   Rule: CodeSystem $subsumes
 
@@ -467,7 +467,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-subsumes-parent-response-parameters.json"
+      And $response should match the pattern in "simple/simple-subsumes-parent-response-parameters.json"
 
     # the mirror of simple-subsumes-parent
     @operation:subsumes
@@ -485,7 +485,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-subsumes-child-response-parameters.json"
+      And $response should match the pattern in "simple/simple-subsumes-child-response-parameters.json"
 
     # A code is equivalent to itself
     @operation:subsumes
@@ -503,7 +503,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-subsumes-equivalent-response-parameters.json"
+      And $response should match the pattern in "simple/simple-subsumes-equivalent-response-parameters.json"
 
     # Subsumption follows the whole nesting, not just direct children
     @operation:subsumes
@@ -521,7 +521,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-subsumes-transitive-response-parameters.json"
+      And $response should match the pattern in "simple/simple-subsumes-transitive-response-parameters.json"
 
     # Two sibling codes do not subsume each other
     @operation:subsumes
@@ -539,7 +539,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-subsumes-siblings-response-parameters.json"
+      And $response should match the pattern in "simple/simple-subsumes-siblings-response-parameters.json"
 
     # Two root level codes do not subsume each other
     @operation:subsumes
@@ -557,7 +557,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-subsumes-unrelated-response-parameters.json"
+      And $response should match the pattern in "simple/simple-subsumes-unrelated-response-parameters.json"
 
     # A root code does not subsume a code under a different root
     @operation:subsumes
@@ -575,7 +575,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-subsumes-root-response-parameters.json"
+      And $response should match the pattern in "simple/simple-subsumes-root-response-parameters.json"
 
     # codeA is not in the code system
     @operation:subsumes @http-code:4xx
@@ -593,7 +593,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "simple/simple-subsumes-unknown-code-response-parameters.json"
+      And $response should match the pattern in "simple/simple-subsumes-unknown-code-response-parameters.json"
 
     # As simple-subsumes-parent, but with codingA/codingB
     @operation:subsumes
@@ -622,7 +622,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-subsumes-parent-coding-response-parameters.json"
+      And $response should match the pattern in "simple/simple-subsumes-parent-coding-response-parameters.json"
 
     # As simple-subsumes-child, but with codingA/codingB
     @operation:subsumes
@@ -651,7 +651,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-subsumes-child-coding-response-parameters.json"
+      And $response should match the pattern in "simple/simple-subsumes-child-coding-response-parameters.json"
 
     # As simple-subsumes-equivalent, but with codingA/codingB
     @operation:subsumes
@@ -680,7 +680,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-subsumes-equivalent-coding-response-parameters.json"
+      And $response should match the pattern in "simple/simple-subsumes-equivalent-coding-response-parameters.json"
 
     # As simple-subsumes-transitive, but with codingA/codingB
     @operation:subsumes
@@ -709,7 +709,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-subsumes-transitive-coding-response-parameters.json"
+      And $response should match the pattern in "simple/simple-subsumes-transitive-coding-response-parameters.json"
 
     # As simple-subsumes-siblings, but with codingA/codingB
     @operation:subsumes
@@ -738,7 +738,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-subsumes-siblings-coding-response-parameters.json"
+      And $response should match the pattern in "simple/simple-subsumes-siblings-coding-response-parameters.json"
 
     # As simple-subsumes-unrelated, but with codingA/codingB
     @operation:subsumes
@@ -767,7 +767,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-subsumes-unrelated-coding-response-parameters.json"
+      And $response should match the pattern in "simple/simple-subsumes-unrelated-coding-response-parameters.json"
 
     # As simple-subsumes-root, but with codingA/codingB
     @operation:subsumes
@@ -796,7 +796,7 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-subsumes-root-coding-response-parameters.json"
+      And $response should match the pattern in "simple/simple-subsumes-root-coding-response-parameters.json"
 
     # As simple-subsumes-unknown-code, but with codingA/codingB
     @operation:subsumes @http-code:4xx
@@ -825,4 +825,4 @@ Feature: Terminology server — simple-cases
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "simple/simple-subsumes-unknown-code-coding-response-parameters.json"
+      And $response should match the pattern in "simple/simple-subsumes-unknown-code-coding-response-parameters.json"

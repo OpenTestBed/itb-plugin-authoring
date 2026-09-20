@@ -3,8 +3,8 @@
 # Suite "inactive": 12 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:inactive @mode:general
 Feature: Terminology server — inactive
   Testing Inactive codes
@@ -37,7 +37,7 @@ Feature: Terminology server — inactive
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "inactive/inactive-expand-all-response-valueSet.json"
+      And $response should match the pattern in "inactive/inactive-expand-all-response-valueSet.json"
 
     @operation:expand
     Scenario: inactive-inactive-expand
@@ -53,7 +53,7 @@ Feature: Terminology server — inactive
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "inactive/inactive-inactive-expand-all-response-valueSet.json"
+      And $response should match the pattern in "inactive/inactive-inactive-expand-all-response-valueSet.json"
 
     @operation:expand
     Scenario: inactive-active-expand
@@ -69,7 +69,7 @@ Feature: Terminology server — inactive
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "inactive/inactive-active-expand-all-response-valueSet.json"
+      And $response should match the pattern in "inactive/inactive-active-expand-all-response-valueSet.json"
 
   Rule: ValueSet $validate-code
 
@@ -93,7 +93,7 @@ Feature: Terminology server — inactive
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "inactive/validate-inactive-1-response-parameters.json"
+      And $response should match the pattern in "inactive/validate-inactive-1-response-parameters.json"
 
     @operation:validate-code
     Scenario: inactive-2-validate
@@ -115,7 +115,7 @@ Feature: Terminology server — inactive
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "inactive/validate-inactive-2-response-parameters.json"
+      And $response should match the pattern in "inactive/validate-inactive-2-response-parameters.json"
 
     @operation:validate-code
     Scenario: inactive-3-validate
@@ -137,7 +137,7 @@ Feature: Terminology server — inactive
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "inactive/validate-inactive-3-response-parameters.json"
+      And $response should match the pattern in "inactive/validate-inactive-3-response-parameters.json"
 
     @operation:validate-code
     Scenario: inactive-1a-validate
@@ -159,7 +159,7 @@ Feature: Terminology server — inactive
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "inactive/validate-inactive-1a-response-parameters.json"
+      And $response should match the pattern in "inactive/validate-inactive-1a-response-parameters.json"
 
     @operation:validate-code
     Scenario: inactive-2a-validate
@@ -181,7 +181,7 @@ Feature: Terminology server — inactive
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "inactive/validate-inactive-2a-response-parameters.json"
+      And $response should match the pattern in "inactive/validate-inactive-2a-response-parameters.json"
 
     @operation:validate-code
     Scenario: inactive-3a-validate
@@ -203,7 +203,7 @@ Feature: Terminology server — inactive
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "inactive/validate-inactive-3a-response-parameters.json"
+      And $response should match the pattern in "inactive/validate-inactive-3a-response-parameters.json"
 
     @operation:validate-code
     Scenario: inactive-1b-validate
@@ -225,7 +225,7 @@ Feature: Terminology server — inactive
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "inactive/validate-inactive-1b-response-parameters.json"
+      And $response should match the pattern in "inactive/validate-inactive-1b-response-parameters.json"
 
     @operation:validate-code
     Scenario: inactive-2b-validate
@@ -247,7 +247,7 @@ Feature: Terminology server — inactive
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "inactive/validate-inactive-2b-response-parameters.json"
+      And $response should match the pattern in "inactive/validate-inactive-2b-response-parameters.json"
 
     @operation:validate-code
     Scenario: inactive-3b-validate
@@ -269,4 +269,4 @@ Feature: Terminology server — inactive
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "inactive/validate-inactive-3b-response-parameters.json"
+      And $response should match the pattern in "inactive/validate-inactive-3b-response-parameters.json"

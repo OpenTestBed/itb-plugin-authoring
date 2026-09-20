@@ -126,8 +126,8 @@ function feature(suite) {
   if (leftOut.length) L.push(`# Left out, bound to another FHIR version: ${leftOut.map(t => `${t.name} (${t.version})`).join(', ')}.`);
   L.push(`#`);
   L.push(`# Each scenario is one upstream test: the request is the upstream Parameters with the`);
-  L.push(`# runner's profile parameters merged in, and the expected response is the upstream file,`);
-  L.push(`# fetched at run time and compared as a matchetype by the FHIR validator.`);
+  L.push(`# runner's profile parameters merged in, and the pattern is the upstream expected-response`);
+  L.push(`# file, which is a matchetype — fetched at run time and compared by the FHIR validator.`);
   const tags = ['@lang:itb-core-en@^2', '@dialect:fhir-terminology@^1', '@dialect:fhir-validator@^2', `@suite:${suite.name}`];
   if (suite.mode) tags.push(`@mode:${suite.mode}`);
   L.push(tags.join(' '));
@@ -187,11 +187,11 @@ function feature(suite) {
       // one match is enough.
       const alternatives = [t.response, t['response:flat'], t['response:tx.fhir.org'], t.response2].filter(Boolean);
       if (alternatives.length === 1) {
-        L.push(`      And ${subject} should match the expected response "${alternatives[0]}"`);
+        L.push(`      And ${subject} should match the pattern in "${alternatives[0]}"`);
       } else {
-        L.push(`      And ${subject} should match one of the expected responses:`);
-        const w = Math.max(...alternatives.map(a => a.length), 8);
-        L.push(`        | ${'response'.padEnd(w)} |`);
+        L.push(`      And ${subject} should match one of the patterns in:`);
+        const w = Math.max(...alternatives.map(a => a.length), 7);
+        L.push(`        | ${'pattern'.padEnd(w)} |`);
         for (const a of alternatives) L.push(`        | ${a.padEnd(w)} |`);
       }
     }

@@ -4,8 +4,8 @@
 # Left out, bound to another FHIR version: sct-msg-5 (5.0).
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:bugs @mode:tx.fhir.org
 Feature: Terminology server — bugs
   A series of tests that deal with discovered bugs in FHIRsmith. These tests are specific to
@@ -47,7 +47,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/expand-country-codes-response.json"
+      And $response should match the pattern in "bugs/expand-country-codes-response.json"
 
     @operation:expand @full-set @http-code:4xx
     Scenario: cpt
@@ -74,7 +74,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "bugs/expand-cpt-response.json"
+      And $response should match the pattern in "bugs/expand-cpt-response.json"
 
     @operation:expand @full-set
     Scenario: cpt-0
@@ -102,7 +102,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/expand-cpt-0-response.json"
+      And $response should match the pattern in "bugs/expand-cpt-0-response.json"
 
     @operation:expand @full-set
     Scenario: cpt-100
@@ -130,7 +130,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/expand-cpt-100-response.json"
+      And $response should match the pattern in "bugs/expand-cpt-100-response.json"
 
     @operation:expand @full-set
     Scenario: sct-ver-ex
@@ -163,7 +163,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/expand-sct-ver-response.json"
+      And $response should match the pattern in "bugs/expand-sct-ver-response.json"
 
   Rule: ValueSet $validate-code
 
@@ -217,7 +217,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-undefined-response.json"
+      And $response should match the pattern in "bugs/validate-undefined-response.json"
 
     @operation:validate-code @full-set
     Scenario: sct-isa
@@ -271,7 +271,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-sct-isa-response.json"
+      And $response should match the pattern in "bugs/validate-sct-isa-response.json"
 
     @operation:validate-code @fhir-version:4.0
     Scenario: sct-msg-4
@@ -298,7 +298,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-sct-msg-4-response.json"
+      And $response should match the pattern in "bugs/validate-sct-msg-4-response.json"
 
   Rule: CodeSystem $validate-code
 
@@ -315,7 +315,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-no-system-response.json"
+      And $response should match the pattern in "bugs/validate-no-system-response.json"
 
     @operation:cs-validate-code
     Scenario: sct-parse
@@ -331,7 +331,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-sct-parse-response.json"
+      And $response should match the pattern in "bugs/validate-sct-parse-response.json"
 
     @operation:cs-validate-code
     Scenario: sct-parse-pc
@@ -347,7 +347,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-sct-parse-pc-response.json"
+      And $response should match the pattern in "bugs/validate-sct-parse-pc-response.json"
 
     @operation:cs-validate-code
     Scenario: lang-case
@@ -364,7 +364,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-lang-case-response.json"
+      And $response should match the pattern in "bugs/validate-lang-case-response.json"
 
     @operation:cs-validate-code
     Scenario: lang-case2
@@ -380,7 +380,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-lang-case2-response.json"
+      And $response should match the pattern in "bugs/validate-lang-case2-response.json"
 
     @operation:cs-validate-code
     Scenario: provenance
@@ -396,7 +396,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-provenance-response.json"
+      And $response should match the pattern in "bugs/validate-provenance-response.json"
 
     @operation:cs-validate-code
     Scenario: country-code
@@ -412,7 +412,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-country-code-response.json"
+      And $response should match the pattern in "bugs/validate-country-code-response.json"
 
     @operation:cs-validate-code @full-set
     Scenario: sct-ver
@@ -433,7 +433,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-sct-ver-response.json"
+      And $response should match the pattern in "bugs/validate-sct-ver-response.json"
 
     @operation:cs-validate-code
     Scenario: sct-display-1
@@ -453,7 +453,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-sct-display-1-response.json"
+      And $response should match the pattern in "bugs/validate-sct-display-1-response.json"
 
     @operation:cs-validate-code
     Scenario: sct-display-2
@@ -473,7 +473,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-sct-display-2-response.json"
+      And $response should match the pattern in "bugs/validate-sct-display-2-response.json"
 
     @operation:cs-validate-code @full-set
     Scenario: ndc
@@ -489,7 +489,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-ndc-response.json"
+      And $response should match the pattern in "bugs/validate-ndc-response.json"
 
     @operation:cs-validate-code
     Scenario: x12-bad
@@ -506,7 +506,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-x12-bad-response.json"
+      And $response should match the pattern in "bugs/validate-x12-bad-response.json"
 
     # Check user assigned codes are valid
     @operation:cs-validate-code
@@ -523,7 +523,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-3166-a-response.json"
+      And $response should match the pattern in "bugs/validate-3166-a-response.json"
 
     # Check user assigned codes can get display from a supplement
     @operation:cs-validate-code
@@ -564,7 +564,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-3166-b-response.json"
+      And $response should match the pattern in "bugs/validate-3166-b-response.json"
 
     # But base names are still valid
     @operation:cs-validate-code
@@ -605,7 +605,7 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-3166-c-response.json"
+      And $response should match the pattern in "bugs/validate-3166-c-response.json"
 
     # Check that wrong displays on user assigned codes are just a hint
     @operation:cs-validate-code
@@ -623,4 +623,4 @@ Feature: Terminology server — bugs
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "bugs/validate-3166-d-response.json"
+      And $response should match the pattern in "bugs/validate-3166-d-response.json"

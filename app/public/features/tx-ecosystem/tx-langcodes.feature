@@ -3,8 +3,8 @@
 # Suite "langcodes": 43 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:langcodes @mode:tx.fhir.org
 Feature: Terminology server — langcodes
   IETF language code (BCP-47) test cases
@@ -40,7 +40,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-base-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-base-response.json"
 
     # language plus an ISO 3166 region (en-US)
     @operation:cs-validate-code
@@ -57,7 +57,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-region-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-region-response.json"
 
     # language plus a script (zh-Hans)
     @operation:cs-validate-code
@@ -74,7 +74,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-script-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-script-response.json"
 
     # language, script and region together (zh-Hans-CN)
     @operation:cs-validate-code
@@ -91,7 +91,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-script-region-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-script-region-response.json"
 
     # a region inside the QM..QZ private-use range - the registry writes those as a range rather than
     # one entry per code (en-QM)
@@ -109,7 +109,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-region-private-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-region-private-response.json"
 
     # a grandfathered tag: registered whole, and it does not decompose into valid subtags (i-klingon)
     @operation:cs-validate-code
@@ -126,7 +126,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-grandfathered-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-grandfathered-response.json"
 
     # two letters that are not an allocated language (zz)
     @operation:cs-validate-code
@@ -143,7 +143,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-base-bad-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-base-bad-response.json"
 
     # two letters that are neither allocated nor inside a private-use range (en-AB)
     @operation:cs-validate-code
@@ -160,7 +160,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-region-bad-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-region-bad-response.json"
 
     # four letters that are not an allocated script (en-Abcd)
     @operation:cs-validate-code
@@ -177,7 +177,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-script-bad-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-script-bad-response.json"
 
     # the extlang cmn carries Prefix: zh in the registry, so it may not follow en (en-cmn)
     @operation:cs-validate-code
@@ -194,7 +194,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-extlang-prefix-bad-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-extlang-prefix-bad-response.json"
 
     # the variant 1901 carries Prefix: de in the registry, so it may not follow en (en-1901)
     @operation:cs-validate-code
@@ -211,7 +211,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-variant-prefix-bad-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-variant-prefix-bad-response.json"
 
     # the language subtag written in the wrong case (EN): valid, because BCP 47 tags are
     # case-insensitive, but the server returns normalized-code en and notes the difference
@@ -229,7 +229,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-case-language-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-case-language-response.json"
 
     # the region subtag written in the wrong case (en-us): valid, because BCP 47 tags are
     # case-insensitive, but the server returns normalized-code en-US and notes the difference
@@ -247,7 +247,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-case-region-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-case-region-response.json"
 
     # every subtag written in the wrong case (ZH-hans-cn): valid, because BCP 47 tags are
     # case-insensitive, but the server returns normalized-code zh-Hans-CN and notes the difference
@@ -265,7 +265,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-case-all-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-case-all-response.json"
 
   Rule: CodeSystem $subsumes
 
@@ -285,7 +285,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/subsumes-lang-base-region-response.json"
+      And $response should match the pattern in "langcodes/subsumes-lang-base-region-response.json"
 
     # en-US is subsumed by en
     @operation:subsumes
@@ -303,7 +303,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/subsumes-lang-reverse-response.json"
+      And $response should match the pattern in "langcodes/subsumes-lang-reverse-response.json"
 
     # a tag against itself
     @operation:subsumes
@@ -321,7 +321,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/subsumes-lang-equivalent-response.json"
+      And $response should match the pattern in "langcodes/subsumes-lang-equivalent-response.json"
 
     # zh subsumes zh-Hans-CN: script and region added
     @operation:subsumes
@@ -339,7 +339,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/subsumes-lang-script-response.json"
+      And $response should match the pattern in "langcodes/subsumes-lang-script-response.json"
 
     # en-US subsumes en-Latn-US, though the added script sits between the two subtags en-US names -
     # RFC 4647 extended filtering rather than basic
@@ -358,7 +358,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/subsumes-lang-skipped-script-response.json"
+      And $response should match the pattern in "langcodes/subsumes-lang-skipped-script-response.json"
 
     # de subsumes de-1901: a variant added
     @operation:subsumes
@@ -376,7 +376,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/subsumes-lang-variant-response.json"
+      And $response should match the pattern in "langcodes/subsumes-lang-variant-response.json"
 
     # en-US and en-GB: two regions of one language, neither subsumes the other
     @operation:subsumes
@@ -394,7 +394,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/subsumes-lang-siblings-response.json"
+      And $response should match the pattern in "langcodes/subsumes-lang-siblings-response.json"
 
     # zh-Hant and zh-Hans-CN: different scripts
     @operation:subsumes
@@ -412,7 +412,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/subsumes-lang-scripts-response.json"
+      And $response should match the pattern in "langcodes/subsumes-lang-scripts-response.json"
 
     # en-Latn and en-US: each states something the other does not
     @operation:subsumes
@@ -430,7 +430,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/subsumes-lang-crossed-response.json"
+      And $response should match the pattern in "langcodes/subsumes-lang-crossed-response.json"
 
     # en and fr: different languages
     @operation:subsumes
@@ -448,7 +448,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/subsumes-lang-unrelated-response.json"
+      And $response should match the pattern in "langcodes/subsumes-lang-unrelated-response.json"
 
     # EN subsumes en-us: BCP 47 tags are case-insensitive
     @operation:subsumes
@@ -466,7 +466,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/subsumes-lang-case-response.json"
+      And $response should match the pattern in "langcodes/subsumes-lang-case-response.json"
 
     # zh does not subsume zh-min-nan: a grandfathered tag is matched whole and has no components to
     # compare
@@ -485,7 +485,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/subsumes-lang-grandfathered-response.json"
+      And $response should match the pattern in "langcodes/subsumes-lang-grandfathered-response.json"
 
   Rule: ValueSet $validate-code
 
@@ -505,7 +505,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-filter-language-in-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-filter-language-in-response.json"
 
     # a code with a different language
     @operation:validate-code
@@ -523,7 +523,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-filter-language-out-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-filter-language-out-response.json"
 
     # a code in a region=US filter, whatever its language
     @operation:validate-code
@@ -541,7 +541,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-filter-region-in-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-filter-region-in-response.json"
 
     # a code with a different region
     @operation:validate-code
@@ -559,7 +559,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-filter-region-out-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-filter-region-out-response.json"
 
     # language and region both fixed: the script is free to vary
     @operation:validate-code
@@ -577,7 +577,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-filter-both-in-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-filter-both-in-response.json"
 
     # the language matches but the region does not, and the message says which rule failed
     @operation:validate-code
@@ -595,7 +595,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-filter-both-out-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-filter-both-out-response.json"
 
     # a script filter validates codes even though it cannot be expanded
     @operation:validate-code
@@ -613,7 +613,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-filter-script-in-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-filter-script-in-response.json"
 
     # a code in a different script
     @operation:validate-code
@@ -631,7 +631,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-filter-script-out-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-filter-script-out-response.json"
 
     # the bare language itself is in a language=en filter: a language filter matches the language,
     # however much or little else the tag says
@@ -650,7 +650,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-filter-language-bare-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-filter-language-bare-response.json"
 
     # a tag with no region at all is not in a region=US filter: an absent component does not match a
     # fixed one
@@ -669,7 +669,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-filter-region-absent-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-filter-region-absent-response.json"
 
     # a tag with no script at all is not in a script=Latn filter, even though Latn is the script
     # English is written in
@@ -688,7 +688,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-filter-script-absent-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-filter-script-absent-response.json"
 
     # the language matches but there is no region to match, so the code is not in the value set
     @operation:validate-code
@@ -706,7 +706,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/validate-lang-filter-both-absent-response.json"
+      And $response should match the pattern in "langcodes/validate-lang-filter-both-absent-response.json"
 
   Rule: ValueSet $expand
 
@@ -726,7 +726,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/expand-lang-language-response.json"
+      And $response should match the pattern in "langcodes/expand-lang-language-response.json"
 
     # language and region fixed expands to the scripts, starting with the tag that has none
     @operation:expand
@@ -744,7 +744,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/expand-lang-both-response.json"
+      And $response should match the pattern in "langcodes/expand-lang-both-response.json"
 
     # a fixed region is finite but far too large to expand, so it answers too-costly
     @operation:expand @http-code:4xx
@@ -760,7 +760,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "langcodes/expand-lang-region-response.json"
+      And $response should match the pattern in "langcodes/expand-lang-region-response.json"
 
     # a script alone leaves the language open, so there is nothing to enumerate
     @operation:expand @http-code:4xx
@@ -776,7 +776,7 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "langcodes/expand-lang-script-response.json"
+      And $response should match the pattern in "langcodes/expand-lang-script-response.json"
 
     # Tests the $expand operation for all language codes (a special case): the grammar is unbounded,
     # so the common-languages base value set is returned, marked as an incomplete (unclosed) expansion
@@ -793,4 +793,4 @@ Feature: Terminology server — langcodes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "langcodes/expand-langcodes-all-response.json"
+      And $response should match the pattern in "langcodes/expand-langcodes-all-response.json"

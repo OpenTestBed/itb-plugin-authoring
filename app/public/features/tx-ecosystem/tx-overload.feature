@@ -3,8 +3,8 @@
 # Suite "overload": 29 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:overload @mode:general
 Feature: Terminology server — overload
   A set of tests that test out handling of value sets that cross versions of the same code system
@@ -45,7 +45,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/overload-expand-all-response.json"
+      And $response should match the pattern in "overload/overload-expand-all-response.json"
 
     # Expanding two versions of the same code system, versioned
     @operation:expand
@@ -61,7 +61,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/overload-expand-all-versioned-response.json"
+      And $response should match the pattern in "overload/overload-expand-all-versioned-response.json"
 
     # Expanding two versions of the same code system, merging versions
     @operation:expand
@@ -77,7 +77,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/overload-expand-all-merged-response.json"
+      And $response should match the pattern in "overload/overload-expand-all-merged-response.json"
 
     # Expanding two versions of the same code system, codes selected from each version
     @operation:expand
@@ -93,7 +93,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/overload-expand-enum-good-response.json"
+      And $response should match the pattern in "overload/overload-expand-enum-good-response.json"
 
     # Expanding two versions of the same code system, codes selected from both versions - but you
     # can't do this
@@ -110,7 +110,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/overload-expand-enum-bad-response.json"
+      And $response should match the pattern in "overload/overload-expand-enum-bad-response.json"
 
     # Excluding one version of the code system from the other (cheap diff analysis)
     @operation:expand
@@ -126,7 +126,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/overload-expand-exclude-response.json"
+      And $response should match the pattern in "overload/overload-expand-exclude-response.json"
 
     # Excluding one version of the code system from the other (cheap diff analysis), versioned
     @operation:expand
@@ -142,7 +142,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/overload-expand-exclude-versioned-response.json"
+      And $response should match the pattern in "overload/overload-expand-exclude-versioned-response.json"
 
     # Excluding one version of the code system from the other (cheap diff analysis), merging versions
     @operation:expand
@@ -158,7 +158,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/overload-expand-exclude-merged-response.json"
+      And $response should match the pattern in "overload/overload-expand-exclude-merged-response.json"
 
     # Tests whether a system-version parameter forcing v1 overrides the value set's explicit
     # dual-version includes. It should not, since it's just a default
@@ -176,7 +176,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/overload-expand-all-sysver-response.json"
+      And $response should match the pattern in "overload/overload-expand-all-sysver-response.json"
 
     # Expands a value set that includes all of both versions but excludes only code2 from v1 by
     # enumeration, testing version-scoped exclusion of individual codes.
@@ -193,7 +193,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/overload-expand-exclude-enum-response.json"
+      And $response should match the pattern in "overload/overload-expand-exclude-enum-response.json"
 
     # Expands a value set with one versioned include (v1) and one unversioned include, testing how the
     # server resolves the unversioned reference.
@@ -210,7 +210,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/overload-expand-mixed-response.json"
+      And $response should match the pattern in "overload/overload-expand-mixed-response.json"
 
   Rule: ValueSet $validate-code
 
@@ -235,7 +235,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-good-response.json"
+      And $response should match the pattern in "overload/validate-good-response.json"
 
     # Is code in value set - in both versions, but display from the second
     @operation:validate-code
@@ -259,7 +259,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-good2-response.json"
+      And $response should match the pattern in "overload/validate-good2-response.json"
 
     # Is code in value set - in one version
     @operation:validate-code
@@ -282,7 +282,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-good3-response.json"
+      And $response should match the pattern in "overload/validate-good3-response.json"
 
     # Is code in value set - in one versions
     @operation:validate-code
@@ -305,7 +305,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-good4-response.json"
+      And $response should match the pattern in "overload/validate-good4-response.json"
 
     # Is code in value set - in one versions
     @operation:validate-code
@@ -329,7 +329,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-bad2-response.json"
+      And $response should match the pattern in "overload/validate-bad2-response.json"
 
     # code from one version, display from the other
     @operation:validate-code
@@ -354,7 +354,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-bad2v-response.json"
+      And $response should match the pattern in "overload/validate-bad2v-response.json"
 
     # Validates that code1 is rejected by the enum-good value set, since it's not in the enumerated
     # list.
@@ -378,7 +378,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-bad-enum-code1-response.json"
+      And $response should match the pattern in "overload/validate-bad-enum-code1-response.json"
 
     # Validates that code1 is rejected by the exclude value set, since it exists in both versions and
     # the v1 overlap is excluded.
@@ -402,7 +402,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-bad-exclude-code1-response.json"
+      And $response should match the pattern in "overload/validate-bad-exclude-code1-response.json"
 
     # Validates that a completely nonexistent code (code99) fails against the value set.
     @operation:validate-code
@@ -425,7 +425,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-bad-unknown-response.json"
+      And $response should match the pattern in "overload/validate-bad-unknown-response.json"
 
     # Validates that code1 with version pinned to 1.0.0 succeeds, confirming version-pinning works for
     # a code present in both versions
@@ -451,7 +451,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-bad-v1code2-wrongdisplay-response.json"
+      And $response should match the pattern in "overload/validate-bad-v1code2-wrongdisplay-response.json"
 
     # Validates that code4 with version explicitly pinned to 1.0.0 fails, since code4 only exists in
     # v2.
@@ -476,7 +476,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-bad-v1code4-response.json"
+      And $response should match the pattern in "overload/validate-bad-v1code4-response.json"
 
     # Validates that code3 with version explicitly pinned to 2.0.0 fails, since code3 only exists in
     # v1.
@@ -501,7 +501,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-bad-v2code3-response.json"
+      And $response should match the pattern in "overload/validate-bad-v2code3-response.json"
 
     # Tests the ambiguous case of code2 with display "Display 2" and no version pin, where the display
     # matches v1 but not v2
@@ -526,7 +526,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-good-code2-v1display-response.json"
+      And $response should match the pattern in "overload/validate-good-code2-v1display-response.json"
 
     # Validates code3 against the enum-good value set, which explicitly enumerates it from v1
     @operation:validate-code
@@ -549,7 +549,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-good-enum-code3-response.json"
+      And $response should match the pattern in "overload/validate-good-enum-code3-response.json"
 
     # Validates that code4 is accepted by the exclude value set, where it's the only code surviving
     # the v1 exclusion.
@@ -573,7 +573,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-good-exclude-code4-response.json"
+      And $response should match the pattern in "overload/validate-good-exclude-code4-response.json"
 
     # Validates that code1 with version pinned to 1.0.0 succeeds, confirming version-pinning works for
     # a code present in both versions.
@@ -598,7 +598,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-good-v1code1-response.json"
+      And $response should match the pattern in "overload/validate-good-v1code1-response.json"
 
     # Validates that code2 with version=1.0.0 and display "Display 2" succeeds, since that's the
     # correct display for v1.
@@ -624,7 +624,7 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-good-v1code2-display-response.json"
+      And $response should match the pattern in "overload/validate-good-v1code2-display-response.json"
 
     # Validates that a codeableConcept with both versions in it works fine.
     @operation:validate-code
@@ -657,4 +657,4 @@ Feature: Terminology server — overload
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "overload/validate-good2a-response.json"
+      And $response should match the pattern in "overload/validate-good2a-response.json"

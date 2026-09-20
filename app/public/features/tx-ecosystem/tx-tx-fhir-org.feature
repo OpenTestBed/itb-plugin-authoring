@@ -3,8 +3,8 @@
 # Suite "tx.fhir.org": 76 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:tx.fhir.org @mode:tx.fhir.org
 Feature: Terminology server — tx.fhir.org
   These are tx.fhir.org specific tests. There's no expectation that other servers will pass these
@@ -56,7 +56,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-validation-1-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-validation-1-response-parameters.json"
 
     @operation:cs-validate-code
     Scenario: loinc-validate-code
@@ -72,7 +72,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-code-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-code-response-parameters.json"
 
     @operation:cs-validate-code
     Scenario: loinc-validate-code-uz
@@ -89,7 +89,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-code-uz-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-code-uz-response-parameters.json"
 
     @operation:cs-validate-code
     Scenario: loinc-validate-discouraged-code
@@ -105,7 +105,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-code-discouraged-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-code-discouraged-response-parameters.json"
 
     # LOINC supplement test - code in the supplement, but english
     @operation:cs-validate-code
@@ -122,7 +122,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-code-supp1-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-code-supp1-response-parameters.json"
 
     # LOINC supplement test - code in the supplement, but german from the supplement
     @operation:cs-validate-code
@@ -140,7 +140,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-code-supp2-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-code-supp2-response-parameters.json"
 
     @operation:cs-validate-code
     Scenario: loinc-validate-part
@@ -156,7 +156,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-part-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-part-response-parameters.json"
 
     @operation:cs-validate-code
     Scenario: loinc-validate-list
@@ -172,7 +172,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-list-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-list-response-parameters.json"
 
     @operation:cs-validate-code
     Scenario: loinc-validate-answer
@@ -188,7 +188,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-answer-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-answer-response-parameters.json"
 
     @operation:cs-validate-code
     Scenario: loinc-validate-invalid
@@ -204,7 +204,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-invalid-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-invalid-response-parameters.json"
 
   Rule: CodeSystem $lookup
 
@@ -222,7 +222,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-lookup-code-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-lookup-code-response-parameters.json"
 
     @operation:lookup
     Scenario: loinc-lookup-part
@@ -238,7 +238,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-lookup-part-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-lookup-part-response-parameters.json"
 
     @operation:lookup
     Scenario: loinc-lookup-list
@@ -254,7 +254,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-lookup-list-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-lookup-list-response-parameters.json"
 
     @operation:lookup
     Scenario: loinc-lookup-answer
@@ -270,7 +270,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-lookup-answer-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-lookup-answer-response-parameters.json"
 
   Rule: ValueSet $expand
 
@@ -288,7 +288,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-enum-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-enum-response-valueSet.json"
 
     @operation:expand @http-code:4xx
     Scenario: loinc-expand-all
@@ -305,7 +305,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "tx.fhir.org/loinc-expand-all-response-outcome.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-all-response-outcome.json"
 
     # Attempt to expand the whole HGVS code system: it has a grammar and cannot be iterated, so a
     # not-supported OperationOutcome is expected
@@ -337,7 +337,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "tx.fhir.org/hgvs-expand-all-response-outcome.json"
+      And $response should match the pattern in "tx.fhir.org/hgvs-expand-all-response-outcome.json"
 
     @operation:expand
     Scenario: loinc-expand-all-limited
@@ -356,7 +356,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-all-limited-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-all-limited-response-valueSet.json"
 
     @operation:expand
     Scenario: loinc-expand-enum-bad
@@ -372,7 +372,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-enum-bad-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-enum-bad-response-valueSet.json"
 
     @operation:expand
     Scenario: loinc-expand-status
@@ -391,7 +391,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-status-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-status-response-valueSet.json"
 
     @operation:expand
     Scenario: loinc-expand-parent
@@ -407,7 +407,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-parent-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-parent-response-valueSet.json"
 
     @operation:expand
     Scenario: loinc-expand-class-regex
@@ -426,7 +426,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-class-regex-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-class-regex-response-valueSet.json"
 
     @operation:expand
     Scenario: loinc-expand-prop-component
@@ -442,7 +442,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-prop-component-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-prop-component-response-valueSet.json"
 
     @operation:expand
     Scenario: loinc-expand-prop-method
@@ -458,7 +458,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-prop-method-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-prop-method-response-valueSet.json"
 
     @operation:expand
     Scenario: loinc-expand-prop-component-str
@@ -474,7 +474,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-prop-component-str-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-prop-component-str-response-valueSet.json"
 
     @operation:expand
     Scenario: loinc-expand-prop-order-obs
@@ -492,7 +492,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-prop-order-obs-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-prop-order-obs-response-valueSet.json"
 
     @operation:expand
     Scenario: loinc-expand-concept-is-a
@@ -508,7 +508,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-concept-is-a-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-concept-is-a-response-valueSet.json"
 
     @operation:expand
     Scenario: loinc-expand-copyright
@@ -526,7 +526,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-copyright-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-copyright-response-valueSet.json"
 
     @operation:expand
     Scenario: loinc-expand-scale-type
@@ -545,7 +545,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-scale-type-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-scale-type-response-valueSet.json"
 
     @operation:expand
     Scenario: loinc-expand-list-request-parameters
@@ -560,7 +560,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-list-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-list-response-valueSet.json"
 
     @operation:expand
     Scenario: loinc-expand-filter-list-request-parameters
@@ -575,7 +575,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-filter-list-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-filter-list-response-valueSet.json"
 
     @operation:expand
     Scenario: loinc-expand-filter-dockind-request-parameters
@@ -594,7 +594,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-prop-dockind-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-prop-dockind-response-valueSet.json"
 
     # Test answers-for filters with LL code
     @operation:expand
@@ -610,7 +610,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-filter-answers-for1-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-filter-answers-for1-response-valueSet.json"
 
     # Test answers-for filters with normal code
     @operation:expand
@@ -626,7 +626,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-filter-answers-for2-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-filter-answers-for2-response-valueSet.json"
 
     # Test answer-list filters with normal code
     @operation:expand
@@ -642,7 +642,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-expand-filter-answer-list-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-expand-filter-answer-list-response-valueSet.json"
 
     # Test the inactive filter
     @operation:expand
@@ -682,7 +682,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-expand-active-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-expand-active-response-valueSet.json"
 
     # Test the inactive filter
     @operation:expand
@@ -722,7 +722,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-expand-inactive-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-expand-inactive-response-valueSet.json"
 
     # Test the inactive filter
     @operation:expand @http-code:4xx
@@ -758,7 +758,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "tx.fhir.org/snomed-expand-inactive2-response-valueSet.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-expand-inactive2-response-valueSet.json"
 
     # Test ModuleId filter
     @operation:expand
@@ -798,7 +798,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-expand-moduleid-1-response.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-expand-moduleid-1-response.json"
 
     # Test ModuleId filter
     @operation:expand
@@ -838,7 +838,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-expand-moduleid-2-response.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-expand-moduleid-2-response.json"
 
     # Test ModuleId filter
     @operation:expand
@@ -878,7 +878,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-expand-moduleid-3-response.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-expand-moduleid-3-response.json"
 
     # Test ModuleId filter
     @operation:expand
@@ -918,7 +918,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-expand-moduleid-4-response.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-expand-moduleid-4-response.json"
 
     # Test Property filter
     @operation:expand
@@ -958,7 +958,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-expand-property-1-response.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-expand-property-1-response.json"
 
     # Test Property filter
     @operation:expand
@@ -993,7 +993,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-expand-property-2-response.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-expand-property-2-response.json"
 
   Rule: ValueSet $validate-code
 
@@ -1011,7 +1011,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-enum-good-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-enum-good-response-parameters.json"
 
     @operation:validate-code
     Scenario: loinc-validate-enum-bad
@@ -1027,7 +1027,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-enum-bad-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-enum-bad-response-parameters.json"
 
     @operation:validate-code
     Scenario: loinc-validate-filter-prop-component-good
@@ -1043,7 +1043,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-filter-prop-component-good-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-filter-prop-component-good-response-parameters.json"
 
     @operation:validate-code
     Scenario: loinc-validate-filter-prop-component-bad
@@ -1059,7 +1059,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-filter-prop-component-bad-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-filter-prop-component-bad-response-parameters.json"
 
     @operation:validate-code
     Scenario: loinc-validate-filter-status-good
@@ -1075,7 +1075,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-filter-status-good-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-filter-status-good-response-parameters.json"
 
     @operation:validate-code
     Scenario: loinc-validate-filter-status-bad
@@ -1091,7 +1091,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-filter-status-bad-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-filter-status-bad-response-parameters.json"
 
     @operation:validate-code
     Scenario: loinc-validate-filter-class-regex-good
@@ -1107,7 +1107,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-filter-class-regex-good-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-filter-class-regex-good-response-parameters.json"
 
     @operation:validate-code
     Scenario: loinc-validate-filter-class-regex-bad
@@ -1123,7 +1123,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-filter-class-regex-bad-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-filter-class-regex-bad-response-parameters.json"
 
     @operation:validate-code
     Scenario: loinc-validate-filter-scale-type-good
@@ -1139,7 +1139,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-filter-scale-type-good-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-filter-scale-type-good-response-parameters.json"
 
     @operation:validate-code
     Scenario: loinc-validate-filter-scale-type-bad
@@ -1155,7 +1155,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-filter-scale-type-bad-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-filter-scale-type-bad-response-parameters.json"
 
     @operation:validate-code
     Scenario: loinc-validate-list-good
@@ -1171,7 +1171,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-list-good-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-list-good-response-parameters.json"
 
     @operation:validate-code
     Scenario: loinc-validate-list-bad
@@ -1187,7 +1187,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-list-bad-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-list-bad-response-parameters.json"
 
     @operation:validate-code
     Scenario: loinc-validate-filter-list-type-good
@@ -1203,7 +1203,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-filter-list-good-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-filter-list-good-response-parameters.json"
 
     @operation:validate-code
     Scenario: loinc-validate-filter-list-bad
@@ -1219,7 +1219,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-filter-list-bad-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-filter-list-bad-response-parameters.json"
 
     @operation:validate-code
     Scenario: loinc-validate-filter-dockind-type-good
@@ -1235,7 +1235,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-filter-prop-dockind-good-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-filter-prop-dockind-good-response-parameters.json"
 
     @operation:validate-code
     Scenario: loinc-validate-filter-dockind-bad
@@ -1251,7 +1251,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-filter-prop-dockind-bad-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-filter-prop-dockind-bad-response-parameters.json"
 
     # test classtype filter (numerical)
     @operation:validate-code
@@ -1268,7 +1268,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-filter-classtype-good-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-filter-classtype-good-response-parameters.json"
 
     # test classtype filter (numerical)
     @operation:validate-code
@@ -1285,7 +1285,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-validate-filter-classtype-bad-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-validate-filter-classtype-bad-response-parameters.json"
 
     # Test inactive filter
     @operation:validate-code
@@ -1322,7 +1322,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-validate-active-bad-response.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-validate-active-bad-response.json"
 
     # Test inactive filter
     @operation:validate-code
@@ -1359,7 +1359,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-validate-active-good-response.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-validate-active-good-response.json"
 
     # Test inactive filter
     @operation:validate-code
@@ -1396,7 +1396,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-validate-inactive-bad-response.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-validate-inactive-bad-response.json"
 
     # Test inactive filter
     @operation:validate-code
@@ -1433,7 +1433,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-validate-inactive-good-response.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-validate-inactive-good-response.json"
 
     # Test moduleid filter
     @operation:validate-code
@@ -1470,7 +1470,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-validate-moduleid-bad-response.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-validate-moduleid-bad-response.json"
 
     # Test moduleid filter
     @operation:validate-code
@@ -1507,7 +1507,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-validate-moduleid-good-response.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-validate-moduleid-good-response.json"
 
     # Test Property filter
     @operation:validate-code
@@ -1549,7 +1549,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-validate-property-bad-response.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-validate-property-bad-response.json"
 
     # Test Property filter
     @operation:validate-code
@@ -1591,7 +1591,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-validate-property-good-response.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-validate-property-good-response.json"
 
   Rule: ConceptMap $translate
 
@@ -1612,7 +1612,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/snomed-translate-response.json"
+      And $response should match the pattern in "tx.fhir.org/snomed-translate-response.json"
 
   Rule: CodeSystem $subsumes
 
@@ -1632,7 +1632,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-subsumes-equivalent-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-subsumes-equivalent-response-parameters.json"
 
     # A LOINC part subsumes a code beneath it in the multiaxial hierarchy
     @operation:subsumes
@@ -1650,7 +1650,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-subsumes-parent-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-subsumes-parent-response-parameters.json"
 
     # the mirror of loinc-subsumes-parent
     @operation:subsumes
@@ -1668,7 +1668,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-subsumes-child-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-subsumes-child-response-parameters.json"
 
     # Two unrelated LOINC codes
     @operation:subsumes
@@ -1686,7 +1686,7 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tx.fhir.org/loinc-subsumes-unrelated-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-subsumes-unrelated-response-parameters.json"
 
     # codeA is not a LOINC code
     @operation:subsumes @http-code:4xx
@@ -1704,4 +1704,4 @@ Feature: Terminology server — tx.fhir.org
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "tx.fhir.org/loinc-subsumes-unknown-code-response-parameters.json"
+      And $response should match the pattern in "tx.fhir.org/loinc-subsumes-unknown-code-response-parameters.json"

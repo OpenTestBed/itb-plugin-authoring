@@ -3,8 +3,8 @@
 # Suite "batch": 2 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:batch @mode:general
 Feature: Terminology server — batch
   Test Batch Validation
@@ -102,7 +102,7 @@ Feature: Terminology server — batch
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "batch/batch-validate-response-bundle.json"
+      And $response should match the pattern in "batch/batch-validate-response-bundle.json"
 
     # Simple use of the batch validate operation
     @operation:batch-validate
@@ -194,4 +194,4 @@ Feature: Terminology server — batch
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "batch/batch-validate-bad-response-bundle.json"
+      And $response should match the pattern in "batch/batch-validate-bad-response-bundle.json"

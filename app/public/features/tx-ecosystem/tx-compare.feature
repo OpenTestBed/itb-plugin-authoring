@@ -3,8 +3,8 @@
 # Suite "compare": 28 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:compare @mode:tx.fhir.org
 Feature: Terminology server — compare
   Tests for candidate new 'related' operation
@@ -48,7 +48,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-all-response.json"
+      And $response should match the pattern in "related/simple-all-response.json"
 
     # Checks that an all value is the same as itself, in the presence of the active flag = true
     @operation:compare
@@ -66,7 +66,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-active-response.json"
+      And $response should match the pattern in "related/simple-active-response.json"
 
     # Checks that an all value is the same as itself, in the presence of the active flag = false
     @operation:compare
@@ -84,7 +84,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-inactive-response.json"
+      And $response should match the pattern in "related/simple-inactive-response.json"
 
     # Checks that an all value is the same as itself, in the presence of an enumerated list
     @operation:compare
@@ -102,7 +102,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-enumerated-response.json"
+      And $response should match the pattern in "related/simple-enumerated-response.json"
 
     # Checks that an all value is the same as itself, in the presence of an is-a filter
     @operation:compare
@@ -120,7 +120,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-is-a-response.json"
+      And $response should match the pattern in "related/simple-is-a-response.json"
 
     # Checks that an all value is the same as itself, in the presence of an regex filter
     @operation:compare
@@ -138,7 +138,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-regex-1-response.json"
+      And $response should match the pattern in "related/simple-regex-1-response.json"
 
     # Checks that an all value is the same as itself, in the presence of a property regex filter
     @operation:compare
@@ -156,7 +156,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-regex-2-response.json"
+      And $response should match the pattern in "related/simple-regex-2-response.json"
 
     # Checks that two enumerated value sets are the same (concept order is different)
     @operation:compare
@@ -236,7 +236,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-lists-response.json"
+      And $response should match the pattern in "related/simple-lists-response.json"
 
     # Checks that two enumerated value sets are related such that the other contains this
     @operation:compare
@@ -313,7 +313,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-lists-more-response.json"
+      And $response should match the pattern in "related/simple-lists-more-response.json"
 
     # Checks that two enumerated value sets are related such that this contains the other
     @operation:compare
@@ -390,7 +390,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-lists-less-response.json"
+      And $response should match the pattern in "related/simple-lists-less-response.json"
 
     # Checks that two enumerated value sets are overlapping
     @operation:compare
@@ -458,7 +458,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-lists-over-response.json"
+      And $response should match the pattern in "related/simple-lists-over-response.json"
 
     # Checks that two enumerated value sets are the disjoint
     @operation:compare
@@ -523,7 +523,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-lists-disj-response.json"
+      And $response should match the pattern in "related/simple-lists-disj-response.json"
 
     # Checks that two valuesets that import the same entire code systems are identical
     @operation:compare
@@ -581,7 +581,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-systems-response.json"
+      And $response should match the pattern in "related/simple-systems-response.json"
 
     # Checks that two valuesets that import the same entire code systems are identical
     @operation:compare
@@ -639,7 +639,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-systems-response.json"
+      And $response should match the pattern in "related/simple-systems-response.json"
 
     # Checks that two valuesets that import the same entire code systems are identical
     @operation:compare
@@ -694,7 +694,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-systems-less-response.json"
+      And $response should match the pattern in "related/simple-systems-less-response.json"
 
     # Checks that two valuesets that import the same entire code systems are identical
     @operation:compare
@@ -749,7 +749,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-systems-more-response.json"
+      And $response should match the pattern in "related/simple-systems-more-response.json"
 
     # Checks that two valuesets that import the same entire code systems are identical
     @operation:compare
@@ -798,7 +798,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-systems-disj-response.json"
+      And $response should match the pattern in "related/simple-systems-disj-response.json"
 
     # Checks that two valuesets that import the same entire code systems are identical
     @operation:compare
@@ -850,7 +850,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-systems-over-response.json"
+      And $response should match the pattern in "related/simple-systems-over-response.json"
 
     # Checks that two valuesets that haev the same filters in different orders (as filters)
     @operation:compare
@@ -920,7 +920,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-filters-1-response.json"
+      And $response should match the pattern in "related/simple-filters-1-response.json"
 
     # Checks that two valuesets that haev the same filters in different orders (as includes)
     @operation:compare
@@ -1000,7 +1000,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-filters-2-response.json"
+      And $response should match the pattern in "related/simple-filters-2-response.json"
 
     # Checks that two valuesets that haev the same filters in different orders (as includes from the
     # same system)
@@ -1081,7 +1081,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-filters-3-response.json"
+      And $response should match the pattern in "related/simple-filters-3-response.json"
 
     # Checks that two valuesets that have the same content with incompatible definitions are
     # considered the same
@@ -1146,7 +1146,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-mixed-response.json"
+      And $response should match the pattern in "related/simple-mixed-response.json"
 
     # Checks that two valuesets that have the same content with incompatible definitions are
     # considered the same
@@ -1214,7 +1214,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-mixed-less-response.json"
+      And $response should match the pattern in "related/simple-mixed-less-response.json"
 
     # Checks that two valuesets that have the same content with incompatible definitions are
     # considered the same
@@ -1276,7 +1276,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-mixed-more-response.json"
+      And $response should match the pattern in "related/simple-mixed-more-response.json"
 
     # Checks that two valuesets that have the same content with incompatible definitions are
     # considered the same
@@ -1338,7 +1338,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-mixed-disj-response.json"
+      And $response should match the pattern in "related/simple-mixed-disj-response.json"
 
     # Checks that two valuesets that have the same content with incompatible definitions are
     # considered the same
@@ -1403,7 +1403,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-mixed-over-response.json"
+      And $response should match the pattern in "related/simple-mixed-over-response.json"
 
     # Checks that two valuesets that have the same content with incompatible definitions are
     # considered the same
@@ -1474,7 +1474,7 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-filters-less-response.json"
+      And $response should match the pattern in "related/simple-filters-less-response.json"
 
     # Checks that two valuesets that have the same content with incompatible definitions are
     # considered the same
@@ -1545,4 +1545,4 @@ Feature: Terminology server — compare
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/simple-filters-more-response.json"
+      And $response should match the pattern in "related/simple-filters-more-response.json"

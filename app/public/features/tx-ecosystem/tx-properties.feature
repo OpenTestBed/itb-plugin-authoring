@@ -3,8 +3,8 @@
 # Suite "properties": 2 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:properties @mode:general
 Feature: Terminology server — properties
   Testing the ValueSet.compose.property element
@@ -37,7 +37,7 @@ Feature: Terminology server — properties
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "properties/expand-with-VSCP-all-properties-wildcard-response.json"
+      And $response should match the pattern in "properties/expand-with-VSCP-all-properties-wildcard-response.json"
 
     # Expand a value set defined to request all properties using ValueSet.compose.property with
     # enumerated properties
@@ -54,4 +54,4 @@ Feature: Terminology server — properties
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "properties/expand-with-VSCP-all-properties-enums-response.json"
+      And $response should match the pattern in "properties/expand-with-VSCP-all-properties-enums-response.json"

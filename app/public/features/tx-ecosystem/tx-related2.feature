@@ -3,8 +3,8 @@
 # Suite "related2": 33 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:related2 @mode:tx.fhir.org
 Feature: Terminology server — related2
   Tests for $compare operation - comparing two value sets to determine their relationship
@@ -95,7 +95,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-eq-identical-def-response-parameters.json"
+      And $response should match the pattern in "related/compare-eq-identical-def-response-parameters.json"
 
     # Equivalent: same enumerated codes in different order
     @operation:compare
@@ -169,7 +169,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-eq-enum-reorder-response-parameters.json"
+      And $response should match the pattern in "related/compare-eq-enum-reorder-response-parameters.json"
 
     # Equivalent: multiple includes from same system in different order
     @operation:compare
@@ -257,7 +257,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-eq-multi-include-reorder-response-parameters.json"
+      And $response should match the pattern in "related/compare-eq-multi-include-reorder-response-parameters.json"
 
     # Equivalent: is-a filter vs explicit enumeration of same codes
     @operation:compare
@@ -329,7 +329,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-eq-filter-vs-enum-response-parameters.json"
+      And $response should match the pattern in "related/compare-eq-filter-vs-enum-response-parameters.json"
 
     # Equivalent: imported value set vs same definition inline
     @operation:compare
@@ -391,7 +391,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-eq-import-vs-inline-response-parameters.json"
+      And $response should match the pattern in "related/compare-eq-import-vs-inline-response-parameters.json"
 
     # Equivalent: child value sets imported in different order
     @operation:compare
@@ -457,7 +457,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-eq-import-reorder-response-parameters.json"
+      And $response should match the pattern in "related/compare-eq-import-reorder-response-parameters.json"
 
     # Equivalent (expansion): all CS1 minus C vs enumeration of same codes
     @operation:compare
@@ -545,7 +545,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-expeq-exclude-vs-enum-response-parameters.json"
+      And $response should match the pattern in "related/compare-expeq-exclude-vs-enum-response-parameters.json"
 
     # Equivalent (expansion): is-a root minus {A2,B2} vs enumeration of result
     @operation:compare
@@ -640,7 +640,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-expeq-exclude-partial-response-parameters.json"
+      And $response should match the pattern in "related/compare-expeq-exclude-partial-response-parameters.json"
 
     # Subset: is-a A is subset of is-a root
     @operation:compare
@@ -706,7 +706,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-sub-branch-vs-root-response-parameters.json"
+      And $response should match the pattern in "related/compare-sub-branch-vs-root-response-parameters.json"
 
     # Subset: enumerated {A1,A2} is subset of is-a A
     @operation:compare
@@ -773,7 +773,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-sub-enum-vs-filter-response-parameters.json"
+      And $response should match the pattern in "related/compare-sub-enum-vs-filter-response-parameters.json"
 
     # Subset: base VS is subset of VS that imports it and adds codes
     @operation:compare
@@ -842,7 +842,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-sub-base-vs-import-plus-response-parameters.json"
+      And $response should match the pattern in "related/compare-sub-base-vs-import-plus-response-parameters.json"
 
     # Subset: single leaf {A1} is subset of is-a A
     @operation:compare
@@ -906,7 +906,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-sub-leaf-vs-subtree-response-parameters.json"
+      And $response should match the pattern in "related/compare-sub-leaf-vs-subtree-response-parameters.json"
 
     # Superset: is-a root is superset of is-a A
     @operation:compare
@@ -972,7 +972,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-super-root-vs-branch-response-parameters.json"
+      And $response should match the pattern in "related/compare-super-root-vs-branch-response-parameters.json"
 
     # Subset (expansion): all minus {C,B1,B2} subset of all minus {C}
     @operation:compare
@@ -1054,7 +1054,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-expsub-exclude-narrower-response-parameters.json"
+      And $response should match the pattern in "related/compare-expsub-exclude-narrower-response-parameters.json"
 
     # Disjoint: value sets from entirely different code systems
     @operation:compare
@@ -1120,7 +1120,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-disj-diff-systems-response-parameters.json"
+      And $response should match the pattern in "related/compare-disj-diff-systems-response-parameters.json"
 
     # Disjoint: non-overlapping branches (A vs B) in same system
     @operation:compare
@@ -1186,7 +1186,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-disj-diff-branches-response-parameters.json"
+      And $response should match the pattern in "related/compare-disj-diff-branches-response-parameters.json"
 
     # Disjoint: enumerated codes with no intersection (flat system)
     @operation:compare
@@ -1254,7 +1254,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-disj-enum-no-intersection-response-parameters.json"
+      And $response should match the pattern in "related/compare-disj-enum-no-intersection-response-parameters.json"
 
     # Disjoint: multi-system value sets with no overlap
     @operation:compare
@@ -1336,7 +1336,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-disj-multi-system-response-parameters.json"
+      And $response should match the pattern in "related/compare-disj-multi-system-response-parameters.json"
 
     # Overlap: partially overlapping enumerations
     @operation:compare
@@ -1416,7 +1416,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-ov-enum-partial-response-parameters.json"
+      And $response should match the pattern in "related/compare-ov-enum-partial-response-parameters.json"
 
     # Overlap: is-a A overlaps with enum {A2, B1}
     @operation:compare
@@ -1483,7 +1483,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-ov-filter-vs-enum-response-parameters.json"
+      And $response should match the pattern in "related/compare-ov-filter-vs-enum-response-parameters.json"
 
     # Overlap: multi-include with partial overlap (is-a A+{B1} vs is-a B+{A1})
     @operation:compare
@@ -1569,7 +1569,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-ov-multi-include-partial-response-parameters.json"
+      And $response should match the pattern in "related/compare-ov-multi-include-partial-response-parameters.json"
 
     # Overlap: imported value sets creating partial overlap
     @operation:compare
@@ -1644,7 +1644,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-ov-import-partial-response-parameters.json"
+      And $response should match the pattern in "related/compare-ov-import-partial-response-parameters.json"
 
     # Overlap: cross-system partial overlap
     @operation:compare
@@ -1734,7 +1734,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-ov-cross-system-response-parameters.json"
+      And $response should match the pattern in "related/compare-ov-cross-system-response-parameters.json"
 
     # Overlap (expansion): overlap after excludes applied
     @operation:compare
@@ -1814,7 +1814,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-ov-exclude-partial-response-parameters.json"
+      And $response should match the pattern in "related/compare-ov-exclude-partial-response-parameters.json"
 
     # Unknown: two SNOMED is-a filters, can't determine relationship
     @operation:compare
@@ -1880,7 +1880,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-unk-snomed-both-filter-response-parameters.json"
+      And $response should match the pattern in "related/compare-unk-snomed-both-filter-response-parameters.json"
 
     # Unknown: SNOMED is-a filter vs enumerated SNOMED code
     @operation:compare
@@ -1944,7 +1944,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-unk-snomed-filter-vs-enum-response-parameters.json"
+      And $response should match the pattern in "related/compare-unk-snomed-filter-vs-enum-response-parameters.json"
 
     # Unknown: unknown code system, can't expand
     @operation:compare
@@ -2012,7 +2012,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-unk-unknown-system-response-parameters.json"
+      And $response should match the pattern in "related/compare-unk-unknown-system-response-parameters.json"
 
     # Version: same is-a A definition, CS1 v1 subset of CS1 v2
     @operation:compare
@@ -2080,7 +2080,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-ver-same-def-diff-cs-version-response-parameters.json"
+      And $response should match the pattern in "related/compare-ver-same-def-diff-cs-version-response-parameters.json"
 
     # Version: all CS1, v1 subset of v2
     @operation:compare
@@ -2134,7 +2134,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-ver-all-diff-cs-version-response-parameters.json"
+      And $response should match the pattern in "related/compare-ver-all-diff-cs-version-response-parameters.json"
 
     # Version: is-a B, CS1 v1 subset of CS1 v2
     @operation:compare
@@ -2202,7 +2202,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-ver-branch-diff-cs-version-response-parameters.json"
+      And $response should match the pattern in "related/compare-ver-branch-diff-cs-version-response-parameters.json"
 
     # Version: unversioned is-a A (uses latest=v2) superset of v1-pinned
     @operation:compare
@@ -2269,7 +2269,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-ver-unversioned-vs-pinned-response-parameters.json"
+      And $response should match the pattern in "related/compare-ver-unversioned-vs-pinned-response-parameters.json"
 
     # Version: same VS URL, v1 subset of v2 (definition changed)
     @operation:compare
@@ -2355,7 +2355,7 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-ver-same-vs-diff-version-response-parameters.json"
+      And $response should match the pattern in "related/compare-ver-same-vs-diff-version-response-parameters.json"
 
     # Version: import of v1-pinned VS subset of import of v2-pinned VS
     @operation:compare
@@ -2427,4 +2427,4 @@ Feature: Terminology server — related2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "related/compare-ver-import-version-cascade-response-parameters.json"
+      And $response should match the pattern in "related/compare-ver-import-version-cascade-response-parameters.json"

@@ -3,8 +3,8 @@
 # Suite "deprecated": 11 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:deprecated @mode:general
 Feature: Terminology server — deprecated
   Testing Deprecated+Withdrawn warnings
@@ -41,7 +41,7 @@ Feature: Terminology server — deprecated
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "deprecated/expand-withdrawn-response-valueSet.json"
+      And $response should match the pattern in "deprecated/expand-withdrawn-response-valueSet.json"
 
     @operation:expand
     Scenario: not-withdrawn
@@ -56,7 +56,7 @@ Feature: Terminology server — deprecated
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "deprecated/expand-not-withdrawn-response-valueSet.json"
+      And $response should match the pattern in "deprecated/expand-not-withdrawn-response-valueSet.json"
 
     @operation:expand
     Scenario: experimental
@@ -71,7 +71,7 @@ Feature: Terminology server — deprecated
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "deprecated/expand-experimental-response-valueSet.json"
+      And $response should match the pattern in "deprecated/expand-experimental-response-valueSet.json"
 
     @operation:expand
     Scenario: draft
@@ -86,7 +86,7 @@ Feature: Terminology server — deprecated
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "deprecated/expand-draft-response-valueSet.json"
+      And $response should match the pattern in "deprecated/expand-draft-response-valueSet.json"
 
     # Deprecating a code in a valueset
     @operation:expand
@@ -102,7 +102,7 @@ Feature: Terminology server — deprecated
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "deprecated/expand-deprecating-response-valueSet.json"
+      And $response should match the pattern in "deprecated/expand-deprecating-response-valueSet.json"
 
   Rule: ValueSet $validate-code
 
@@ -126,7 +126,7 @@ Feature: Terminology server — deprecated
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "deprecated/validate-withdrawn-response-parameters.json"
+      And $response should match the pattern in "deprecated/validate-withdrawn-response-parameters.json"
 
     @operation:validate-code
     Scenario: not-withdrawn-validate
@@ -148,7 +148,7 @@ Feature: Terminology server — deprecated
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "deprecated/validate-not-withdrawn-response-parameters.json"
+      And $response should match the pattern in "deprecated/validate-not-withdrawn-response-parameters.json"
 
     @operation:validate-code
     Scenario: experimental-validate
@@ -170,7 +170,7 @@ Feature: Terminology server — deprecated
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "deprecated/validate-experimental-response-parameters.json"
+      And $response should match the pattern in "deprecated/validate-experimental-response-parameters.json"
 
     @operation:validate-code
     Scenario: draft-validate
@@ -192,7 +192,7 @@ Feature: Terminology server — deprecated
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "deprecated/validate-draft-response-parameters.json"
+      And $response should match the pattern in "deprecated/validate-draft-response-parameters.json"
 
     # Validating a code that has been deprecated in the value set using a deprecated extension
     @operation:validate-code
@@ -215,7 +215,7 @@ Feature: Terminology server — deprecated
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "deprecated/validate-deprecating-response-parameters.json"
+      And $response should match the pattern in "deprecated/validate-deprecating-response-parameters.json"
 
     # Validating a code that has been deprecated in the value set
     @operation:validate-code
@@ -238,4 +238,4 @@ Feature: Terminology server — deprecated
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "deprecated/validate-deprecating-2-response-parameters.json"
+      And $response should match the pattern in "deprecated/validate-deprecating-2-response-parameters.json"

@@ -3,8 +3,8 @@
 # Suite "search": 6 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:search @mode:general
 Feature: Terminology server — search
   Tests for proper functioning of text search. Note what we're not interested in the
@@ -40,8 +40,8 @@ Feature: Terminology server — search
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                        |
+      And $response should match one of the patterns in:
+        | pattern                                         |
         | search/search-expand-all-yes-response.json      |
         | search/search-expand-all-yes-flat-response.json |
 
@@ -60,7 +60,7 @@ Feature: Terminology server — search
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "search/search-expand-all-no-response.json"
+      And $response should match the pattern in "search/search-expand-all-no-response.json"
 
     # Test a simple search
     @operation:expand
@@ -77,8 +77,8 @@ Feature: Terminology server — search
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                           |
+      And $response should match one of the patterns in:
+        | pattern                                            |
         | search/search-expand-filter-yes-response.json      |
         | search/search-expand-filter-yes-flat-response.json |
 
@@ -97,7 +97,7 @@ Feature: Terminology server — search
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "search/search-expand-filter-no-response.json"
+      And $response should match the pattern in "search/search-expand-filter-no-response.json"
 
     # Test a simple search
     @operation:expand
@@ -114,7 +114,7 @@ Feature: Terminology server — search
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "search/search-expand-enum-yes-response.json"
+      And $response should match the pattern in "search/search-expand-enum-yes-response.json"
 
     # Test a simple search that returns no results
     @operation:expand
@@ -131,4 +131,4 @@ Feature: Terminology server — search
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "search/search-expand-enum-no-response.json"
+      And $response should match the pattern in "search/search-expand-enum-no-response.json"

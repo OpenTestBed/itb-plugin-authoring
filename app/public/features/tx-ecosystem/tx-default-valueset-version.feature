@@ -3,8 +3,8 @@
 # Suite "default-valueset-version": 12 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:default-valueset-version @mode:general
 Feature: Terminology server — default-valueset-version
   Test the default-valueset-version parameter
@@ -40,7 +40,7 @@ Feature: Terminology server — default-valueset-version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "valueset-version/expand-direct-expand-one-response-valueSet.json"
+      And $response should match the pattern in "valueset-version/expand-direct-expand-one-response-valueSet.json"
 
     # Test the actual value set directly - v2
     @operation:expand
@@ -57,7 +57,7 @@ Feature: Terminology server — default-valueset-version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "valueset-version/expand-direct-expand-two-response-valueSet.json"
+      And $response should match the pattern in "valueset-version/expand-direct-expand-two-response-valueSet.json"
 
     # Test the actual value set indirectly - v1
     @operation:expand
@@ -73,7 +73,7 @@ Feature: Terminology server — default-valueset-version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "valueset-version/expand-indirect-expand-one-response-valueSet.json"
+      And $response should match the pattern in "valueset-version/expand-indirect-expand-one-response-valueSet.json"
 
     # Test the actual value set indirectly - v2
     @operation:expand
@@ -89,7 +89,7 @@ Feature: Terminology server — default-valueset-version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "valueset-version/expand-indirect-expand-two-response-valueSet.json"
+      And $response should match the pattern in "valueset-version/expand-indirect-expand-two-response-valueSet.json"
 
     # Test the actual value set indirectly - versionless
     @operation:expand
@@ -105,7 +105,7 @@ Feature: Terminology server — default-valueset-version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "valueset-version/expand-indirect-expand-zero-response-valueSet.json"
+      And $response should match the pattern in "valueset-version/expand-indirect-expand-zero-response-valueSet.json"
 
     # Test the actual value set indirectly - versionless, and specify a version
     @operation:expand
@@ -125,7 +125,7 @@ Feature: Terminology server — default-valueset-version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "valueset-version/expand-indirect-expand-zero-pinned-response-valueSet.json"
+      And $response should match the pattern in "valueset-version/expand-indirect-expand-zero-pinned-response-valueSet.json"
 
     # Test the actual value set indirectly - versionless, and specify a version that doesn't exist
     @operation:expand @http-code:4xx
@@ -145,7 +145,7 @@ Feature: Terminology server — default-valueset-version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "valueset-version/expand-indirect-expand-zero-pinned-wrong-response-outcome.json"
+      And $response should match the pattern in "valueset-version/expand-indirect-expand-zero-pinned-wrong-response-outcome.json"
 
   Rule: ValueSet $validate-code
 
@@ -170,7 +170,7 @@ Feature: Terminology server — default-valueset-version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "valueset-version/coding-indirect-one-response-parameters.json"
+      And $response should match the pattern in "valueset-version/coding-indirect-one-response-parameters.json"
 
     # Test the value set indirectly
     @operation:validate-code
@@ -193,7 +193,7 @@ Feature: Terminology server — default-valueset-version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "valueset-version/coding-indirect-two-response-parameters.json"
+      And $response should match the pattern in "valueset-version/coding-indirect-two-response-parameters.json"
 
     # Test the value set indirectly
     @operation:validate-code
@@ -216,7 +216,7 @@ Feature: Terminology server — default-valueset-version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "valueset-version/coding-indirect-zero-response-parameters.json"
+      And $response should match the pattern in "valueset-version/coding-indirect-zero-response-parameters.json"
 
     # Test the value set indirectly
     @operation:validate-code
@@ -243,7 +243,7 @@ Feature: Terminology server — default-valueset-version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "valueset-version/coding-indirect-zero-pinned-response-parameters.json"
+      And $response should match the pattern in "valueset-version/coding-indirect-zero-pinned-response-parameters.json"
 
     # Test the value set indirectly
     @operation:validate-code
@@ -270,4 +270,4 @@ Feature: Terminology server — default-valueset-version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "valueset-version/coding-indirect-zero-pinned-wrong-response-parameters.json"
+      And $response should match the pattern in "valueset-version/coding-indirect-zero-pinned-wrong-response-parameters.json"

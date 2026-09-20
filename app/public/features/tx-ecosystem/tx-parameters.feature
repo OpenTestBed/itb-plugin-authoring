@@ -3,8 +3,8 @@
 # Suite "parameters": 35 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:parameters @mode:general
 Feature: Terminology server — parameters
   Testing out the various expansion parameters that the IG publisher makes use of
@@ -49,8 +49,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                               |
+      And $response should match one of the patterns in:
+        | pattern                                                                |
         | parameters/parameters-expand-all-hierarchy-response-valueSet.json      |
         | parameters/parameters-expand-all-hierarchy-response-flat-valueSet.json |
 
@@ -69,7 +69,7 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-enum-hierarchy-response-valueSet.json"
+      And $response should match the pattern in "parameters/parameters-expand-enum-hierarchy-response-valueSet.json"
 
     # Expand an is-a value set, and preserve the hierarchy
     @operation:expand
@@ -86,8 +86,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                               |
+      And $response should match one of the patterns in:
+        | pattern                                                                |
         | parameters/parameters-expand-isa-hierarchy-response-valueSet.json      |
         | parameters/parameters-expand-isa-hierarchy-response-flat-valueSet.json |
 
@@ -107,8 +107,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                            |
+      And $response should match one of the patterns in:
+        | pattern                                                             |
         | parameters/parameters-expand-all-active-response-valueSet.json      |
         | parameters/parameters-expand-all-active-response-flat-valueSet.json |
 
@@ -128,8 +128,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                               |
+      And $response should match one of the patterns in:
+        | pattern                                                                |
         | parameters/parameters-expand-active-active-response-valueSet.json      |
         | parameters/parameters-expand-active-active-response-flat-valueSet.json |
 
@@ -149,8 +149,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                                 |
+      And $response should match one of the patterns in:
+        | pattern                                                                  |
         | parameters/parameters-expand-inactive-active-response-valueSet.json      |
         | parameters/parameters-expand-inactive-active-response-flat-valueSet.json |
 
@@ -170,7 +170,7 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-enum-active-response-valueSet.json"
+      And $response should match the pattern in "parameters/parameters-expand-enum-active-response-valueSet.json"
 
     # Expand an is-a value set, only the active codes
     @operation:expand
@@ -188,8 +188,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                            |
+      And $response should match one of the patterns in:
+        | pattern                                                             |
         | parameters/parameters-expand-isa-active-response-valueSet.json      |
         | parameters/parameters-expand-isa-active-response-flat-valueSet.json |
 
@@ -209,8 +209,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                              |
+      And $response should match one of the patterns in:
+        | pattern                                                               |
         | parameters/parameters-expand-all-inactive-response-valueSet.json      |
         | parameters/parameters-expand-all-inactive-response-flat-valueSet.json |
 
@@ -229,8 +229,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                                 |
+      And $response should match one of the patterns in:
+        | pattern                                                                  |
         | parameters/parameters-expand-active-inactive-response-valueSet.json      |
         | parameters/parameters-expand-active-inactive-response-flat-valueSet.json |
 
@@ -249,8 +249,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                                   |
+      And $response should match one of the patterns in:
+        | pattern                                                                    |
         | parameters/parameters-expand-inactive-inactive-response-valueSet.json      |
         | parameters/parameters-expand-inactive-inactive-response-flat-valueSet.json |
 
@@ -269,7 +269,7 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-enum-inactive-response-valueSet.json"
+      And $response should match the pattern in "parameters/parameters-expand-enum-inactive-response-valueSet.json"
 
     @operation:expand
     Scenario: parameters-expand-isa-inactive
@@ -286,8 +286,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                              |
+      And $response should match one of the patterns in:
+        | pattern                                                               |
         | parameters/parameters-expand-isa-inactive-response-valueSet.json      |
         | parameters/parameters-expand-isa-inactive-response-flat-valueSet.json |
 
@@ -306,8 +306,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                                  |
+      And $response should match one of the patterns in:
+        | pattern                                                                   |
         | parameters/parameters-expand-all-designations-response-valueSet.json      |
         | parameters/parameters-expand-all-designations-response-flat-valueSet.json |
 
@@ -326,7 +326,7 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-enum-designations-response-valueSet.json"
+      And $response should match the pattern in "parameters/parameters-expand-enum-designations-response-valueSet.json"
 
     @operation:expand
     Scenario: parameters-expand-isa-designations
@@ -343,8 +343,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                                  |
+      And $response should match one of the patterns in:
+        | pattern                                                                   |
         | parameters/parameters-expand-isa-designations-response-valueSet.json      |
         | parameters/parameters-expand-isa-designations-response-flat-valueSet.json |
 
@@ -364,8 +364,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                                 |
+      And $response should match one of the patterns in:
+        | pattern                                                                  |
         | parameters/parameters-expand-all-definitions-response-valueSet.json      |
         | parameters/parameters-expand-all-definitions-response-flat-valueSet.json |
 
@@ -385,7 +385,7 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-enum-definitions-response-valueSet.json"
+      And $response should match the pattern in "parameters/parameters-expand-enum-definitions-response-valueSet.json"
 
     @operation:expand
     Scenario: parameters-expand-isa-definitions
@@ -403,8 +403,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                                 |
+      And $response should match one of the patterns in:
+        | pattern                                                                  |
         | parameters/parameters-expand-isa-definitions-response-valueSet.json      |
         | parameters/parameters-expand-isa-definitions-response-flat-valueSet.json |
 
@@ -425,8 +425,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                                  |
+      And $response should match one of the patterns in:
+        | pattern                                                                   |
         | parameters/parameters-expand-all-definitions2-response-valueSet.json      |
         | parameters/parameters-expand-all-definitions2-response-flat-valueSet.json |
 
@@ -447,7 +447,7 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-enum-definitions2-response-valueSet.json"
+      And $response should match the pattern in "parameters/parameters-expand-enum-definitions2-response-valueSet.json"
 
     # specifically to test out http://hl7.org/fhir/StructureDefinition/valueset-concept-definition
     @operation:expand
@@ -467,7 +467,7 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-enum-definitions3-response-valueSet.json"
+      And $response should match the pattern in "parameters/parameters-expand-enum-definitions3-response-valueSet.json"
 
     @operation:expand
     Scenario: parameters-expand-isa-definitions2
@@ -486,8 +486,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                                  |
+      And $response should match one of the patterns in:
+        | pattern                                                                   |
         | parameters/parameters-expand-isa-definitions2-response-valueSet.json      |
         | parameters/parameters-expand-isa-definitions2-response-flat-valueSet.json |
 
@@ -506,8 +506,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                              |
+      And $response should match one of the patterns in:
+        | pattern                                                               |
         | parameters/parameters-expand-all-property-response-valueSet.json      |
         | parameters/parameters-expand-all-property-response-flat-valueSet.json |
 
@@ -526,7 +526,7 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-enum-property-response-valueSet.json"
+      And $response should match the pattern in "parameters/parameters-expand-enum-property-response-valueSet.json"
 
     @operation:expand
     Scenario: parameters-expand-isa-property
@@ -543,8 +543,8 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                                              |
+      And $response should match one of the patterns in:
+        | pattern                                                               |
         | parameters/parameters-expand-isa-property-response-valueSet.json      |
         | parameters/parameters-expand-isa-property-response-flat-valueSet.json |
 
@@ -563,7 +563,7 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-supplement-none-response.json"
+      And $response should match the pattern in "parameters/parameters-expand-supplement-none-response.json"
 
     # Make sure the useSupplement parameter works
     @operation:expand
@@ -582,7 +582,7 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-expand-supplement-good-response.json"
+      And $response should match the pattern in "parameters/parameters-expand-supplement-good-response.json"
 
     # Make sure the useSupplement parameter fails when it's not valid
     @operation:expand @http-code:4xx
@@ -601,7 +601,7 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "parameters/parameters-expand-supplement-bad-response.json"
+      And $response should match the pattern in "parameters/parameters-expand-supplement-bad-response.json"
 
   Rule: ValueSet $validate-code
 
@@ -627,7 +627,7 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-validate-supplement-none-response.json"
+      And $response should match the pattern in "parameters/parameters-validate-supplement-none-response.json"
 
     # Make sure the useSupplement parameter works for validation
     @operation:validate-code
@@ -652,7 +652,7 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-validate-supplement-good-response.json"
+      And $response should match the pattern in "parameters/parameters-validate-supplement-good-response.json"
 
     # Make sure the useSupplement parameter fails when it's not valid - for validation
     @operation:validate-code @http-code:4xx
@@ -677,7 +677,7 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "parameters/parameters-validate-supplement-bad-response.json"
+      And $response should match the pattern in "parameters/parameters-validate-supplement-bad-response.json"
 
   Rule: CodeSystem $lookup
 
@@ -696,7 +696,7 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-lookup-supplement-none-response.json"
+      And $response should match the pattern in "parameters/parameters-lookup-supplement-none-response.json"
 
     # Make sure the useSupplement parameter works for lookup
     @operation:lookup
@@ -714,7 +714,7 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "parameters/parameters-lookup-supplement-good-response.json"
+      And $response should match the pattern in "parameters/parameters-lookup-supplement-good-response.json"
 
     # Make sure the useSupplement parameter fails when it's not valid - for lookup
     @operation:lookup @http-code:4xx
@@ -732,4 +732,4 @@ Feature: Terminology server — parameters
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "parameters/parameters-lookup-supplement-bad-response.json"
+      And $response should match the pattern in "parameters/parameters-lookup-supplement-bad-response.json"

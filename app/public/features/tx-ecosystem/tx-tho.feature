@@ -3,8 +3,8 @@
 # Suite "tho": 32 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:tho @mode:general
 Feature: Terminology server — tho
   Misc assorted test cases from tho
@@ -43,7 +43,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/expand-vs-act-class-response-valueSet.json"
+      And $response should match the pattern in "tho/expand-vs-act-class-response-valueSet.json"
 
     # tests for proper handling of retired and deprecated codes (part 2)
     @operation:expand
@@ -61,7 +61,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/expand-vs-act-class-activeonly-response-valueSet.json"
+      And $response should match the pattern in "tho/expand-vs-act-class-activeonly-response-valueSet.json"
 
     # tests for proper handling of excluded codes
     @operation:expand
@@ -108,7 +108,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/expand-vs-act-exclusion-response.json"
+      And $response should match the pattern in "tho/expand-vs-act-exclusion-response.json"
 
   Rule: CodeSystem $subsumes
 
@@ -129,7 +129,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/subsumes-act-class-property-parent-response.json"
+      And $response should match the pattern in "tho/subsumes-act-class-property-parent-response.json"
 
     # the mirror of subsumes-act-class-property-parent
     @operation:subsumes
@@ -147,7 +147,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/subsumes-act-class-property-child-response.json"
+      And $response should match the pattern in "tho/subsumes-act-class-property-child-response.json"
 
     # subsumption follows the whole chain of subsumedBy properties, five links here
     @operation:subsumes
@@ -165,7 +165,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/subsumes-act-class-transitive-response.json"
+      And $response should match the pattern in "tho/subsumes-act-class-transitive-response.json"
 
     # the mirror of subsumes-act-class-transitive
     @operation:subsumes
@@ -183,7 +183,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/subsumes-act-class-transitive-reverse-response.json"
+      And $response should match the pattern in "tho/subsumes-act-class-transitive-reverse-response.json"
 
     # a code is equivalent to itself
     @operation:subsumes
@@ -201,7 +201,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/subsumes-act-class-equivalent-response.json"
+      And $response should match the pattern in "tho/subsumes-act-class-equivalent-response.json"
 
     # two codes with the same subsumedBy do not subsume each other
     @operation:subsumes
@@ -219,7 +219,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/subsumes-act-class-siblings-response.json"
+      And $response should match the pattern in "tho/subsumes-act-class-siblings-response.json"
 
     # both codes are under ACT, but neither is on the other's path to it
     @operation:subsumes
@@ -237,7 +237,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/subsumes-act-class-cross-branch-response.json"
+      And $response should match the pattern in "tho/subsumes-act-class-cross-branch-response.json"
 
     # ENTRY states subsumedBy twice: this is the first parent
     @operation:subsumes
@@ -255,7 +255,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/subsumes-act-class-multiple-parents-first-response.json"
+      And $response should match the pattern in "tho/subsumes-act-class-multiple-parents-first-response.json"
 
     # and this is the second - a relationship a nested hierarchy cannot express at all
     @operation:subsumes
@@ -273,7 +273,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/subsumes-act-class-multiple-parents-second-response.json"
+      And $response should match the pattern in "tho/subsumes-act-class-multiple-parents-second-response.json"
 
     # two parents of the same code are not thereby related to each other
     @operation:subsumes
@@ -291,7 +291,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/subsumes-act-class-multiple-parents-crossed-response.json"
+      And $response should match the pattern in "tho/subsumes-act-class-multiple-parents-crossed-response.json"
 
     # codeB is not in the code system
     @operation:subsumes @http-code:4xx
@@ -309,7 +309,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "tho/subsumes-act-class-unknown-code-response.json"
+      And $response should match the pattern in "tho/subsumes-act-class-unknown-code-response.json"
 
   Rule: ValueSet $validate-code
 
@@ -329,7 +329,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-isa-self-response.json"
+      And $response should match the pattern in "tho/validate-isa-self-response.json"
 
     # a code that names the filter code in a subsumedBy property is in the value set
     @operation:validate-code
@@ -347,7 +347,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-isa-child-response.json"
+      And $response should match the pattern in "tho/validate-isa-child-response.json"
 
     # and so is one five property links below it
     @operation:validate-code
@@ -365,7 +365,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-isa-deep-response.json"
+      And $response should match the pattern in "tho/validate-isa-deep-response.json"
 
     # is-a runs downwards: the code above the filter code is not in the value set
     @operation:validate-code
@@ -383,7 +383,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-isa-parent-response.json"
+      And $response should match the pattern in "tho/validate-isa-parent-response.json"
 
     # a code in a different branch of the same code system is not in it either
     @operation:validate-code
@@ -401,7 +401,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-isa-other-branch-response.json"
+      And $response should match the pattern in "tho/validate-isa-other-branch-response.json"
 
     # descendent-of excludes the code named in the filter - the one thing that distinguishes it from
     # is-a
@@ -420,7 +420,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-descendent-of-self-response.json"
+      And $response should match the pattern in "tho/validate-descendent-of-self-response.json"
 
     # everything below the filter code is in it, exactly as for is-a
     @operation:validate-code
@@ -438,7 +438,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-descendent-of-child-response.json"
+      And $response should match the pattern in "tho/validate-descendent-of-child-response.json"
 
     # including the deep descendants
     @operation:validate-code
@@ -456,7 +456,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-descendent-of-deep-response.json"
+      And $response should match the pattern in "tho/validate-descendent-of-deep-response.json"
 
     # is-not-a excludes the code named in the filter as well as its descendants
     @operation:validate-code
@@ -474,7 +474,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-isnota-self-response.json"
+      And $response should match the pattern in "tho/validate-isnota-self-response.json"
 
     # a deep descendant of the filter code is excluded too, not just the direct children
     @operation:validate-code
@@ -492,7 +492,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-isnota-descendant-response.json"
+      And $response should match the pattern in "tho/validate-isnota-descendant-response.json"
 
     # the code above the filter code is in an is-not-a value set
     @operation:validate-code
@@ -510,7 +510,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-isnota-parent-response.json"
+      And $response should match the pattern in "tho/validate-isnota-parent-response.json"
 
     # and so is a code in a different branch
     @operation:validate-code
@@ -528,7 +528,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-isnota-other-branch-response.json"
+      And $response should match the pattern in "tho/validate-isnota-other-branch-response.json"
 
     # child-of picks up a direct child, which act-class states in a subsumedBy property rather than by
     # nesting
@@ -547,7 +547,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-child-of-child-response.json"
+      And $response should match the pattern in "tho/validate-child-of-child-response.json"
 
     # child-of does not include the code named in the filter, unlike is-a
     @operation:validate-code
@@ -565,7 +565,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-child-of-self-response.json"
+      And $response should match the pattern in "tho/validate-child-of-self-response.json"
 
     # and it stops at the direct children, which is what separates it from descendent-of
     @operation:validate-code
@@ -583,7 +583,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-child-of-grandchild-response.json"
+      And $response should match the pattern in "tho/validate-child-of-grandchild-response.json"
 
     # ENTRY is in an is-a on _ActContainer, the second of its two subsumedBy parents - a relationship
     # nesting cannot express
@@ -602,7 +602,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-isa-second-parent-response.json"
+      And $response should match the pattern in "tho/validate-isa-second-parent-response.json"
 
     # a code under the other container is not in it
     @operation:validate-code
@@ -620,7 +620,7 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-isa-second-parent-out-response.json"
+      And $response should match the pattern in "tho/validate-isa-second-parent-out-response.json"
 
     # a code that is not in the code system at all, validated against a filtered value set
     @operation:validate-code
@@ -638,4 +638,4 @@ Feature: Terminology server — tho
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "tho/validate-isa-unknown-code-response.json"
+      And $response should match the pattern in "tho/validate-isa-unknown-code-response.json"

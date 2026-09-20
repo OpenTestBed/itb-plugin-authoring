@@ -3,8 +3,8 @@
 # Suite "version": 206 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:version @mode:general
 Feature: Terminology server — version
   Testing various version issues. There's two versions of a code system, and three value sets that
@@ -51,7 +51,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/simple-code-bad-version1-response-parameters.json"
+      And $response should match the pattern in "version/simple-code-bad-version1-response-parameters.json"
 
     # Coding. Invalid CodeSystem version. No ValueSet version pinning. No version parameters
     @operation:validate-code
@@ -75,7 +75,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/simple-coding-bad-version1-response-parameters.json"
+      And $response should match the pattern in "version/simple-coding-bad-version1-response-parameters.json"
 
     # CodeableConcept. Invalid CodeSystem version. No ValueSet version pinning. No version parameters
     @operation:validate-code
@@ -103,7 +103,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/simple-codeableconcept-bad-version1-response-parameters.json"
+      And $response should match the pattern in "version/simple-codeableconcept-bad-version1-response-parameters.json"
 
     # Check that a bad system with a version doesn't generate a warning that the version can't be
     # found
@@ -132,7 +132,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/simple-codeableconcept-bad-version2-response-parameters.json"
+      And $response should match the pattern in "version/simple-codeableconcept-bad-version2-response-parameters.json"
 
     # Code. Valid CodeSystem version. ValueSet pinned to same version. No version parameters
     @operation:validate-code
@@ -151,7 +151,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/simple-code-good-version-response-parameters.json"
+      And $response should match the pattern in "version/simple-code-good-version-response-parameters.json"
 
     # Coding. Valid CodeSystem version. ValueSet pinned to same version. No version parameters
     @operation:validate-code
@@ -175,7 +175,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/simple-coding-good-version-response-parameters.json"
+      And $response should match the pattern in "version/simple-coding-good-version-response-parameters.json"
 
     # CodeableConcept. Valid CodeSystem version. ValueSet pinned to same version. No version
     # parameters
@@ -204,7 +204,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/simple-codeableconcept-good-version-response-parameters.json"
+      And $response should match the pattern in "version/simple-codeableconcept-good-version-response-parameters.json"
 
     @operation:validate-code
     Scenario: version-version-profile-none
@@ -226,7 +226,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/version-profile-none-response-parameters.json"
+      And $response should match the pattern in "version/version-profile-none-response-parameters.json"
 
     @operation:validate-code
     Scenario: version-version-profile-default
@@ -250,7 +250,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/version-profile-default-response-parameters.json"
+      And $response should match the pattern in "version/version-profile-default-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-version-profile-coding
@@ -274,7 +274,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/version-profile-coding-response-parameters.json"
+      And $response should match the pattern in "version/version-profile-coding-response-parameters.json"
 
     # Coding. No CodeSystem version. No ValueSet version pinning. No version parameters
     @operation:validate-code
@@ -297,7 +297,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vnn-vsnn-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vsnn-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.x. No version parameters
     @operation:validate-code
@@ -321,7 +321,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vs1w-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vs1w-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.x. No version parameters
     @operation:validate-code
@@ -345,7 +345,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vs1wb-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vs1wb-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.0. No version parameters
     @operation:validate-code
@@ -370,7 +370,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vs10-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vs10-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.2. No version parameters
     @operation:validate-code
@@ -395,7 +395,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vs20-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vs20-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 2.4 (bad). No version parameters
     @operation:validate-code @http-code:4xx
@@ -420,7 +420,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/coding-v10-vsbb-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vsbb-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 2.4 (bad). No version parameters
     @operation:validate-code @http-code:4xx
@@ -445,7 +445,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/coding-v10-vsbb-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vsbb-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. No ValueSet version pinning. No version parameters
     @operation:validate-code
@@ -469,7 +469,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vsnn-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vsnn-response-parameters.json"
 
     # Coding. CodeSystem version 2.4 (bad). ValueSet version pinned to 1.0. No version parameters
     @operation:validate-code
@@ -494,7 +494,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vbb-vs10-response-parameters.json"
+      And $response should match the pattern in "version/coding-vbb-vs10-response-parameters.json"
 
     # Coding. CodeSystem version 2.4 (bad). No ValueSet version pinning. No version parameters
     @operation:validate-code
@@ -518,7 +518,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vbb-vsnn-response-parameters.json"
+      And $response should match the pattern in "version/coding-vbb-vsnn-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.x. No version parameters
     @operation:validate-code
@@ -541,7 +541,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vnn-vs1w-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vs1w-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.x. No version parameters
     @operation:validate-code
@@ -564,7 +564,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vnn-vs1wb-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vs1wb-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.0. No version parameters
     @operation:validate-code
@@ -588,7 +588,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vnn-vs10-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vs10-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 2.4 (bad). No version parameters
     @operation:validate-code @http-code:4xx
@@ -612,7 +612,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/coding-vnn-vsbb-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vsbb-response-parameters.json"
 
     # Coding. No CodeSystem version. No ValueSet version pinning. Version Parameter: default to 1.2.0
     @operation:validate-code
@@ -636,7 +636,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vnn-vsnn-default-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vsnn-default-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: default to
     # 1.2.0
@@ -662,7 +662,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vs1w-default-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vs1w-default-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: default to
     # 1.2.0
@@ -688,7 +688,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vs1wb-default-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vs1wb-default-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.0. Version Parameter: default to
     # 1.2.0
@@ -715,7 +715,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vs10-default-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vs10-default-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.2. Version Parameter: default to
     # 1.2.0
@@ -742,7 +742,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vs20-default-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vs20-default-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 2.4 (bad). Version Parameter: default
     # to 1.2.0
@@ -769,7 +769,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/coding-v10-vsbb-default-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vsbb-default-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. No ValueSet version pinning. Version Parameter: default to 1.2.0
     @operation:validate-code
@@ -794,7 +794,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vsnn-default-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vsnn-default-response-parameters.json"
 
     # Coding. CodeSystem version 2.4 (bad). ValueSet version pinned to 1.0. Version Parameter: default
     # to 1.2.0
@@ -821,7 +821,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vbb-vs10-default-response-parameters.json"
+      And $response should match the pattern in "version/coding-vbb-vs10-default-response-parameters.json"
 
     # Coding. CodeSystem version 2.4 (bad). No ValueSet version pinning. Version Parameter: default to
     # 1.2.0
@@ -847,7 +847,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vbb-vsnn-default-response-parameters.json"
+      And $response should match the pattern in "version/coding-vbb-vsnn-default-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.x. Version Parameter: default to
     # 1.2.0
@@ -872,7 +872,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vnn-vs1w-default-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vs1w-default-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.x. Version Parameter: default to
     # 1.2.0
@@ -897,7 +897,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vnn-vs1wb-default-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vs1wb-default-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.0. Version Parameter: default to
     # 1.2.0
@@ -923,7 +923,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vnn-vs10-default-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vs10-default-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 2.4 (bad). Version Parameter: default
     # to 1.2.0
@@ -949,7 +949,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/coding-vnn-vsbb-default-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vsbb-default-response-parameters.json"
 
     # Coding. No CodeSystem version. No ValueSet version pinning. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -975,7 +975,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vnn-vsnn-check-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vsnn-check-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: check is
     # 1.2.0
@@ -1003,7 +1003,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vs1w-check-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vs1w-check-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: check is
     # 1.2.0
@@ -1031,7 +1031,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vs1wb-check-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vs1wb-check-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.0. Version Parameter: check is1.2.0
     @operation:validate-code
@@ -1059,7 +1059,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vs10-check-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vs10-check-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.2. Version Parameter: check is
     # 1.2.0
@@ -1088,7 +1088,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vs20-check-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vs20-check-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 2.4 (bad). Version Parameter: check
     # is 1.2.0
@@ -1117,7 +1117,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/coding-v10-vsbb-check-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vsbb-check-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. No ValueSet version pinning. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -1144,7 +1144,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vsnn-check-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vsnn-check-response-parameters.json"
 
     # Coding. CodeSystem version 2.4 (bad). ValueSet version pinned to 1.0. Version Parameter: check
     # is 1.2.0
@@ -1173,7 +1173,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vbb-vs10-check-response-parameters.json"
+      And $response should match the pattern in "version/coding-vbb-vs10-check-response-parameters.json"
 
     # Coding. CodeSystem version 2.4 (bad). No ValueSet version pinning. Version Parameter: check is
     # 1.2.0
@@ -1201,7 +1201,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vbb-vsnn-check-response-parameters.json"
+      And $response should match the pattern in "version/coding-vbb-vsnn-check-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.x. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -1227,7 +1227,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vnn-vs1w-check-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vs1w-check-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.x. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -1253,7 +1253,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vnn-vs1wb-check-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vs1wb-check-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.0. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -1280,7 +1280,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vnn-vs10-check-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vs10-check-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 2.4 (bad). Version Parameter: check is
     # 1.2.0
@@ -1308,7 +1308,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/coding-vnn-vsbb-check-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vsbb-check-response-parameters.json"
 
     # Coding. No CodeSystem version. No ValueSet version pinning. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -1335,7 +1335,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vnn-vsnn-force-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vsnn-force-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: force to
     # 1.2.0
@@ -1364,7 +1364,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vs1w-force-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vs1w-force-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: force to
     # 1.2.0
@@ -1393,7 +1393,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vs1wb-force-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vs1wb-force-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.0. Version Parameter: force to
     # 1.2.0
@@ -1423,7 +1423,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vs10-force-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vs10-force-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.2. Version Parameter: force to
     # 1.2.0
@@ -1453,7 +1453,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vs20-force-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vs20-force-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 2.4 (bad). Version Parameter: force
     # to 1.2.0
@@ -1483,7 +1483,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/coding-v10-vsbb-force-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vsbb-force-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. No ValueSet version pinning. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -1511,7 +1511,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-v10-vsnn-force-response-parameters.json"
+      And $response should match the pattern in "version/coding-v10-vsnn-force-response-parameters.json"
 
     # Coding. CodeSystem version 2.4 (bad). ValueSet version pinned to 1.0. Version Parameter: force
     # to 1.2.0
@@ -1541,7 +1541,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vbb-vs10-force-response-parameters.json"
+      And $response should match the pattern in "version/coding-vbb-vs10-force-response-parameters.json"
 
     # Coding. CodeSystem version 2.4 (bad). No ValueSet version pinning. Version Parameter: force to
     # 1.2.0
@@ -1570,7 +1570,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vbb-vsnn-force-response-parameters.json"
+      And $response should match the pattern in "version/coding-vbb-vsnn-force-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.x. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -1597,7 +1597,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vnn-vs1w-force-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vs1w-force-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.x. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -1624,7 +1624,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vnn-vs1wb-force-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vs1wb-force-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.0. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -1652,7 +1652,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/coding-vnn-vs10-force-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vs10-force-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 2.4 (bad). Version Parameter: force to
     # 1.2.0
@@ -1681,7 +1681,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/coding-vnn-vsbb-force-response-parameters.json"
+      And $response should match the pattern in "version/coding-vnn-vsbb-force-response-parameters.json"
 
     # Coding. No CodeSystem version. No ValueSet version pinning. No version parameters
     @operation:validate-code
@@ -1708,7 +1708,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vnn-vsnn-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vsnn-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.x. No version parameters
     @operation:validate-code
@@ -1736,7 +1736,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vs1w-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vs1w-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.x. No version parameters
     @operation:validate-code
@@ -1764,7 +1764,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vs1wb-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vs1wb-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.0. No version parameters
     @operation:validate-code
@@ -1793,7 +1793,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vs10-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vs10-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.2. No version parameters
     @operation:validate-code
@@ -1822,7 +1822,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vs20-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vs20-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 2.4 (bad). No version parameters
     @operation:validate-code @http-code:4xx
@@ -1851,7 +1851,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/codeableconcept-v10-vsbb-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vsbb-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 2.4 (bad). No version parameters
     @operation:validate-code @http-code:4xx
@@ -1880,7 +1880,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/codeableconcept-v10-vsbb-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vsbb-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. No ValueSet version pinning. No version parameters
     @operation:validate-code
@@ -1908,7 +1908,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vsnn-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vsnn-response-parameters.json"
 
     # Coding. CodeSystem version 2.4 (bad). ValueSet version pinned to 1.0. No version parameters
     @operation:validate-code
@@ -1937,7 +1937,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vbb-vs10-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vbb-vs10-response-parameters.json"
 
     # Coding. CodeSystem version 2.4 (bad). No ValueSet version pinning. No version parameters
     @operation:validate-code
@@ -1965,7 +1965,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vbb-vsnn-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vbb-vsnn-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.x. No version parameters
     @operation:validate-code
@@ -1992,7 +1992,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vnn-vs1w-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vs1w-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.x. No version parameters
     @operation:validate-code
@@ -2019,7 +2019,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vnn-vs1wb-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vs1wb-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.0. No version parameters
     @operation:validate-code
@@ -2047,7 +2047,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vnn-vs10-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vs10-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 2.4 (bad). No version parameters
     @operation:validate-code @http-code:4xx
@@ -2075,7 +2075,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/codeableconcept-vnn-vsbb-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vsbb-response-parameters.json"
 
     # Coding. No CodeSystem version. No ValueSet version pinning. Version Parameter: default to 1.2.0
     @operation:validate-code
@@ -2103,7 +2103,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vnn-vsnn-default-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vsnn-default-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: default to
     # 1.2.0
@@ -2133,7 +2133,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vs1w-default-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vs1w-default-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: default to
     # 1.2.0
@@ -2163,7 +2163,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vs1wb-default-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vs1wb-default-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.0. Version Parameter: default to
     # 1.2.0
@@ -2194,7 +2194,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vs10-default-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vs10-default-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.2. Version Parameter: default to
     # 1.2.0
@@ -2225,7 +2225,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vs20-default-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vs20-default-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 2.4 (bad). Version Parameter: default
     # to 1.2.0
@@ -2256,7 +2256,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/codeableconcept-v10-vsbb-default-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vsbb-default-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. No ValueSet version pinning. Version Parameter: default to 1.2.0
     @operation:validate-code
@@ -2285,7 +2285,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vsnn-default-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vsnn-default-response-parameters.json"
 
     # Coding. CodeSystem version 2.4 (bad). ValueSet version pinned to 1.0. Version Parameter: default
     # to 1.2.0
@@ -2316,7 +2316,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vbb-vs10-default-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vbb-vs10-default-response-parameters.json"
 
     # Coding. CodeSystem version 2.4 (bad). No ValueSet version pinning. Version Parameter: default to
     # 1.2.0
@@ -2346,7 +2346,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vbb-vsnn-default-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vbb-vsnn-default-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.x. Version Parameter: default to
     # 1.2.0
@@ -2375,7 +2375,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vnn-vs1w-default-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vs1w-default-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.x. Version Parameter: default to
     # 1.2.0
@@ -2404,7 +2404,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vnn-vs1wb-default-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vs1wb-default-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.0. Version Parameter: default to
     # 1.2.0
@@ -2434,7 +2434,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vnn-vs10-default-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vs10-default-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 2.4 (bad). Version Parameter: default
     # to 1.2.0
@@ -2464,7 +2464,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/codeableconcept-vnn-vsbb-default-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vsbb-default-response-parameters.json"
 
     # Coding. No CodeSystem version. No ValueSet version pinning. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -2494,7 +2494,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vnn-vsnn-check-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vsnn-check-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: check is
     # 1.2.0
@@ -2526,7 +2526,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vs1w-check-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vs1w-check-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: check is
     # 1.2.0
@@ -2558,7 +2558,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vs1wb-check-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vs1wb-check-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.0. Version Parameter: check is1.2.0
     @operation:validate-code
@@ -2590,7 +2590,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vs10-check-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vs10-check-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.2. Version Parameter: check is
     # 1.2.0
@@ -2623,7 +2623,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vs20-check-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vs20-check-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 2.4 (bad). Version Parameter: check
     # is 1.2.0
@@ -2656,7 +2656,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/codeableconcept-v10-vsbb-check-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vsbb-check-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. No ValueSet version pinning. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -2687,7 +2687,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vsnn-check-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vsnn-check-response-parameters.json"
 
     # Coding. CodeSystem version 2.4 (bad). ValueSet version pinned to 1.0. Version Parameter: check
     # is 1.2.0
@@ -2720,7 +2720,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vbb-vs10-check-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vbb-vs10-check-response-parameters.json"
 
     # Coding. CodeSystem version 2.4 (bad). No ValueSet version pinning. Version Parameter: check is
     # 1.2.0
@@ -2752,7 +2752,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vbb-vsnn-check-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vbb-vsnn-check-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.x. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -2782,7 +2782,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vnn-vs1w-check-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vs1w-check-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.x. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -2812,7 +2812,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vnn-vs1wb-check-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vs1wb-check-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.0. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -2843,7 +2843,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vnn-vs10-check-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vs10-check-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 2.4 (bad). Version Parameter: check is
     # 1.2.0
@@ -2875,7 +2875,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/codeableconcept-vnn-vsbb-check-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vsbb-check-response-parameters.json"
 
     # Coding. No CodeSystem version. No ValueSet version pinning. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -2906,7 +2906,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vnn-vsnn-force-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vsnn-force-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: force to
     # 1.2.0
@@ -2939,7 +2939,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vs1w-force-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vs1w-force-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: force to
     # 1.2.0
@@ -2972,7 +2972,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vs1wb-force-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vs1wb-force-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.0. Version Parameter: force to
     # 1.2.0
@@ -3006,7 +3006,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vs10-force-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vs10-force-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 1.2. Version Parameter: force to
     # 1.2.0
@@ -3040,7 +3040,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vs20-force-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vs20-force-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. ValueSet version pinned to 2.4 (bad). Version Parameter: force
     # to 1.2.0
@@ -3074,7 +3074,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/codeableconcept-v10-vsbb-force-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vsbb-force-response-parameters.json"
 
     # Coding. CodeSystem version 1.0. No ValueSet version pinning. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -3106,7 +3106,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-v10-vsnn-force-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-v10-vsnn-force-response-parameters.json"
 
     # Coding. CodeSystem version 2.4 (bad). ValueSet version pinned to 1.0. Version Parameter: force
     # to 1.2.0
@@ -3140,7 +3140,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vbb-vs10-force-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vbb-vs10-force-response-parameters.json"
 
     # Coding. CodeSystem version 2.4 (bad). No ValueSet version pinning. Version Parameter: force to
     # 1.2.0
@@ -3173,7 +3173,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vbb-vsnn-force-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vbb-vsnn-force-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.x. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -3204,7 +3204,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vnn-vs1w-force-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vs1w-force-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.x. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -3235,7 +3235,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vnn-vs1wb-force-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vs1wb-force-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 1.0. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -3267,7 +3267,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/codeableconcept-vnn-vs10-force-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vs10-force-response-parameters.json"
 
     # Coding. No CodeSystem version. ValueSet version pinned to 2.4 (bad). Version Parameter: force to
     # 1.2.0
@@ -3300,7 +3300,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/codeableconcept-vnn-vsbb-force-response-parameters.json"
+      And $response should match the pattern in "version/codeableconcept-vnn-vsbb-force-response-parameters.json"
 
     # code. No CodeSystem version. No ValueSet version pinning. No version parameters
     @operation:validate-code
@@ -3318,7 +3318,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vnn-vsnn-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vsnn-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 1.x. No version parameters
     @operation:validate-code
@@ -3337,7 +3337,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vs1w-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vs1w-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 1.x. No version parameters
     @operation:validate-code
@@ -3356,7 +3356,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vs1wb-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vs1wb-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 1.0. No version parameters
     @operation:validate-code
@@ -3376,7 +3376,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vs10-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vs10-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 1.2. No version parameters
     @operation:validate-code
@@ -3396,7 +3396,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vs20-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vs20-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 2.4 (bad). No version parameters
     @operation:validate-code @http-code:4xx
@@ -3416,7 +3416,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/code-v10-vsbb-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vsbb-response-parameters.json"
 
     # code. CodeSystem version 1.0. No ValueSet version pinning. No version parameters
     @operation:validate-code
@@ -3435,7 +3435,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vsnn-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vsnn-response-parameters.json"
 
     # code. CodeSystem version 2.4 (bad). ValueSet version pinned to 1.0. No version parameters
     @operation:validate-code
@@ -3455,7 +3455,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vbb-vs10-response-parameters.json"
+      And $response should match the pattern in "version/code-vbb-vs10-response-parameters.json"
 
     # code. CodeSystem version 2.4 (bad). No ValueSet version pinning. No version parameters
     @operation:validate-code
@@ -3474,7 +3474,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vbb-vsnn-response-parameters.json"
+      And $response should match the pattern in "version/code-vbb-vsnn-response-parameters.json"
 
     # code. No CodeSystem version. ValueSet version pinned to 1.x. No version parameters
     @operation:validate-code
@@ -3492,7 +3492,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vnn-vs1w-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vs1w-response-parameters.json"
 
     # code. No CodeSystem version. ValueSet version pinned to 1.x. No version parameters
     @operation:validate-code
@@ -3510,7 +3510,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vnn-vs1wb-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vs1wb-response-parameters.json"
 
     # code. No CodeSystem version. ValueSet version pinned to 1.0. No version parameters
     @operation:validate-code
@@ -3529,7 +3529,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vnn-vs10-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vs10-response-parameters.json"
 
     # code. No CodeSystem version. ValueSet version pinned to 2.4 (bad). No version parameters
     @operation:validate-code @http-code:4xx
@@ -3548,7 +3548,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/code-vnn-vsbb-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vsbb-response-parameters.json"
 
     # code. No CodeSystem version. No ValueSet version pinning. Version Parameter: default to 1.2.0
     @operation:validate-code
@@ -3567,7 +3567,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vnn-vsnn-default-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vsnn-default-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: default to
     # 1.2.0
@@ -3588,7 +3588,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vs1w-default-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vs1w-default-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: default to
     # 1.2.0
@@ -3609,7 +3609,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vs1wb-default-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vs1wb-default-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 1.0. Version Parameter: default to
     # 1.2.0
@@ -3631,7 +3631,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vs10-default-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vs10-default-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 1.2. Version Parameter: default to
     # 1.2.0
@@ -3653,7 +3653,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vs20-default-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vs20-default-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 2.4 (bad). Version Parameter: default
     # to 1.2.0
@@ -3675,7 +3675,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/code-v10-vsbb-default-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vsbb-default-response-parameters.json"
 
     # code. CodeSystem version 1.0. No ValueSet version pinning. Version Parameter: default to 1.2.0
     @operation:validate-code
@@ -3695,7 +3695,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vsnn-default-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vsnn-default-response-parameters.json"
 
     # code. CodeSystem version 2.4 (bad). ValueSet version pinned to 1.0. Version Parameter: default
     # to 1.2.0
@@ -3717,7 +3717,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vbb-vs10-default-response-parameters.json"
+      And $response should match the pattern in "version/code-vbb-vs10-default-response-parameters.json"
 
     # code. CodeSystem version 2.4 (bad). No ValueSet version pinning. Version Parameter: default to
     # 1.2.0
@@ -3738,7 +3738,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vbb-vsnn-default-response-parameters.json"
+      And $response should match the pattern in "version/code-vbb-vsnn-default-response-parameters.json"
 
     # code. No CodeSystem version. ValueSet version pinned to 1.x. Version Parameter: default to 1.2.0
     @operation:validate-code
@@ -3757,7 +3757,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vnn-vs1wb-default-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vs1wb-default-response-parameters.json"
 
     # code. No CodeSystem version. ValueSet version pinned to 1.0. Version Parameter: default to 1.2.0
     @operation:validate-code
@@ -3777,7 +3777,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vnn-vs10-default-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vs10-default-response-parameters.json"
 
     # code. No CodeSystem version. ValueSet version pinned to 2.4 (bad). Version Parameter: default to
     # 1.2.0
@@ -3798,7 +3798,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/code-vnn-vsbb-default-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vsbb-default-response-parameters.json"
 
     # code. No CodeSystem version. No ValueSet version pinning. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -3819,7 +3819,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vnn-vsnn-check-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vsnn-check-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -3841,7 +3841,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vs1w-check-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vs1w-check-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -3863,7 +3863,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vs1wb-check-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vs1wb-check-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 1.0. Version Parameter: check is1.2.0
     @operation:validate-code
@@ -3886,7 +3886,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vs10-check-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vs10-check-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 1.2. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -3909,7 +3909,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vs20-check-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vs20-check-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 2.4 (bad). Version Parameter: check is
     # 1.2.0
@@ -3933,7 +3933,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/code-v10-vsbb-check-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vsbb-check-response-parameters.json"
 
     # code. CodeSystem version 1.0. No ValueSet version pinning. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -3955,7 +3955,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vsnn-check-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vsnn-check-response-parameters.json"
 
     # code. CodeSystem version 2.4 (bad). ValueSet version pinned to 1.0. Version Parameter: check is
     # 1.2.0
@@ -3979,7 +3979,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vbb-vs10-check-response-parameters.json"
+      And $response should match the pattern in "version/code-vbb-vs10-check-response-parameters.json"
 
     # code. CodeSystem version 2.4 (bad). No ValueSet version pinning. Version Parameter: check is
     # 1.2.0
@@ -4002,7 +4002,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vbb-vsnn-check-response-parameters.json"
+      And $response should match the pattern in "version/code-vbb-vsnn-check-response-parameters.json"
 
     # code. No CodeSystem version. ValueSet version pinned to 1.x. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -4023,7 +4023,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vnn-vs1w-check-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vs1w-check-response-parameters.json"
 
     # code. No CodeSystem version. ValueSet version pinned to 1.x. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -4044,7 +4044,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vnn-vs1wb-check-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vs1wb-check-response-parameters.json"
 
     # code. No CodeSystem version. ValueSet version pinned to 1.0. Version Parameter: check is 1.2.0
     @operation:validate-code
@@ -4066,7 +4066,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vnn-vs10-check-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vs10-check-response-parameters.json"
 
     # code. No CodeSystem version. ValueSet version pinned to 2.4 (bad). Version Parameter: check is
     # 1.2.0
@@ -4089,7 +4089,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/code-vnn-vsbb-check-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vsbb-check-response-parameters.json"
 
     # code. No CodeSystem version. No ValueSet version pinning. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -4111,7 +4111,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vnn-vsnn-force-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vsnn-force-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -4134,7 +4134,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vs1w-force-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vs1w-force-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 1.x. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -4157,7 +4157,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vs1wb-force-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vs1wb-force-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 1.0. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -4181,7 +4181,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vs10-force-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vs10-force-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 1.2. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -4205,7 +4205,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vs20-force-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vs20-force-response-parameters.json"
 
     # code. CodeSystem version 1.0. ValueSet version pinned to 2.4 (bad). Version Parameter: force to
     # 1.2.0
@@ -4230,7 +4230,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/code-v10-vsbb-force-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vsbb-force-response-parameters.json"
 
     # code. CodeSystem version 1.0. No ValueSet version pinning. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -4253,7 +4253,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-v10-vsnn-force-response-parameters.json"
+      And $response should match the pattern in "version/code-v10-vsnn-force-response-parameters.json"
 
     # code. CodeSystem version 2.4 (bad). ValueSet version pinned to 1.0. Version Parameter: force to
     # 1.2.0
@@ -4278,7 +4278,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vbb-vs10-force-response-parameters.json"
+      And $response should match the pattern in "version/code-vbb-vs10-force-response-parameters.json"
 
     # code. CodeSystem version 2.4 (bad). No ValueSet version pinning. Version Parameter: force to
     # 1.2.0
@@ -4302,7 +4302,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vbb-vsnn-force-response-parameters.json"
+      And $response should match the pattern in "version/code-vbb-vsnn-force-response-parameters.json"
 
     # code. No CodeSystem version. ValueSet version pinned to 1.x. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -4324,7 +4324,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vnn-vs1w-force-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vs1w-force-response-parameters.json"
 
     # code. No CodeSystem version. ValueSet version pinned to 1.x. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -4346,7 +4346,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vnn-vs1wb-force-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vs1wb-force-response-parameters.json"
 
     # code. No CodeSystem version. ValueSet version pinned to 1.0. Version Parameter: force to 1.2.0
     @operation:validate-code
@@ -4369,7 +4369,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vnn-vs10-force-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vs10-force-response-parameters.json"
 
     # code. No CodeSystem version. ValueSet version pinned to 2.4 (bad). Version Parameter: force to
     # 1.2.0
@@ -4393,7 +4393,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/code-vnn-vsbb-force-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vsbb-force-response-parameters.json"
 
     # code (1). No CodeSystem version. ValueSet version includes both versions of the code system. No
     # Version Parameter
@@ -4412,7 +4412,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vnn-vsmix-1-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vsmix-1-response-parameters.json"
 
     # code (2). No CodeSystem version. ValueSet version includes both versions of the code system. No
     # Version Parameter
@@ -4431,7 +4431,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/code-vnn-vsmix-1-response-parameters.json"
+      And $response should match the pattern in "version/code-vnn-vsmix-1-response-parameters.json"
 
   Rule: ValueSet $expand
 
@@ -4450,7 +4450,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-all-v-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-all-v-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4467,7 +4467,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-all-v1-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-all-v1-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4484,7 +4484,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-all-v2-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-all-v2-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4501,7 +4501,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v-mixed-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v-mixed-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4518,7 +4518,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v-n-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v-n-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4535,7 +4535,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v-w-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v-w-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand @http-code:4xx
@@ -4552,7 +4552,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/vs-expand-v-wb-response-outcome.json"
+      And $response should match the pattern in "version/vs-expand-v-wb-response-outcome.json"
 
     # version specific expand tests
     @operation:expand
@@ -4569,7 +4569,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v1-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v1-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4586,7 +4586,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v2-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v2-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4607,7 +4607,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-all-v-force-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-all-v-force-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4628,7 +4628,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-all-v1-force-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-all-v1-force-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4649,7 +4649,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-all-v2-force-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-all-v2-force-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4670,7 +4670,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v-mixed-force-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v-mixed-force-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4691,7 +4691,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v-n-force-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v-n-force-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4712,7 +4712,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v-w-force-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v-w-force-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4733,7 +4733,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v-wb-force-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v-wb-force-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4754,7 +4754,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v1-force-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v1-force-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4775,7 +4775,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v2-force-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v2-force-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4793,7 +4793,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-all-v-default-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-all-v-default-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4811,7 +4811,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-all-v1-default-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-all-v1-default-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4829,7 +4829,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-all-v2-default-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-all-v2-default-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4847,7 +4847,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v-mixed-default-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v-mixed-default-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4865,7 +4865,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v-n-default-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v-n-default-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4883,7 +4883,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v-w-default-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v-w-default-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand @http-code:4xx
@@ -4901,7 +4901,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/vs-expand-v-wb-default-response-outcome.json"
+      And $response should match the pattern in "version/vs-expand-v-wb-default-response-outcome.json"
 
     # version specific expand tests
     @operation:expand
@@ -4919,7 +4919,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v1-default-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v1-default-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand
@@ -4937,7 +4937,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v2-default-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v2-default-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand @http-code:4xx
@@ -4957,7 +4957,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/vs-expand-all-v-check-response-outcome.json"
+      And $response should match the pattern in "version/vs-expand-all-v-check-response-outcome.json"
 
     # version specific expand tests
     @operation:expand
@@ -4977,7 +4977,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-all-v1-check-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-all-v1-check-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand @http-code:4xx
@@ -4997,7 +4997,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/vs-expand-all-v2-check-response-outcome.json"
+      And $response should match the pattern in "version/vs-expand-all-v2-check-response-outcome.json"
 
     # version specific expand tests
     @operation:expand @http-code:4xx
@@ -5017,7 +5017,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/vs-expand-v-mixed-check-response-outcome.json"
+      And $response should match the pattern in "version/vs-expand-v-mixed-check-response-outcome.json"
 
     # version specific expand tests
     @operation:expand
@@ -5037,7 +5037,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v-n-check-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v-n-check-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand @http-code:4xx
@@ -5057,7 +5057,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/vs-expand-v-w-check-response-outcome.json"
+      And $response should match the pattern in "version/vs-expand-v-w-check-response-outcome.json"
 
     # version specific expand tests
     @operation:expand @http-code:4xx
@@ -5077,7 +5077,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/vs-expand-v-wb-check-response-outcome.json"
+      And $response should match the pattern in "version/vs-expand-v-wb-check-response-outcome.json"
 
     # version specific expand tests
     @operation:expand
@@ -5097,7 +5097,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-v1-check-response-valueSet.json"
+      And $response should match the pattern in "version/vs-expand-v1-check-response-valueSet.json"
 
     # version specific expand tests
     @operation:expand @http-code:4xx
@@ -5117,7 +5117,7 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "version/vs-expand-v2-check-response-outcome.json"
+      And $response should match the pattern in "version/vs-expand-v2-check-response-outcome.json"
 
     # check expand without any version
     @operation:expand
@@ -5147,4 +5147,4 @@ Feature: Terminology server — version
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "version/vs-expand-versionless-response.json"
+      And $response should match the pattern in "version/vs-expand-versionless-response.json"

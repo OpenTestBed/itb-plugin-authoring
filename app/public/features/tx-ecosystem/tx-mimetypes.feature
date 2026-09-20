@@ -3,8 +3,8 @@
 # Suite "mimetypes": 39 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:mimetypes @mode:mimetypes
 Feature: Terminology server — mimetypes
   Tests for the mime types code system (BCP 13). Type and subtype have no hierarchy, but
@@ -44,7 +44,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-subsumes-equivalent-response.json"
+      And $response should match the pattern in "mimetypes/mimetype-subsumes-equivalent-response.json"
 
     # Two unrelated media types
     @operation:subsumes
@@ -62,7 +62,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-subsumes-unrelated-response.json"
+      And $response should match the pattern in "mimetypes/mimetype-subsumes-unrelated-response.json"
 
     # A media type and one with a structured suffix of it
     @operation:subsumes
@@ -80,7 +80,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-subsumes-suffix-response.json"
+      And $response should match the pattern in "mimetypes/mimetype-subsumes-suffix-response.json"
 
     # A media type and the same type carrying a parameter
     @operation:subsumes
@@ -98,7 +98,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-subsumes-parameter-response.json"
+      And $response should match the pattern in "mimetypes/mimetype-subsumes-parameter-response.json"
 
     # the mirror of mimetype-subsumes-parameter
     @operation:subsumes
@@ -116,7 +116,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-subsumes-parameter-reverse-response.json"
+      And $response should match the pattern in "mimetypes/mimetype-subsumes-parameter-reverse-response.json"
 
     # The same parameter with two different values
     @operation:subsumes
@@ -134,7 +134,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-subsumes-parameter-siblings-response.json"
+      And $response should match the pattern in "mimetypes/mimetype-subsumes-parameter-siblings-response.json"
 
     # A parameter set and a superset of it
     @operation:subsumes
@@ -152,7 +152,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-subsumes-parameter-added-response.json"
+      And $response should match the pattern in "mimetypes/mimetype-subsumes-parameter-added-response.json"
 
     # Two parameter sets, neither containing the other
     @operation:subsumes
@@ -170,7 +170,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-subsumes-parameter-disjoint-response.json"
+      And $response should match the pattern in "mimetypes/mimetype-subsumes-parameter-disjoint-response.json"
 
     # a parameter written out at its default value: RFC 6657 section 4 keeps US-ASCII as the default
     # charset for text/plain, so the bare form already carries it and the two codes are the same media
@@ -190,7 +190,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-subsumes-default-explicit-response.json"
+      And $response should match the pattern in "mimetypes/mimetype-subsumes-default-explicit-response.json"
 
     # a parameter away from its default: because bare text/plain means charset=us-ascii, a different
     # charset contradicts it rather than narrowing it. This is where the rule that a parameter narrows
@@ -210,7 +210,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-subsumes-default-contradicted-response.json"
+      And $response should match the pattern in "mimetypes/mimetype-subsumes-default-contradicted-response.json"
 
     # the same for format, which RFC 3676 section 4 defaults to Fixed, so text/plain and text/plain;
     # format=flowed are different media types
@@ -229,7 +229,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-subsumes-default-format-response.json"
+      And $response should match the pattern in "mimetypes/mimetype-subsumes-default-format-response.json"
 
     # RFC 6657 section 3 leaves a text/* registration that does not say how the charset is determined
     # defaulting to US-ASCII, so for such a type a server cannot tell whether the absence of a charset
@@ -249,7 +249,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "mimetypes/mimetype-subsumes-charset-unknown-default-response.json"
+      And $response should match the pattern in "mimetypes/mimetype-subsumes-charset-unknown-default-response.json"
 
     # The same media type differing only in case and quoting
     @operation:subsumes
@@ -267,7 +267,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-subsumes-case-response.json"
+      And $response should match the pattern in "mimetypes/mimetype-subsumes-case-response.json"
 
     # a parameter the server does not know: whether it narrows the media type depends on its
     # definition, so the relationship cannot be determined
@@ -286,7 +286,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "mimetypes/mimetype-subsumes-unknown-parameter-response.json"
+      And $response should match the pattern in "mimetypes/mimetype-subsumes-unknown-parameter-response.json"
 
     # two values of an unknown parameter: nothing says whether they exclude one another or one
     # includes the other
@@ -305,7 +305,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "mimetypes/mimetype-subsumes-unknown-parameter-value-response.json"
+      And $response should match the pattern in "mimetypes/mimetype-subsumes-unknown-parameter-value-response.json"
 
     # an unknown parameter carried identically by both codes cannot affect the answer, so it must not
     # stop the server deciding
@@ -324,7 +324,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-subsumes-unknown-parameter-shared-response.json"
+      And $response should match the pattern in "mimetypes/mimetype-subsumes-unknown-parameter-shared-response.json"
 
     # codeA is not a well formed media type
     @operation:subsumes @http-code:4xx
@@ -342,7 +342,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "mimetypes/mimetype-subsumes-invalid-code-response.json"
+      And $response should match the pattern in "mimetypes/mimetype-subsumes-invalid-code-response.json"
 
   Rule: ValueSet $validate-code
 
@@ -362,7 +362,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-filter-base-type-in-response-parameters.json"
+      And $response should match the pattern in "mimetypes/mimetype-filter-base-type-in-response-parameters.json"
 
     # Parameters do not stop a code matching the base filter
     @operation:validate-code
@@ -380,7 +380,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-filter-base-type-params-response-parameters.json"
+      And $response should match the pattern in "mimetypes/mimetype-filter-base-type-params-response-parameters.json"
 
     # Any subtype of the type matches a type-only base filter
     @operation:validate-code
@@ -398,7 +398,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-filter-base-type-other-subtype-response-parameters.json"
+      And $response should match the pattern in "mimetypes/mimetype-filter-base-type-other-subtype-response-parameters.json"
 
     # A code of a different type does not match
     @operation:validate-code
@@ -416,7 +416,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-filter-base-type-out-response-parameters.json"
+      And $response should match the pattern in "mimetypes/mimetype-filter-base-type-out-response-parameters.json"
 
     # A code matching a base filter of 'text/plain'
     @operation:validate-code
@@ -434,7 +434,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-filter-base-subtype-in-response-parameters.json"
+      And $response should match the pattern in "mimetypes/mimetype-filter-base-subtype-in-response-parameters.json"
 
     # Parameters do not stop a code matching a type/subtype base filter
     @operation:validate-code
@@ -452,7 +452,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-filter-base-subtype-params-response-parameters.json"
+      And $response should match the pattern in "mimetypes/mimetype-filter-base-subtype-params-response-parameters.json"
 
     # A different subtype does not match a type/subtype base filter
     @operation:validate-code
@@ -470,7 +470,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-filter-base-subtype-out-response-parameters.json"
+      And $response should match the pattern in "mimetypes/mimetype-filter-base-subtype-out-response-parameters.json"
 
     # A media type that is in the IANA registry
     @operation:validate-code
@@ -488,7 +488,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-filter-registered-in-response-parameters.json"
+      And $response should match the pattern in "mimetypes/mimetype-filter-registered-in-response-parameters.json"
 
     # Parameters do not stop a registered type matching
     @operation:validate-code
@@ -506,7 +506,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-filter-registered-params-response-parameters.json"
+      And $response should match the pattern in "mimetypes/mimetype-filter-registered-params-response-parameters.json"
 
     # A media type that is not in the IANA registry
     @operation:validate-code
@@ -524,7 +524,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-filter-registered-out-response-parameters.json"
+      And $response should match the pattern in "mimetypes/mimetype-filter-registered-out-response-parameters.json"
 
     # registered=false selects a type that is not in the registry
     @operation:validate-code
@@ -542,7 +542,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-filter-unregistered-in-response-parameters.json"
+      And $response should match the pattern in "mimetypes/mimetype-filter-unregistered-in-response-parameters.json"
 
     # registered=false excludes a registered type
     @operation:validate-code
@@ -560,7 +560,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-filter-unregistered-out-response-parameters.json"
+      And $response should match the pattern in "mimetypes/mimetype-filter-unregistered-out-response-parameters.json"
 
     # A parameter does not make an unregistered type match registered=true
     @operation:validate-code
@@ -578,7 +578,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-filter-registered-params-out-response-parameters.json"
+      And $response should match the pattern in "mimetypes/mimetype-filter-registered-params-out-response-parameters.json"
 
     # An unregistered type with a parameter still matches registered=false
     @operation:validate-code
@@ -596,7 +596,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-filter-unregistered-params-in-response-parameters.json"
+      And $response should match the pattern in "mimetypes/mimetype-filter-unregistered-params-in-response-parameters.json"
 
     # A parameter does not make a registered type match registered=false
     @operation:validate-code
@@ -614,7 +614,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-filter-unregistered-params-out-response-parameters.json"
+      And $response should match the pattern in "mimetypes/mimetype-filter-unregistered-params-out-response-parameters.json"
 
   Rule: ValueSet $expand
 
@@ -632,7 +632,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-expand-enumerated-response-valueSet.json"
+      And $response should match the pattern in "mimetypes/mimetype-expand-enumerated-response-valueSet.json"
 
     # The whole code system cannot be expanded
     @operation:expand @http-code:4xx
@@ -648,7 +648,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "mimetypes/mimetype-expand-all-response-outcome.json"
+      And $response should match the pattern in "mimetypes/mimetype-expand-all-response-outcome.json"
 
     # A base filter cannot be expanded either
     @operation:expand @http-code:4xx
@@ -664,7 +664,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "mimetypes/mimetype-expand-base-response-outcome.json"
+      And $response should match the pattern in "mimetypes/mimetype-expand-base-response-outcome.json"
 
     # registered=false cannot be expanded - it is unbounded
     @operation:expand @http-code:4xx
@@ -680,7 +680,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "mimetypes/mimetype-expand-unregistered-response-outcome.json"
+      And $response should match the pattern in "mimetypes/mimetype-expand-unregistered-response-outcome.json"
 
     # registered=true can be expanded, narrowed by a base filter, and the expansion is marked unclosed
     @operation:expand
@@ -696,7 +696,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-expand-registered-narrow-response-valueSet.json"
+      And $response should match the pattern in "mimetypes/mimetype-expand-registered-narrow-response-valueSet.json"
 
     # Expanding every registered media type at once is too costly
     # registered=true is enumerable - the IANA registry is a finite list - but there are a couple of
@@ -717,7 +717,7 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "mimetypes/mimetype-expand-registered-response-outcome.json"
+      And $response should match the pattern in "mimetypes/mimetype-expand-registered-response-outcome.json"
 
     # A page of the registered media types, with the page size asserted rather than its contents
     @operation:expand
@@ -735,4 +735,4 @@ Feature: Terminology server — mimetypes
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "mimetypes/mimetype-expand-registered-paged-response-valueSet.json"
+      And $response should match the pattern in "mimetypes/mimetype-expand-registered-paged-response-valueSet.json"

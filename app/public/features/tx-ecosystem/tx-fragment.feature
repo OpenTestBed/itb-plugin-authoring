@@ -3,8 +3,8 @@
 # Suite "fragment": 7 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:fragment @mode:general
 Feature: Terminology server — fragment
   Testing handling a code system fragment
@@ -36,7 +36,7 @@ Feature: Terminology server — fragment
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "fragment/fragment-expand-response.json"
+      And $response should match the pattern in "fragment/fragment-expand-response.json"
 
   Rule: ValueSet $validate-code
 
@@ -56,7 +56,7 @@ Feature: Terminology server — fragment
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "fragment/fragment-code-good-response-parameters.json"
+      And $response should match the pattern in "fragment/fragment-code-good-response-parameters.json"
 
     # if a code is a in a fragment, then it's all ok
     @operation:validate-code
@@ -79,7 +79,7 @@ Feature: Terminology server — fragment
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "fragment/fragment-coding-good-response-parameters.json"
+      And $response should match the pattern in "fragment/fragment-coding-good-response-parameters.json"
 
     # if a code is a in a fragment, then it's all ok
     @operation:validate-code
@@ -106,7 +106,7 @@ Feature: Terminology server — fragment
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "fragment/fragment-codeableconcept-good-response-parameters.json"
+      And $response should match the pattern in "fragment/fragment-codeableconcept-good-response-parameters.json"
 
     # if a code is not in the fragment, we can't call it invalid (code variant)
     @operation:validate-code
@@ -124,7 +124,7 @@ Feature: Terminology server — fragment
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "fragment/fragment-code-bad-code-response-parameters.json"
+      And $response should match the pattern in "fragment/fragment-code-bad-code-response-parameters.json"
 
     # if a code is not in the fragment, we can't call it invalid (coding variant)
     @operation:validate-code
@@ -147,7 +147,7 @@ Feature: Terminology server — fragment
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "fragment/fragment-coding-bad-code-response-parameters.json"
+      And $response should match the pattern in "fragment/fragment-coding-bad-code-response-parameters.json"
 
     # if a code is not in the fragment, we can't call it invalid (CodeableConcept variant)
     @operation:validate-code
@@ -174,4 +174,4 @@ Feature: Terminology server — fragment
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "fragment/fragment-codeableconcept-bad-code-response-parameters.json"
+      And $response should match the pattern in "fragment/fragment-codeableconcept-bad-code-response-parameters.json"

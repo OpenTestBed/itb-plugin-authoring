@@ -3,8 +3,8 @@
 # Suite "sct-ecl": 103 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:sct-ecl @mode:snomed
 Feature: Terminology server — sct-ecl
   SNOMED CT ECL tests (expand + validate-code), split out of the snomed suite for manageability.
@@ -67,7 +67,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-descendents-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-descendents-code-in-response.json"
 
     # validate-code against ECL "descendents": a code that is NOT in the set
     @operation:validate-code
@@ -117,7 +117,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-descendents-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-descendents-code-out-response.json"
 
     # validate-code against ECL "descendents": a post-coordinated expression that IS in the set
     @operation:validate-code
@@ -166,7 +166,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-descendents-expr-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-descendents-expr-in-response.json"
 
     # validate-code against ECL "descendents": a post-coordinated expression that is NOT in the set
     @operation:validate-code
@@ -218,7 +218,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-descendents-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-descendents-expr-out-response.json"
 
     # validate-code against ECL "descOrSelf": a code that IS in the set
     @operation:validate-code
@@ -268,7 +268,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-descOrSelf-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-descOrSelf-code-in-response.json"
 
     # validate-code against ECL "descOrSelf": a code that is NOT in the set
     @operation:validate-code
@@ -318,7 +318,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-descOrSelf-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-descOrSelf-code-out-response.json"
 
     # validate-code against ECL "descOrSelf": a post-coordinated expression that IS in the set
     @operation:validate-code
@@ -367,7 +367,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-descOrSelf-expr-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-descOrSelf-expr-in-response.json"
 
     # validate-code against ECL "descOrSelf": a post-coordinated expression that is NOT in the set
     @operation:validate-code
@@ -419,7 +419,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-descOrSelf-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-descOrSelf-expr-out-response.json"
 
     # validate-code against ECL "children": a code that IS in the set
     @operation:validate-code
@@ -469,7 +469,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-children-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-children-code-in-response.json"
 
     # validate-code against ECL "children": a code that is NOT in the set
     @operation:validate-code
@@ -519,7 +519,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-children-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-children-code-out-response.json"
 
     # validate-code against ECL "children": a post-coordinated expression that IS in the set
     @operation:validate-code
@@ -568,7 +568,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-children-expr-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-children-expr-in-response.json"
 
     # validate-code against ECL "children": a post-coordinated expression that is NOT in the set
     @operation:validate-code
@@ -620,7 +620,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-children-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-children-expr-out-response.json"
 
     # validate-code against ECL "childrenOrSelf": a code that IS in the set
     @operation:validate-code
@@ -670,7 +670,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-childrenOrSelf-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-childrenOrSelf-code-in-response.json"
 
     # validate-code against ECL "childrenOrSelf": a code that is NOT in the set
     @operation:validate-code
@@ -720,7 +720,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-childrenOrSelf-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-childrenOrSelf-code-out-response.json"
 
     # validate-code against ECL "childrenOrSelf": a post-coordinated expression that IS in the set
     @operation:validate-code
@@ -769,7 +769,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-childrenOrSelf-expr-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-childrenOrSelf-expr-in-response.json"
 
     # validate-code against ECL "childrenOrSelf": a post-coordinated expression that is NOT in the set
     @operation:validate-code
@@ -821,7 +821,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-childrenOrSelf-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-childrenOrSelf-expr-out-response.json"
 
     # validate-code against ECL "ancestors": a code that IS in the set
     @operation:validate-code
@@ -871,7 +871,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-ancestors-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-ancestors-code-in-response.json"
 
     # validate-code against ECL "ancestors": a code that is NOT in the set
     @operation:validate-code
@@ -921,7 +921,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-ancestors-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-ancestors-code-out-response.json"
 
     # validate-code against ECL "ancestors": a post-coordinated expression that is NOT in the set
     @operation:validate-code
@@ -970,7 +970,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-ancestors-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-ancestors-expr-out-response.json"
 
     # validate-code against ECL "ancOrSelf": a code that IS in the set
     @operation:validate-code
@@ -1020,7 +1020,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-ancOrSelf-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-ancOrSelf-code-in-response.json"
 
     # validate-code against ECL "ancOrSelf": a code that is NOT in the set
     @operation:validate-code
@@ -1070,7 +1070,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-ancOrSelf-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-ancOrSelf-code-out-response.json"
 
     # validate-code against ECL "ancOrSelf": a post-coordinated expression that is NOT in the set
     @operation:validate-code
@@ -1119,7 +1119,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-ancOrSelf-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-ancOrSelf-expr-out-response.json"
 
     # validate-code against ECL "parents": a code that IS in the set
     @operation:validate-code
@@ -1169,7 +1169,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-parents-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-parents-code-in-response.json"
 
     # validate-code against ECL "parents": a code that is NOT in the set
     @operation:validate-code
@@ -1219,7 +1219,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-parents-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-parents-code-out-response.json"
 
     # validate-code against ECL "parents": a post-coordinated expression that is NOT in the set
     @operation:validate-code
@@ -1268,7 +1268,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-parents-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-parents-expr-out-response.json"
 
     # validate-code against ECL "parentsOrSelf": a code that IS in the set
     @operation:validate-code
@@ -1318,7 +1318,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-parentsOrSelf-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-parentsOrSelf-code-in-response.json"
 
     # validate-code against ECL "parentsOrSelf": a code that is NOT in the set
     @operation:validate-code
@@ -1368,7 +1368,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-parentsOrSelf-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-parentsOrSelf-code-out-response.json"
 
     # validate-code against ECL "parentsOrSelf": a post-coordinated expression that is NOT in the set
     @operation:validate-code
@@ -1417,7 +1417,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-parentsOrSelf-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-parentsOrSelf-expr-out-response.json"
 
     # validate-code against ECL "refinement-simple": a code that IS in the set
     @operation:validate-code
@@ -1467,7 +1467,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-simple-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-simple-code-in-response.json"
 
     # validate-code against ECL "refinement-simple": a code that is NOT in the set
     @operation:validate-code
@@ -1517,7 +1517,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-simple-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-simple-code-out-response.json"
 
     # validate-code against ECL "refinement-simple": a post-coordinated expression that IS in the set
     @operation:validate-code
@@ -1569,7 +1569,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-simple-expr-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-simple-expr-in-response.json"
 
     # validate-code against ECL "refinement-simple": a post-coordinated expression that is NOT in the
     # set
@@ -1622,7 +1622,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-simple-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-simple-expr-out-response.json"
 
     # validate-code against ECL "refinement-group": a code that is NOT in the set
     @operation:validate-code
@@ -1672,7 +1672,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-group-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-group-code-out-response.json"
 
     # validate-code against ECL "refinement-group": a post-coordinated expression that IS in the set
     @operation:validate-code
@@ -1724,7 +1724,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-group-expr-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-group-expr-in-response.json"
 
     # validate-code against ECL "refinement-group": a post-coordinated expression that is NOT in the
     # set
@@ -1777,7 +1777,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-group-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-group-expr-out-response.json"
 
     # validate-code against ECL "refinement-morphology": a code that IS in the set
     @operation:validate-code
@@ -1827,7 +1827,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-morphology-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-morphology-code-in-response.json"
 
     # validate-code against ECL "refinement-morphology": a code that is NOT in the set
     @operation:validate-code
@@ -1877,7 +1877,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-morphology-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-morphology-code-out-response.json"
 
     # validate-code against ECL "refinement-morphology": a post-coordinated expression that IS in the
     # set
@@ -1930,7 +1930,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-morphology-expr-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-morphology-expr-in-response.json"
 
     # validate-code against ECL "refinement-morphology": a post-coordinated expression that is NOT in
     # the set
@@ -1983,7 +1983,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-morphology-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-morphology-expr-out-response.json"
 
     # validate-code against ECL "refinement-wildcard": a code that IS in the set
     @operation:validate-code
@@ -2033,7 +2033,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-wildcard-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-wildcard-code-in-response.json"
 
     # validate-code against ECL "refinement-wildcard": a code that is NOT in the set
     @operation:validate-code
@@ -2083,7 +2083,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-wildcard-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-wildcard-code-out-response.json"
 
     # validate-code against ECL "refinement-wildcard": a post-coordinated expression that IS in the
     # set
@@ -2136,7 +2136,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-wildcard-expr-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-wildcard-expr-in-response.json"
 
     # validate-code against ECL "refinement-wildcard": a post-coordinated expression that is NOT in
     # the set
@@ -2189,7 +2189,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-wildcard-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-wildcard-expr-out-response.json"
 
     # validate-code against ECL "refinement-cardinality": a code that IS in the set
     @operation:validate-code
@@ -2239,7 +2239,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-cardinality-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-cardinality-code-in-response.json"
 
     # validate-code against ECL "refinement-cardinality": a code that is NOT in the set
     @operation:validate-code
@@ -2289,7 +2289,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-cardinality-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-cardinality-code-out-response.json"
 
     # validate-code against ECL "refinement-cardinality": a post-coordinated expression that IS in the
     # set
@@ -2342,7 +2342,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-cardinality-expr-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-cardinality-expr-in-response.json"
 
     # validate-code against ECL "refinement-cardinality": a post-coordinated expression that is NOT in
     # the set
@@ -2395,7 +2395,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-cardinality-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-cardinality-expr-out-response.json"
 
     # validate-code against ECL "refinement-cardinality-grouped": a code that IS in the set
     @operation:validate-code
@@ -2445,7 +2445,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-cardinality-grouped-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-cardinality-grouped-code-in-response.json"
 
     # validate-code against ECL "refinement-cardinality-grouped": a code that is NOT in the set
     @operation:validate-code
@@ -2495,7 +2495,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-cardinality-grouped-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-cardinality-grouped-code-out-response.json"
 
     # validate-code against ECL "refinement-cardinality-grouped": a post-coordinated expression that
     # IS in the set
@@ -2548,7 +2548,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-cardinality-grouped-expr-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-cardinality-grouped-expr-in-response.json"
 
     # validate-code against ECL "refinement-cardinality-grouped": a post-coordinated expression that
     # is NOT in the set
@@ -2601,7 +2601,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-cardinality-grouped-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-cardinality-grouped-expr-out-response.json"
 
     # validate-code against ECL "refinement-cardinality-rolegroup": a code that IS in the set
     @operation:validate-code
@@ -2651,7 +2651,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-cardinality-rolegroup-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-cardinality-rolegroup-code-in-response.json"
 
     # validate-code against ECL "refinement-cardinality-rolegroup": a code that is NOT in the set
     @operation:validate-code
@@ -2701,7 +2701,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-cardinality-rolegroup-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-cardinality-rolegroup-code-out-response.json"
 
     # validate-code against ECL "refinement-cardinality-rolegroup": a post-coordinated expression that
     # IS in the set
@@ -2754,7 +2754,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-cardinality-rolegroup-expr-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-cardinality-rolegroup-expr-in-response.json"
 
     # validate-code against ECL "refinement-cardinality-rolegroup": a post-coordinated expression that
     # is NOT in the set
@@ -2807,7 +2807,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-refinement-cardinality-rolegroup-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-refinement-cardinality-rolegroup-expr-out-response.json"
 
     # validate-code against ECL "memberOf-refset": a code that IS in the set
     @operation:validate-code
@@ -2857,7 +2857,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-memberOf-refset-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-memberOf-refset-code-in-response.json"
 
     # validate-code against ECL "memberOf-refset": a code that is NOT in the set
     @operation:validate-code
@@ -2907,7 +2907,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-memberOf-refset-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-memberOf-refset-code-out-response.json"
 
     # validate-code against ECL "memberOf-refset": a post-coordinated expression that is NOT in the
     # set
@@ -2960,7 +2960,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-memberOf-refset-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-memberOf-refset-expr-out-response.json"
 
     # validate-code against ECL "minus": a code that IS in the set
     @operation:validate-code
@@ -3010,7 +3010,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-minus-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-minus-code-in-response.json"
 
     # validate-code against ECL "minus": a code that is NOT in the set
     @operation:validate-code
@@ -3060,7 +3060,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-minus-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-minus-code-out-response.json"
 
     # validate-code against ECL "minus": a post-coordinated expression that IS in the set
     @operation:validate-code
@@ -3112,7 +3112,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-minus-expr-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-minus-expr-in-response.json"
 
     # validate-code against ECL "minus": a post-coordinated expression that is NOT in the set
     @operation:validate-code
@@ -3164,7 +3164,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-minus-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-minus-expr-out-response.json"
 
     # validate-code against ECL "wildcard": a code that IS in the set
     @operation:validate-code
@@ -3214,7 +3214,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-wildcard-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-wildcard-code-in-response.json"
 
     # validate-code against ECL "wildcard": a post-coordinated expression that IS in the set
     @operation:validate-code
@@ -3266,7 +3266,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-wildcard-expr-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-wildcard-expr-in-response.json"
 
     # validate-code against ECL "wildcard-minus": a code that IS in the set
     @operation:validate-code
@@ -3316,7 +3316,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-wildcard-minus-code-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-wildcard-minus-code-in-response.json"
 
     # validate-code against ECL "wildcard-minus": a code that is NOT in the set
     @operation:validate-code
@@ -3366,7 +3366,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-wildcard-minus-code-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-wildcard-minus-code-out-response.json"
 
     # validate-code against ECL "wildcard-minus": a post-coordinated expression that IS in the set
     @operation:validate-code
@@ -3418,7 +3418,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-wildcard-minus-expr-in-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-wildcard-minus-expr-in-response.json"
 
     # validate-code against ECL "wildcard-minus": a post-coordinated expression that is NOT in the set
     @operation:validate-code
@@ -3467,7 +3467,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/validate-code-ecl-wildcard-minus-expr-out-response.json"
+      And $response should match the pattern in "sct/ecl/validate-code-ecl-wildcard-minus-expr-out-response.json"
 
   Rule: ValueSet $expand
 
@@ -3512,7 +3512,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-descOrSelf-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-descOrSelf-response.json"
 
     # check that a set of concepts and displays are expanded properly (ecl descendent)
     @operation:expand
@@ -3555,7 +3555,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-descendents-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-descendents-response.json"
 
     # check that a set of concepts and displays are expanded properly (ecl ancestor)
     @operation:expand
@@ -3598,7 +3598,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-ancestors-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-ancestors-response.json"
 
     # check that a set of concepts and displays are expanded properly (ecl ancestor-or-self)
     @operation:expand
@@ -3641,7 +3641,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-ancOrSelf-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-ancOrSelf-response.json"
 
     # check that a set of concepts and displays are expanded properly (ecl descendent-or-self)
     @operation:expand
@@ -3684,7 +3684,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-childrenOrSelf-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-childrenOrSelf-response.json"
 
     # check that a set of concepts and displays are expanded properly (ecl descendent)
     @operation:expand
@@ -3727,7 +3727,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-children-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-children-response.json"
 
     # check that a set of concepts and displays are expanded properly (ecl ancestor)
     @operation:expand
@@ -3770,7 +3770,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-parents-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-parents-response.json"
 
     # check that a set of concepts and displays are expanded properly (ecl ancestor-or-self)
     @operation:expand
@@ -3813,7 +3813,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-parentsOrSelf-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-parentsOrSelf-response.json"
 
     # All active concepts in the subset (wildcard).
     @operation:expand
@@ -3857,7 +3857,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-wildcard-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-wildcard-response.json"
 
     # Members of the REPLACED-BY association reference set.
     @operation:expand
@@ -3900,7 +3900,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-memberOf-refset-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-memberOf-refset-response.json"
 
     # Negative case: ^ applied to a concept that is not a reference set should error.
     @operation:expand
@@ -3943,7 +3943,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-memberOf-nonRefset-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-memberOf-nonRefset-response.json"
 
     # Union of Cellulitis subtree and Liver-structure subtree.
     @operation:expand
@@ -3986,7 +3986,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-or-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-or-response.json"
 
     # Intersection: Cellulitis subtree AND Disease subtree; should equal << 128045006.
     @operation:expand
@@ -4029,7 +4029,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-and-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-and-response.json"
 
     # Exclusion: Disease subtree minus Cellulitis subtree.
     @operation:expand
@@ -4072,7 +4072,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-minus-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-minus-response.json"
 
     # Degenerate exclusion: set minus itself, expects empty.
     @operation:expand
@@ -4115,7 +4115,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-minus-empty-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-minus-empty-response.json"
 
     # All active concepts minus the Liver-structure subtree.
     @operation:expand
@@ -4160,7 +4160,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-wildcard-minus-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-wildcard-minus-response.json"
 
     # Grouped OR: (<< A OR << B) AND << C — OR subexpression parenthesised; union of cellulitis and
     # liver-structure subtrees intersected with disease; yields 1 result.
@@ -4204,7 +4204,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-grouped-or-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-grouped-or-response.json"
 
     # Grouped AND: << A OR (<< B AND << C) — AND subexpression parenthesised; liver-structure unioned
     # with intersection of cellulitis and disease; yields 311 results.
@@ -4248,7 +4248,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-grouped-and-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-grouped-and-response.json"
 
     # Invalid ECL: mixing AND/OR without explicit grouping is forbidden by ECL spec (section 6.4) —
     # must return an error.
@@ -4292,7 +4292,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "sct/ecl/expand-ecl-ambiguous-precedence-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-ambiguous-precedence-response.json"
 
     # Concept reference with matching term; should be accepted.
     @operation:expand
@@ -4335,7 +4335,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-term-match-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-term-match-response.json"
 
     # Concept reference with incorrect term; should error with a term-mismatch message.
     @operation:expand
@@ -4378,7 +4378,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-term-mismatch-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-term-mismatch-response.json"
 
     # Hierarchy operator plus concept plus term; should expand to same set as << 10200004.
     @operation:expand
@@ -4421,7 +4421,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-term-with-operator-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-term-with-operator-response.json"
 
     # Unknown (non-existent) concept ID; expects an unknown-concept error.
     @operation:expand @http-code:4xx
@@ -4464,7 +4464,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "sct/ecl/expand-ecl-unknown-concept-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-unknown-concept-response.json"
 
     # Non-numeric focus concept; expects a lexer/parser error.
     @operation:expand @http-code:4xx
@@ -4507,7 +4507,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "sct/ecl/expand-ecl-invalid-sctid-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-invalid-sctid-response.json"
 
     # Operator with nothing after it; expects a parser error.
     @operation:expand @http-code:4xx
@@ -4550,7 +4550,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "sct/ecl/expand-ecl-missing-focus-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-missing-focus-response.json"
 
     # Extra tokens after a complete expression; expects a parser error.
     @operation:expand @http-code:4xx
@@ -4593,7 +4593,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "sct/ecl/expand-ecl-trailing-tokens-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-trailing-tokens-response.json"
 
     # Deeply nested parentheses; should expand to the same set as << 10200004.
     @operation:expand
@@ -4636,7 +4636,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-nested-parens-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-nested-parens-response.json"
 
     # Refinement: Disease with finding-site in the Liver subtree. Currently unsupported; expect a
     # clear error.
@@ -4680,7 +4680,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-refinement-simple-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-refinement-simple-response.json"
 
     # Refinement: Disease with associated-morphology = Closed fracture. Currently unsupported.
     @operation:expand
@@ -4723,7 +4723,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-refinement-morphology-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-refinement-morphology-response.json"
 
     # Refinement with wildcard value. Currently unsupported.
     @operation:expand
@@ -4766,7 +4766,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-refinement-wildcard-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-refinement-wildcard-response.json"
 
     # Refinement with an attribute group. Currently unsupported.
     @operation:expand
@@ -4809,7 +4809,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-refinement-group-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-refinement-group-response.json"
 
     # Ungrouped [1..1] cardinality: exactly 1 Finding site in liver across all role groups — excludes
     # concepts with 2+ groups each containing a liver Finding site (573).
@@ -4853,7 +4853,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-refinement-cardinality-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-refinement-cardinality-response.json"
 
     # Grouped [1..1] cardinality: exactly 1 role group containing exactly 1 Finding site in liver —
     # same result as ungrouped for typical SNOMED models (573).
@@ -4897,7 +4897,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-refinement-cardinality-grouped-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-refinement-cardinality-grouped-response.json"
 
     # Role group cardinality without outer count: at least one role group containing exactly 1 Finding
     # site in liver — more permissive, includes concepts with multiple groups each having 1 liver
@@ -4942,7 +4942,7 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-refinement-cardinality-rolegroup-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-refinement-cardinality-rolegroup-response.json"
 
     # Dotted expression: finding-site values across Disease descendants. Currently unsupported.
     @operation:expand
@@ -4985,4 +4985,4 @@ Feature: Terminology server — sct-ecl
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/ecl/expand-ecl-dotted-response.json"
+      And $response should match the pattern in "sct/ecl/expand-ecl-dotted-response.json"

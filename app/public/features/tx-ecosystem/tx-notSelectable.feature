@@ -3,8 +3,8 @@
 # Suite "notSelectable": 50 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:notSelectable @mode:general
 Feature: Terminology server — notSelectable
   Testing notSelectable
@@ -51,7 +51,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/expand-prop-all-response-valueSet.json"
+      And $response should match the pattern in "notSelectable/expand-prop-all-response-valueSet.json"
 
     @operation:expand
     Scenario: notSelectable-noprop-all
@@ -66,7 +66,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/expand-noprop-all-response-valueSet.json"
+      And $response should match the pattern in "notSelectable/expand-noprop-all-response-valueSet.json"
 
     @operation:expand
     Scenario: notSelectable-reprop-all
@@ -81,7 +81,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/expand-reprop-all-response-valueSet.json"
+      And $response should match the pattern in "notSelectable/expand-reprop-all-response-valueSet.json"
 
     @operation:expand
     Scenario: notSelectable-unprop-all
@@ -96,7 +96,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/expand-reprop-all-response-valueSet.json"
+      And $response should match the pattern in "notSelectable/expand-reprop-all-response-valueSet.json"
 
     @operation:expand
     Scenario: notSelectable-prop-true
@@ -111,7 +111,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/expand-prop-true-response-valueSet.json"
+      And $response should match the pattern in "notSelectable/expand-prop-true-response-valueSet.json"
 
     @operation:expand
     Scenario: notSelectable-prop-trueUC
@@ -126,7 +126,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/expand-prop-trueUC-response-valueSet.json"
+      And $response should match the pattern in "notSelectable/expand-prop-trueUC-response-valueSet.json"
 
     @operation:expand
     Scenario: notSelectable-noprop-true
@@ -141,7 +141,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/expand-noprop-true-response-valueSet.json"
+      And $response should match the pattern in "notSelectable/expand-noprop-true-response-valueSet.json"
 
     @operation:expand
     Scenario: notSelectable-reprop-true
@@ -156,7 +156,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/expand-reprop-true-response-valueSet.json"
+      And $response should match the pattern in "notSelectable/expand-reprop-true-response-valueSet.json"
 
     @operation:expand
     Scenario: notSelectable-unprop-true
@@ -171,7 +171,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/expand-unprop-true-response-valueSet.json"
+      And $response should match the pattern in "notSelectable/expand-unprop-true-response-valueSet.json"
 
     @operation:expand
     Scenario: notSelectable-prop-false
@@ -186,7 +186,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/expand-prop-false-response-valueSet.json"
+      And $response should match the pattern in "notSelectable/expand-prop-false-response-valueSet.json"
 
     @operation:expand
     Scenario: notSelectable-noprop-false
@@ -201,7 +201,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/expand-noprop-false-response-valueSet.json"
+      And $response should match the pattern in "notSelectable/expand-noprop-false-response-valueSet.json"
 
     @operation:expand
     Scenario: notSelectable-reprop-false
@@ -216,7 +216,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/expand-reprop-false-response-valueSet.json"
+      And $response should match the pattern in "notSelectable/expand-reprop-false-response-valueSet.json"
 
     @operation:expand
     Scenario: notSelectable-unprop-false
@@ -231,7 +231,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/expand-unprop-false-response-valueSet.json"
+      And $response should match the pattern in "notSelectable/expand-unprop-false-response-valueSet.json"
 
     @operation:expand
     Scenario: notSelectable-prop-in
@@ -246,7 +246,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/expand-prop-in-response-valueSet.json"
+      And $response should match the pattern in "notSelectable/expand-prop-in-response-valueSet.json"
 
     @operation:expand
     Scenario: notSelectable-prop-out
@@ -261,7 +261,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/expand-prop-out-response-valueSet.json"
+      And $response should match the pattern in "notSelectable/expand-prop-out-response-valueSet.json"
 
   Rule: ValueSet $validate-code
 
@@ -285,7 +285,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-prop-true-true-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-prop-true-true-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-prop-trueUC-true
@@ -307,7 +307,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-prop-trueUC-true-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-prop-trueUC-true-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-prop-in-true
@@ -329,7 +329,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-prop-in-true-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-prop-in-true-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-prop-out-true
@@ -351,7 +351,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-prop-out-true-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-prop-out-true-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-noprop-true-true
@@ -373,7 +373,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-noprop-true-true-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-noprop-true-true-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-reprop-true-true
@@ -395,7 +395,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-reprop-true-true-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-reprop-true-true-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-unprop-true-true
@@ -417,7 +417,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-unprop-true-true-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-unprop-true-true-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-prop-true-false
@@ -439,7 +439,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-prop-true-false-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-prop-true-false-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-prop-in-false
@@ -461,7 +461,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-prop-in-false-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-prop-in-false-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-prop-in-unknown
@@ -483,7 +483,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-prop-in-unknown-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-prop-in-unknown-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-prop-out-unknown
@@ -505,7 +505,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-prop-out-unknown-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-prop-out-unknown-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-prop-out-false
@@ -527,7 +527,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-prop-out-false-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-prop-out-false-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-noprop-true-false
@@ -549,7 +549,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-noprop-true-false-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-noprop-true-false-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-reprop-true-false
@@ -571,7 +571,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-reprop-true-false-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-reprop-true-false-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-unprop-true-false
@@ -593,7 +593,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-unprop-true-false-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-unprop-true-false-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-prop-false-true
@@ -615,7 +615,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-prop-false-true-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-prop-false-true-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-noprop-false-true
@@ -637,7 +637,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-noprop-false-true-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-noprop-false-true-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-reprop-false-true
@@ -659,7 +659,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-reprop-false-true-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-reprop-false-true-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-unprop-false-true
@@ -681,7 +681,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-unprop-false-true-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-unprop-false-true-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-prop-false-false
@@ -703,7 +703,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-prop-false-false-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-prop-false-false-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-noprop-false-false
@@ -725,7 +725,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-noprop-false-false-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-noprop-false-false-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-reprop-false-false
@@ -747,7 +747,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-reprop-false-false-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-reprop-false-false-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-unprop-false-false
@@ -769,7 +769,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-unprop-false-false-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-unprop-false-false-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-noprop-true-unknown
@@ -791,7 +791,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-noprop-true-unknown-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-noprop-true-unknown-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-reprop-true-unknown
@@ -813,7 +813,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-reprop-true-unknown-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-reprop-true-unknown-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-unprop-true-unknown
@@ -835,7 +835,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-unprop-true-unknown-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-unprop-true-unknown-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-prop-true-unknown
@@ -857,7 +857,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-prop-true-unknown-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-prop-true-unknown-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-prop-false-unknown
@@ -879,7 +879,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-prop-false-unknown-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-prop-false-unknown-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-noprop-false-unknown
@@ -901,7 +901,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-noprop-false-unknown-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-noprop-false-unknown-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-reprop-false-unknown
@@ -923,7 +923,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-reprop-false-unknown-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-reprop-false-unknown-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-unprop-false-unknown
@@ -945,7 +945,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-unprop-false-unknown-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-unprop-false-unknown-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-prop-true-true-param-true
@@ -968,7 +968,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-prop-true-true-param-true-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-prop-true-true-param-true-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-prop-true-true-param-false
@@ -991,7 +991,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-prop-true-true-param-false-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-prop-true-true-param-false-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-prop-false-false-param-true
@@ -1014,7 +1014,7 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-prop-false-false-param-true-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-prop-false-false-param-true-response-parameters.json"
 
     @operation:validate-code
     Scenario: notSelectable-prop-false-false-param-false
@@ -1037,4 +1037,4 @@ Feature: Terminology server — notSelectable
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "notSelectable/validate-prop-false-false-param-false-response-parameters.json"
+      And $response should match the pattern in "notSelectable/validate-prop-false-false-param-false-response-parameters.json"

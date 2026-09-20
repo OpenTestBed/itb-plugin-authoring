@@ -3,8 +3,8 @@
 # Suite "regex-bad": 4 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:regex-bad @mode:general
 Feature: Terminology server — regex-bad
   Bad Regex - checking defences against denial of service attack. These are unusual because
@@ -39,7 +39,7 @@ Feature: Terminology server — regex-bad
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "regex-bad/expand-regex-bad-response.json"
+      And $response should match the pattern in "regex-bad/expand-regex-bad-response.json"
 
     # Check expand is safe from catastrophic regex
     @operation:expand
@@ -56,8 +56,8 @@ Feature: Terminology server — regex-bad
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                   |
+      And $response should match one of the patterns in:
+        | pattern                                    |
         | regex-bad/expand-regex-bad-2-response.json |
         | regex-bad/expand-regex-bad-2-error.json    |
 
@@ -79,7 +79,7 @@ Feature: Terminology server — regex-bad
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "regex-bad/validate-regex-bad-response.json"
+      And $response should match the pattern in "regex-bad/validate-regex-bad-response.json"
 
     # Check validate is safe from catastrophic regex
     @operation:validate-code
@@ -97,7 +97,7 @@ Feature: Terminology server — regex-bad
         }
         """
       Then $response.status should be 200
-      And $response should match one of the expected responses:
-        | response                                     |
+      And $response should match one of the patterns in:
+        | pattern                                      |
         | regex-bad/validate-regex-bad-2-response.json |
         | regex-bad/validate-regex-bad-2-error.json    |

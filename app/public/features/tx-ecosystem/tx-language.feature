@@ -3,8 +3,8 @@
 # Suite "language": 26 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:language @mode:general
 Feature: Terminology server — language
   Testing returning language by request, getting the right designation
@@ -51,7 +51,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-en-none-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-en-none-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-de-none
@@ -68,7 +68,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-de-none-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-de-none-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-en-multi-none
@@ -85,7 +85,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-en-multi-none-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-en-multi-none-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-de-multi-none
@@ -102,7 +102,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-de-multi-none-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-de-multi-none-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-en-en-param
@@ -120,7 +120,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-en-en-param-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-en-en-param-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-en-en-vs
@@ -137,7 +137,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-en-en-vs-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-en-en-vs-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-en-en-header
@@ -155,7 +155,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-en-en-header-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-en-en-header-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-en-en-vslang
@@ -173,7 +173,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-en-en-vslang-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-en-en-vslang-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-en-en-mixed
@@ -192,7 +192,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-en-en-mixed-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-en-en-mixed-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-de-de-param
@@ -210,7 +210,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-de-de-param-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-de-de-param-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-de-de-vs
@@ -227,7 +227,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-de-de-vs-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-de-de-vs-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-de-de-header
@@ -245,7 +245,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-de-de-header-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-de-de-header-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-en-multi-en-param
@@ -263,7 +263,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-en-multi-en-param-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-en-multi-en-param-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-en-multi-en-vs
@@ -280,7 +280,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-en-multi-en-vs-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-en-multi-en-vs-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-en-multi-en-header
@@ -298,7 +298,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-en-multi-en-header-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-en-multi-en-header-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-de-multi-de-param
@@ -316,7 +316,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-de-multi-de-param-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-de-multi-de-param-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-de-multi-de-vs
@@ -333,7 +333,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-de-multi-de-vs-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-de-multi-de-vs-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-de-multi-de-header
@@ -351,7 +351,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-de-multi-de-header-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-de-multi-de-header-response-valueSet.json"
 
     @operation:expand
     Scenario: language-xform-en-multi-de-soft
@@ -369,7 +369,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-xform-en-multi-de-soft-response-valueSet.json"
+      And $response should match the pattern in "language/expand-xform-en-multi-de-soft-response-valueSet.json"
 
     @operation:expand
     Scenario: language-xform-en-multi-de-hard
@@ -387,7 +387,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-xform-en-multi-de-hard-response-valueSet.json"
+      And $response should match the pattern in "language/expand-xform-en-multi-de-hard-response-valueSet.json"
 
     @operation:expand
     Scenario: language-xform-en-multi-de-default
@@ -406,7 +406,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-xform-en-multi-de-default-response-valueSet.json"
+      And $response should match the pattern in "language/expand-xform-en-multi-de-default-response-valueSet.json"
 
     @operation:expand
     Scenario: language-xform-de-multi-en-soft
@@ -424,7 +424,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-xform-de-multi-en-soft-response-valueSet.json"
+      And $response should match the pattern in "language/expand-xform-de-multi-en-soft-response-valueSet.json"
 
     @operation:expand
     Scenario: language-xform-de-multi-en-hard
@@ -442,7 +442,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-xform-de-multi-en-hard-response-valueSet.json"
+      And $response should match the pattern in "language/expand-xform-de-multi-en-hard-response-valueSet.json"
 
     @operation:expand
     Scenario: language-xform-de-multi-en-default
@@ -460,7 +460,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-xform-de-multi-en-default-response-valueSet.json"
+      And $response should match the pattern in "language/expand-xform-de-multi-en-default-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-en-designation
@@ -478,7 +478,7 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-en-designation-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-en-designation-response-valueSet.json"
 
     @operation:expand
     Scenario: language-echo-en-designations
@@ -497,4 +497,4 @@ Feature: Terminology server — language
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "language/expand-echo-en-designations-response-valueSet.json"
+      And $response should match the pattern in "language/expand-echo-en-designations-response-valueSet.json"

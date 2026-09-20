@@ -39,7 +39,7 @@ node scripts/tx-tests.mjs --source <checkout>/tests [--server URL] [--validator 
             { "name": "uuid", "valueUuid": "urn:uuid:8acdbfdc-e9d2-11ed-a05b-0242ac120003" } ] }
         """
       Then $response.status should be 200
-      And $response should match the expected response "simple/simple-expand-all-response-valueSet.json"
+      And $response should match the pattern in "simple/simple-expand-all-response-valueSet.json"
 ```
 
 The request is the upstream Parameters with the runner's profile parameters
@@ -47,8 +47,8 @@ merged in (the default `uuid`, or the `version/parameters-*.json` profile the
 test names, plus `lenient-display-validation` where the test sets it), so the
 reader sees exactly what the server receives. The resources a suite depends on
 travel with every request as `tx-resource` parameters, as the HL7 runner sends
-them. The expected response is the upstream file, fetched at run time and
-compared as a matchetype by the FHIR validator.
+them. The pattern is the upstream expected-response file, which is already a matchetype;
+it is fetched at run time and compared by the FHIR validator.
 
 Upstream modifiers and where they went:
 
@@ -59,7 +59,7 @@ Upstream modifiers and where they went:
 | `profile`, `lenient-display` | merged into the request Parameters |
 | suite/test `mode` | tags `@mode:…`; a sentence in the feature description |
 | `version` (4.0, 5.0, !4.0) | generator filter `--fhir-version`; the left-out tests are listed in the file header |
-| `response:flat`, `response:tx.fhir.org`, `response2` | `should match one of the expected responses:` with a table of `response` rows; one match is enough (24 tests) |
+| `response:flat`, `response:tx.fhir.org`, `response2` | `should match one of the patterns in:` with a table of `pattern` rows; one match is enough (24 tests) |
 | `full-set` | tag only (the runner's handling was not found) |
 
 ## Dialect
@@ -69,9 +69,11 @@ no change to the core language. Operations: expands, validates a code, validates
 a code against the code system, looks up a code, tests subsumption, translates,
 compares value sets, validates a batch, reads the capability statement, reads
 the terminology capabilities; plus `fetches the test material from`, `is given
-the resources:`, `should match the expected response` and `should match one of
-the expected responses:` (each candidate is compared, one `verify` judges them
-with an ExpressionValidator `or`).
+the resources:`, `should match the pattern in` and `should match one of the
+patterns in:`. The last two name a file of the test material rather than an
+inline doc string, because the upstream expected-response files are already
+matchetypes; the comparison is the core `should match pattern:` one. Several
+patterns are each compared and one `verify` judges the accumulated verdict.
 
 Endpoints, taken from the HL7 runner and its terminology client: `ValueSet/$expand`,
 `ValueSet/$validate-code`, `CodeSystem/$validate-code`, `CodeSystem/$lookup`,

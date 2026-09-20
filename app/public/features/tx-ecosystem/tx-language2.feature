@@ -3,8 +3,8 @@
 # Suite "language2": 25 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:language2 @mode:general
 Feature: Terminology server — language2
   A series of tests that test display name validation for various permutations of languages
@@ -50,7 +50,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-right-de-en-response-parameters.json"
+      And $response should match the pattern in "display/validation-right-de-en-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-right-de-ende-N
@@ -74,7 +74,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-right-de-ende-N-response-parameters.json"
+      And $response should match the pattern in "display/validation-right-de-ende-N-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-right-de-ende
@@ -98,7 +98,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-right-de-ende-response-parameters.json"
+      And $response should match the pattern in "display/validation-right-de-ende-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-right-de-none
@@ -122,7 +122,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-right-de-none-response-parameters.json"
+      And $response should match the pattern in "display/validation-right-de-none-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-right-en-en
@@ -146,7 +146,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-right-en-en-response-parameters.json"
+      And $response should match the pattern in "display/validation-right-en-en-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-right-en-ende-N
@@ -170,7 +170,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-right-en-ende-N-response-parameters.json"
+      And $response should match the pattern in "display/validation-right-en-ende-N-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-right-en-ende
@@ -194,7 +194,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-right-en-ende-response-parameters.json"
+      And $response should match the pattern in "display/validation-right-en-ende-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-right-en-none
@@ -218,7 +218,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-right-en-none-response-parameters.json"
+      And $response should match the pattern in "display/validation-right-en-none-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-right-none-en
@@ -241,7 +241,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-right-none-en-response-parameters.json"
+      And $response should match the pattern in "display/validation-right-none-en-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-right-none-ende-N
@@ -264,7 +264,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-right-none-ende-N-response-parameters.json"
+      And $response should match the pattern in "display/validation-right-none-ende-N-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-right-none-ende
@@ -287,7 +287,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-right-none-ende-response-parameters.json"
+      And $response should match the pattern in "display/validation-right-none-ende-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-right-none-none
@@ -310,7 +310,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-right-none-none-response-parameters.json"
+      And $response should match the pattern in "display/validation-right-none-none-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-wrong-de-en
@@ -334,7 +334,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-wrong-de-en-response-parameters.json"
+      And $response should match the pattern in "display/validation-wrong-de-en-response-parameters.json"
 
     # Same request, but with an invalid displayName parameter
     @operation:validate-code @http-code:4xx
@@ -359,7 +359,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "display/validation-wrong-de-en-bad-response-outcome.json"
+      And $response should match the pattern in "display/validation-wrong-de-en-bad-response-outcome.json"
 
     @operation:validate-code
     Scenario: validation-wrong-de-ende-N
@@ -383,7 +383,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-wrong-de-ende-N-response-parameters.json"
+      And $response should match the pattern in "display/validation-wrong-de-ende-N-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-wrong-de-ende
@@ -407,7 +407,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-wrong-de-ende-response-parameters.json"
+      And $response should match the pattern in "display/validation-wrong-de-ende-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-wrong-de-none
@@ -431,7 +431,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-wrong-de-none-response-parameters.json"
+      And $response should match the pattern in "display/validation-wrong-de-none-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-wrong-en-en
@@ -455,7 +455,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-wrong-en-en-response-parameters.json"
+      And $response should match the pattern in "display/validation-wrong-en-en-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-wrong-en-ende-N
@@ -479,7 +479,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-wrong-en-ende-N-response-parameters.json"
+      And $response should match the pattern in "display/validation-wrong-en-ende-N-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-wrong-en-ende
@@ -503,7 +503,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-wrong-en-ende-response-parameters.json"
+      And $response should match the pattern in "display/validation-wrong-en-ende-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-wrong-en-none
@@ -527,7 +527,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-wrong-en-none-response-parameters.json"
+      And $response should match the pattern in "display/validation-wrong-en-none-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-wrong-none-en
@@ -550,7 +550,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-wrong-none-en-response-parameters.json"
+      And $response should match the pattern in "display/validation-wrong-none-en-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-wrong-none-ende-N
@@ -573,7 +573,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-wrong-none-ende-N-response-parameters.json"
+      And $response should match the pattern in "display/validation-wrong-none-ende-N-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-wrong-none-ende
@@ -596,7 +596,7 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-wrong-none-ende-response-parameters.json"
+      And $response should match the pattern in "display/validation-wrong-none-ende-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-wrong-none-none
@@ -619,4 +619,4 @@ Feature: Terminology server — language2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "display/validation-wrong-none-none-response-parameters.json"
+      And $response should match the pattern in "display/validation-wrong-none-none-response-parameters.json"

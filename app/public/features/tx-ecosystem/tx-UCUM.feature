@@ -4,8 +4,8 @@
 # Left out, bound to another FHIR version: expand-ucum-all-5 (5.0).
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:UCUM @mode:tx.fhir.org
 Feature: Terminology server — UCUM
   UCUM Test Cases
@@ -38,7 +38,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/lookup-simple-code-response.json"
+      And $response should match the pattern in "ucum/lookup-simple-code-response.json"
 
     # Tests the $lookup operation with annotation
     @operation:lookup
@@ -55,7 +55,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/lookup-with-annotation-code-response.json"
+      And $response should match the pattern in "ucum/lookup-with-annotation-code-response.json"
 
   Rule: ValueSet $expand
 
@@ -74,7 +74,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/expand-ucum-all-4-response.json"
+      And $response should match the pattern in "ucum/expand-ucum-all-4-response.json"
 
     # Tests the $expand operation for all codes (this is a special case)
     @operation:expand
@@ -90,7 +90,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/expand-ucum-canonical-response.json"
+      And $response should match the pattern in "ucum/expand-ucum-canonical-response.json"
 
   Rule: ValueSet $validate-code
 
@@ -110,7 +110,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/validate-ucum-canonical-good-response.json"
+      And $response should match the pattern in "ucum/validate-ucum-canonical-good-response.json"
 
     # Tests the $validate-code operation for an valid UCUM code not in the canonicl value set
     @operation:validate-code
@@ -128,7 +128,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/validate-ucum-canonical-bad-response.json"
+      And $response should match the pattern in "ucum/validate-ucum-canonical-bad-response.json"
 
     # Tests the $validate-code operation for a valid UCUM code
     @operation:validate-code
@@ -146,7 +146,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/validate-ucum-all-good-response.json"
+      And $response should match the pattern in "ucum/validate-ucum-all-good-response.json"
 
     # Tests the $validate-code operation for an invalid UCUM code
     @operation:validate-code
@@ -164,7 +164,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/validate-ucum-all-bad-response.json"
+      And $response should match the pattern in "ucum/validate-ucum-all-bad-response.json"
 
   Rule: CodeSystem $subsumes
 
@@ -184,7 +184,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/ucum-subsumes-equivalent-response.json"
+      And $response should match the pattern in "ucum/ucum-subsumes-equivalent-response.json"
 
     # The same unit written two different ways
     @operation:subsumes
@@ -202,7 +202,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/ucum-subsumes-canonical-response.json"
+      And $response should match the pattern in "ucum/ucum-subsumes-canonical-response.json"
 
     # Two unrelated units
     @operation:subsumes
@@ -220,7 +220,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/ucum-subsumes-unrelated-response.json"
+      And $response should match the pattern in "ucum/ucum-subsumes-unrelated-response.json"
 
     # A unit and a scaled version of it - UCUM has no hierarchy
     @operation:subsumes
@@ -238,7 +238,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/ucum-subsumes-scaled-response.json"
+      And $response should match the pattern in "ucum/ucum-subsumes-scaled-response.json"
 
     # codeA is not a valid UCUM unit
     @operation:subsumes @http-code:4xx
@@ -256,7 +256,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "ucum/ucum-subsumes-invalid-code-response.json"
+      And $response should match the pattern in "ucum/ucum-subsumes-invalid-code-response.json"
 
     # A unit with an annotation, and the same unit without
     @operation:subsumes
@@ -274,7 +274,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/ucum-subsumes-annotation-response.json"
+      And $response should match the pattern in "ucum/ucum-subsumes-annotation-response.json"
 
     # A named derived unit and the expression it is defined as
     @operation:subsumes
@@ -292,7 +292,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/ucum-subsumes-derived-response.json"
+      And $response should match the pattern in "ucum/ucum-subsumes-derived-response.json"
 
     # Two units of the same property whose conversion has an offset
     @operation:subsumes
@@ -310,7 +310,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/ucum-subsumes-offset-response.json"
+      And $response should match the pattern in "ucum/ucum-subsumes-offset-response.json"
 
     # Two units with the same canonical unit but different magnitudes
     @operation:subsumes
@@ -328,7 +328,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/ucum-subsumes-same-canonical-response.json"
+      And $response should match the pattern in "ucum/ucum-subsumes-same-canonical-response.json"
 
     # The same canonical unit again, with neither magnitude being 1
     @operation:subsumes
@@ -346,7 +346,7 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/ucum-subsumes-both-scaled-response.json"
+      And $response should match the pattern in "ucum/ucum-subsumes-both-scaled-response.json"
 
     # Two dimensionless units, told apart only by magnitude
     @operation:subsumes
@@ -364,4 +364,4 @@ Feature: Terminology server — UCUM
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "ucum/ucum-subsumes-dimensionless-response.json"
+      And $response should match the pattern in "ucum/ucum-subsumes-dimensionless-response.json"

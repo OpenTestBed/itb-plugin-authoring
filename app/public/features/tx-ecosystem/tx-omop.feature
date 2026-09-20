@@ -3,8 +3,8 @@
 # Suite "omop": 26 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:omop @mode:omop
 Feature: Terminology server — omop
   Tests for OMOP implementations. Note that some servers only do OMOP (and some don't). The tests
@@ -37,7 +37,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-good-code-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-good-code-response-parameters.json"
 
     # Just validate a randomly chosen real OMOP code provided as coding
     @operation:cs-validate-code
@@ -60,7 +60,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-good-coding-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-good-coding-response-parameters.json"
 
     # Just validate a randomly chosen real OMOP code provided as codeableConcept
     @operation:cs-validate-code
@@ -86,7 +86,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-good-codeableconcept-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-good-codeableconcept-response-parameters.json"
 
     # Just validate a randomly chosen fake OMOP code that is not valid provided as system and code
     @operation:cs-validate-code
@@ -103,7 +103,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-bad-code-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-bad-code-response-parameters.json"
 
     # Just validate a randomly chosen fake OMOP code that is not valid provided as coding
     @operation:cs-validate-code
@@ -126,7 +126,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-bad-coding-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-bad-coding-response-parameters.json"
 
     # Just validate a randomly chosen fake OMOP code that is not valid provided as CodeableConcept
     @operation:cs-validate-code
@@ -152,7 +152,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-bad-codeableconcept-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-bad-codeableconcept-response-parameters.json"
 
     # Just validate a randomly chosen real OMOP code with a wrong display provided as system, code and
     # display
@@ -171,7 +171,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-bad-display-code-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-bad-display-code-response-parameters.json"
 
     # Just validate a randomly chosen real OMOP code with a wrong display provided as coding
     @operation:cs-validate-code
@@ -194,7 +194,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-bad-display-coding-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-bad-display-coding-response-parameters.json"
 
     # Just validate a randomly chosen real OMOP code with a wrong display provided as CodeableConcept
     @operation:cs-validate-code
@@ -221,7 +221,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-bad-display-codeableconcept-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-bad-display-codeableconcept-response-parameters.json"
 
     # Just validate a randomly chosen real OMOP code with a wrong display provided as system, code and
     # display
@@ -240,7 +240,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-bad-version-code-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-bad-version-code-response-parameters.json"
 
     # Just validate a randomly chosen real OMOP code with a wrong display provided as coding
     @operation:cs-validate-code
@@ -263,7 +263,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-bad-version-coding-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-bad-version-coding-response-parameters.json"
 
     # Just validate a randomly chosen real OMOP code with a wrong display provided as CodeableConcept
     @operation:cs-validate-code
@@ -290,7 +290,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-bad-version-codeableconcept-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-bad-version-codeableconcept-response-parameters.json"
 
   Rule: ValueSet $validate-code
 
@@ -311,7 +311,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-good-vs-code-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-good-vs-code-response-parameters.json"
 
     # Just validate a randomly chosen real OMOP code provided as a coding and require that it's in a
     # particular domain by value set (it is!)
@@ -336,7 +336,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-good-vs-coding-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-good-vs-coding-response-parameters.json"
 
     # Just validate a randomly chosen real OMOP code provided as a CodeableConcept and require that
     # it's in a particular domain by value set (it is!)
@@ -364,7 +364,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-good-vs-codeableconcept-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-good-vs-codeableconcept-response-parameters.json"
 
     # Just validate a randomly chosen real OMOP code provided as system and code and require that it's
     # in a particular domain by value set (it is not!)
@@ -383,7 +383,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-bad-vs-code-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-bad-vs-code-response-parameters.json"
 
     # Just validate a randomly chosen real OMOP code provided as a coding and require that it's in a
     # particular domain by value set (it is not!)
@@ -408,7 +408,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-bad-vs-coding-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-bad-vs-coding-response-parameters.json"
 
     # Just validate a randomly chosen real OMOP code provided as a CodeableConcept and require that
     # it's in a particular domain by value set (it is not!)
@@ -436,7 +436,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-bad-vs-codeableconcept-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-bad-vs-codeableconcept-response-parameters.json"
 
     # Same as omop-basic-validation-code-good-vs but passing a value set in
     @operation:validate-code
@@ -454,7 +454,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-good-vs-url-code-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-good-vs-url-code-response-parameters.json"
 
     # Same as omop-basic-validation-code-bad-vs but passing a value set in
     @operation:validate-code
@@ -472,7 +472,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-validate-bad-vs-url-code-response-parameters.json"
+      And $response should match the pattern in "omop/omop-validate-bad-vs-url-code-response-parameters.json"
 
   Rule: CodeSystem $lookup
 
@@ -491,7 +491,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-lookup-code-response-parameters.json"
+      And $response should match the pattern in "omop/omop-lookup-code-response-parameters.json"
 
     # lookup a non-standard OMOP Code
     @operation:lookup @http-code:4xx
@@ -508,7 +508,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "omop/omop-lookup-code2-response-outcome.json"
+      And $response should match the pattern in "omop/omop-lookup-code2-response-outcome.json"
 
     # lookup a non-standard OMOP Code
     @operation:lookup
@@ -525,7 +525,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-lookup-code3-response-parameters.json"
+      And $response should match the pattern in "omop/omop-lookup-code3-response-parameters.json"
 
   Rule: ValueSet $expand
 
@@ -543,7 +543,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-expand-explicit-response-valueSet.json"
+      And $response should match the pattern in "omop/omop-expand-explicit-response-valueSet.json"
 
   Rule: ConceptMap $translate
 
@@ -565,7 +565,7 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-translate-loinc-implicit-response-parameters.json"
+      And $response should match the pattern in "omop/omop-translate-loinc-implicit-response-parameters.json"
 
     # translating unsucessfully from OMOP to LOINC, leaving it to the server to choose a concept map
     # if it can find one, Also this test - and the last one - assume that the server has no other
@@ -585,4 +585,4 @@ Feature: Terminology server — omop
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "omop/omop-translate-loinc-implicit-bad-response-parameters.json"
+      And $response should match the pattern in "omop/omop-translate-loinc-implicit-bad-response-parameters.json"

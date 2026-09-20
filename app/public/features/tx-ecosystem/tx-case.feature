@@ -3,8 +3,8 @@
 # Suite "case": 6 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:case @mode:general
 Feature: Terminology server — case
   Test Case Sensitivity handling
@@ -43,7 +43,7 @@ Feature: Terminology server — case
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "case/case-coding-insensitive-code1-1-response-parameters.json"
+      And $response should match the pattern in "case/case-coding-insensitive-code1-1-response-parameters.json"
 
     @operation:validate-code
     Scenario: case-insensitive-code1-2
@@ -65,7 +65,7 @@ Feature: Terminology server — case
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "case/case-coding-insensitive-code1-2-response-parameters.json"
+      And $response should match the pattern in "case/case-coding-insensitive-code1-2-response-parameters.json"
 
     @operation:validate-code
     Scenario: case-insensitive-code1-3
@@ -87,7 +87,7 @@ Feature: Terminology server — case
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "case/case-coding-insensitive-code1-3-response-parameters.json"
+      And $response should match the pattern in "case/case-coding-insensitive-code1-3-response-parameters.json"
 
     @operation:validate-code
     Scenario: case-sensitive-code1-1
@@ -109,7 +109,7 @@ Feature: Terminology server — case
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "case/case-coding-sensitive-code1-1-response-parameters.json"
+      And $response should match the pattern in "case/case-coding-sensitive-code1-1-response-parameters.json"
 
     @operation:validate-code
     Scenario: case-sensitive-code1-2
@@ -131,7 +131,7 @@ Feature: Terminology server — case
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "case/case-coding-sensitive-code1-2-response-parameters.json"
+      And $response should match the pattern in "case/case-coding-sensitive-code1-2-response-parameters.json"
 
     @operation:validate-code
     Scenario: case-sensitive-code1-3
@@ -153,4 +153,4 @@ Feature: Terminology server — case
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "case/case-coding-sensitive-code1-3-response-parameters.json"
+      And $response should match the pattern in "case/case-coding-sensitive-code1-3-response-parameters.json"

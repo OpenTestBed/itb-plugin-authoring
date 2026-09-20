@@ -3,8 +3,8 @@
 # Suite "snomed": 70 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:snomed @mode:snomed
 Feature: Terminology server — snomed
   This snomed tests are based on the testing subset in the tx-ecosystem IG github repo (see
@@ -44,7 +44,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-inactive-display-lenient-response.json"
+      And $response should match the pattern in "sct/validate-code-inactive-display-lenient-response.json"
 
     # check that inactive displays are validated properly
     @operation:cs-validate-code
@@ -64,7 +64,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-inactive-display-not-lenient-response.json"
+      And $response should match the pattern in "sct/validate-code-inactive-display-not-lenient-response.json"
 
     # Tests the $validate-code operation for a complex SCT expression
     @operation:cs-validate-code
@@ -82,7 +82,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-procedure-pc-good-response.json"
+      And $response should match the pattern in "sct/validate-code-procedure-pc-good-response.json"
 
     # Tests the $validate-code operation for a complex SCT expression with a wrong qualifier code
     @operation:cs-validate-code
@@ -100,7 +100,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-procedure-pc-bad1-response.json"
+      And $response should match the pattern in "sct/validate-code-procedure-pc-bad1-response.json"
 
     # Tests the $validate-code operation for a complex SCT expression with a wrong qualifier code -
     # the codes are valid but they are reversed
@@ -119,7 +119,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-procedure-pc-bad2-response.json"
+      And $response should match the pattern in "sct/validate-code-procedure-pc-bad2-response.json"
 
     # Tests the $validate-code operation for an expression whose attribute value is itself refined -
     # right hand as the procedure site
@@ -138,7 +138,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-nested-good-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-nested-good-response.json"
 
     # The concept model does not allow laterality on a body structure that is not in the lateralizable
     # body structure reference set
@@ -157,7 +157,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-mrcm-lateralizable-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-mrcm-lateralizable-response.json"
 
     # The concept model does not allow an attribute outside its domain - finding site on a body
     # structure
@@ -176,7 +176,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-mrcm-domain-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-mrcm-domain-response.json"
 
     # An attribute with more than one domain in the concept model is valid in any of them - due to on
     # a clinical finding (due to is also valid on an event)
@@ -195,7 +195,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-mrcm-domain-finding-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-mrcm-domain-finding-response.json"
 
     # An attribute with more than one domain in the concept model is valid in any of them - due to on
     # an event (due to is also valid on a clinical finding)
@@ -214,7 +214,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-mrcm-domain-event-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-mrcm-domain-event-response.json"
 
     # The concept model does not allow an attribute outside all of its domains - due to on a
     # procedure, when it is only valid on a clinical finding or an event
@@ -233,7 +233,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-mrcm-domain-multi-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-mrcm-domain-multi-response.json"
 
     # The concept model does not allow a value outside the attribute's range - a body structure as the
     # value of laterality
@@ -252,7 +252,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-mrcm-range-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-mrcm-range-response.json"
 
     # The concept model does not allow an attribute more times than its cardinality - laterality is
     # 0..1
@@ -271,7 +271,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-mrcm-cardinality-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-mrcm-cardinality-response.json"
 
     # The concept model does not allow an ungrouped attribute inside a relationship group - laterality
     # is ungrouped
@@ -290,7 +290,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-mrcm-grouped-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-mrcm-grouped-response.json"
 
     # Tests the $validate-code operation for an expression with a concrete value
     @operation:cs-validate-code
@@ -308,7 +308,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-concrete-good-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-concrete-good-response.json"
 
     # The comma before an attribute group is optional in the compositional grammar, so an attribute
     # set followed directly by a group has to be accepted - it normalises to the form with the comma
@@ -327,7 +327,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-scg-no-comma-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-scg-no-comma-response.json"
 
     # The same expression written with the optional comma is already the normal form, so it validates
     # with no issues
@@ -346,7 +346,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-scg-comma-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-scg-comma-response.json"
 
     # The concept model does not allow a concrete value outside the attribute's range - the value must
     # be greater than zero
@@ -365,7 +365,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-mrcm-concrete-range-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-mrcm-concrete-range-response.json"
 
     # The concept model does not allow a decimal where the attribute's range is an integer
     @operation:cs-validate-code
@@ -383,7 +383,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-mrcm-concrete-int-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-mrcm-concrete-int-response.json"
 
     # The concept model does not allow a concept where the attribute's range is a concrete value
     @operation:cs-validate-code
@@ -401,7 +401,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-mrcm-concrete-wanted-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-mrcm-concrete-wanted-response.json"
 
     # The concept model does not allow a concrete value where the attribute's range is a concept
     @operation:cs-validate-code
@@ -419,7 +419,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-mrcm-concept-wanted-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-mrcm-concept-wanted-response.json"
 
   Rule: ValueSet $validate-code
 
@@ -471,7 +471,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-isa-in-response.json"
+      And $response should match the pattern in "sct/validate-code-isa-in-response.json"
 
     # check that codes are validated properly (is-a heirachy) - not in the value set
     @operation:validate-code
@@ -524,7 +524,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-isa-out-response.json"
+      And $response should match the pattern in "sct/validate-code-isa-out-response.json"
 
     # Checks that a valid expression is not allowed when expressions are not allowed
     @operation:validate-code
@@ -542,7 +542,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-none-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-none-response.json"
 
     # Checks that a valid expression is allowed when expressions are listed
     @operation:validate-code
@@ -561,7 +561,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-list-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-list-response.json"
 
     # Checks that a valid expression is not allowed just because it's primacy code is listed
     @operation:validate-code
@@ -583,7 +583,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-list-bad-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-list-bad-response.json"
 
     # Checks that a valid expression is allowed when expressions are allowed
     @operation:validate-code
@@ -602,7 +602,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-pc-filter-response.json"
+      And $response should match the pattern in "sct/validate-code-pc-filter-response.json"
 
     # Check that implied value sets work (isa)
     @operation:validate-code
@@ -624,7 +624,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-implied-1-response.json"
+      And $response should match the pattern in "sct/validate-code-implied-1-response.json"
 
     # Check that implied value sets work (bad isa)
     @operation:validate-code @http-code:4xx
@@ -646,7 +646,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "sct/validate-code-implied-1b-response.json"
+      And $response should match the pattern in "sct/validate-code-implied-1b-response.json"
 
     # Check that implied value sets work (refset)
     @operation:validate-code
@@ -668,7 +668,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/validate-code-implied-2-response.json"
+      And $response should match the pattern in "sct/validate-code-implied-2-response.json"
 
     # Check that implied value sets work (refset)
     @operation:validate-code @http-code:4xx
@@ -690,7 +690,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "sct/validate-code-implied-2b-response.json"
+      And $response should match the pattern in "sct/validate-code-implied-2b-response.json"
 
   Rule: ValueSet $expand
 
@@ -709,7 +709,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/expand-inactive-response.json"
+      And $response should match the pattern in "sct/expand-inactive-response.json"
 
     # check that a set of concepts and displays are expanded properly (is-a)
     @operation:expand
@@ -755,7 +755,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/expand-isa-response.json"
+      And $response should match the pattern in "sct/expand-isa-response.json"
 
     # Smoke test: total concept count for the loaded SNOMED edition subset must be 2206.
     @operation:expand
@@ -776,7 +776,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/expand-count-all-response.json"
+      And $response should match the pattern in "sct/expand-count-all-response.json"
 
     # return too many codes at once - fails
     @operation:expand @http-code:4xx
@@ -823,7 +823,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "sct/expand-too-big-response.json"
+      And $response should match the pattern in "sct/expand-too-big-response.json"
 
     # Expands no expresssions allowed - check settings
     @operation:expand
@@ -840,7 +840,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/expand-pc-none-response.json"
+      And $response should match the pattern in "sct/expand-pc-none-response.json"
 
     # Checks that a valid expression is not allowed just because it's primacy code is listed
     @operation:expand
@@ -856,7 +856,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/expand-pc-list-response.json"
+      And $response should match the pattern in "sct/expand-pc-list-response.json"
 
     # Checks that a valid expression is allowed when expressions are allowed
     @operation:expand
@@ -872,7 +872,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/expand-pc-filter-response.json"
+      And $response should match the pattern in "sct/expand-pc-filter-response.json"
 
   Rule: CodeSystem $lookup
 
@@ -892,7 +892,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/lookup-procedure-response.json"
+      And $response should match the pattern in "sct/lookup-procedure-response.json"
 
     # Tests the $lookup operation for a complex SCT expression
     @operation:lookup
@@ -910,7 +910,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/lookup-procedure-pc-response.json"
+      And $response should match the pattern in "sct/lookup-procedure-pc-response.json"
 
   Rule: CodeSystem $subsumes
 
@@ -931,7 +931,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-simple-response.json"
+      And $response should match the pattern in "sct/subsumes-simple-response.json"
 
     # A code subsumes its stated child
     @operation:subsumes
@@ -950,7 +950,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-parent-response.json"
+      And $response should match the pattern in "sct/subsumes-parent-response.json"
 
     # A code is equivalent to itself
     @operation:subsumes
@@ -969,7 +969,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-equivalent-response.json"
+      And $response should match the pattern in "sct/subsumes-equivalent-response.json"
 
     # Subsumption is transitive - a code subsumes a distant descendant
     @operation:subsumes
@@ -988,7 +988,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-transitive-response.json"
+      And $response should match the pattern in "sct/subsumes-transitive-response.json"
 
     # Two sibling codes do not subsume each other
     @operation:subsumes
@@ -1007,7 +1007,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-siblings-response.json"
+      And $response should match the pattern in "sct/subsumes-siblings-response.json"
 
     # Two codes in different top level hierarchies do not subsume each other
     @operation:subsumes
@@ -1026,7 +1026,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-disjoint-response.json"
+      And $response should match the pattern in "sct/subsumes-disjoint-response.json"
 
     # Subsumption using codingA/codingB instead of system + codeA/codeB
     @operation:subsumes
@@ -1057,7 +1057,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-coding-response.json"
+      And $response should match the pattern in "sct/subsumes-coding-response.json"
 
     # codeA is a well formed SNOMED code that is not in this edition
     @operation:subsumes @http-code:4xx
@@ -1076,7 +1076,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "sct/subsumes-unknown-code-a-response.json"
+      And $response should match the pattern in "sct/subsumes-unknown-code-a-response.json"
 
     # codeB is a well formed SNOMED code that is not in this edition
     @operation:subsumes @http-code:4xx
@@ -1095,7 +1095,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "sct/subsumes-unknown-code-b-response.json"
+      And $response should match the pattern in "sct/subsumes-unknown-code-b-response.json"
 
     # codeA is not a valid SNOMED code at all
     @operation:subsumes @http-code:4xx
@@ -1114,7 +1114,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "sct/subsumes-invalid-code-response.json"
+      And $response should match the pattern in "sct/subsumes-invalid-code-response.json"
 
     # the version names a SNOMED edition the server does not have
     @operation:subsumes @http-code:4xx
@@ -1133,7 +1133,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "sct/subsumes-bad-version-response.json"
+      And $response should match the pattern in "sct/subsumes-bad-version-response.json"
 
     # the system is not a code system the server knows
     @operation:subsumes @http-code:4xx
@@ -1151,7 +1151,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "sct/subsumes-bad-system-response.json"
+      And $response should match the pattern in "sct/subsumes-bad-system-response.json"
 
     # a refined expression is still subsumed by an ancestor of its focus concept
     @operation:subsumes
@@ -1170,7 +1170,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-expr-refined-vs-parent-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-refined-vs-parent-response.json"
 
     # the mirror of subsumes-expr-refined-vs-parent
     @operation:subsumes
@@ -1189,7 +1189,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-expr-parent-vs-refined-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-parent-vs-refined-response.json"
 
     # a refined expression is subsumed by its own focus concept
     @operation:subsumes
@@ -1208,7 +1208,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-expr-vs-focus-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-vs-focus-response.json"
 
     # same attribute, and the value in A subsumes the value in B
     @operation:subsumes
@@ -1227,7 +1227,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-expr-attr-value-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-attr-value-response.json"
 
     # the mirror of subsumes-expr-attr-value
     @operation:subsumes
@@ -1246,7 +1246,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-expr-attr-value-reverse-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-attr-value-reverse-response.json"
 
     # same attribute, unrelated values: structure finds nothing, which does not establish that nothing
     # is there
@@ -1266,7 +1266,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "sct/subsumes-expr-attr-unrelated-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-attr-unrelated-response.json"
 
     # B carries every attribute A does, and one more
     @operation:subsumes
@@ -1285,7 +1285,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-expr-extra-attribute-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-extra-attribute-response.json"
 
     # each expression refines an attribute the other does not: no structural relationship either way,
     # and no proof that none exists
@@ -1305,7 +1305,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "sct/subsumes-expr-different-attributes-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-different-attributes-response.json"
 
     # an expression against a PRIMITIVE concept whose entailed attributes satisfy it - the attributes
     # are necessary conditions, so they count
@@ -1325,7 +1325,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-expr-primitive-focus-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-primitive-focus-response.json"
 
     # a concept against its own long normal form written out
     @operation:subsumes
@@ -1344,7 +1344,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-expr-normal-form-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-normal-form-response.json"
 
     # a refinement that restates the concept's own definition
     @operation:subsumes
@@ -1363,7 +1363,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-expr-redundant-refinement-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-redundant-refinement-response.json"
 
     # the same attribute grouped and ungrouped: the MRCM requires |Finding site| to be grouped, so the
     # ungrouped form is not a valid expression
@@ -1383,7 +1383,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "sct/subsumes-expr-grouped-ungrouped-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-grouped-ungrouped-response.json"
 
     # the grouping rule is not specific to |Finding site|: |Associated morphology| is grouped too
     @operation:subsumes @http-code:4xx
@@ -1402,7 +1402,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "sct/subsumes-expr-ungrouped-morphology-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-ungrouped-morphology-response.json"
 
     # |Laterality| is ungrouped in the MRCM, so writing it outside a group is correct and subsumption
     # proceeds
@@ -1422,7 +1422,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-expr-ungrouped-laterality-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-ungrouped-laterality-response.json"
 
     # the same expression with and without terms
     @operation:subsumes
@@ -1444,7 +1444,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-expr-with-terms-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-with-terms-response.json"
 
     # a conjunction of a concept with its own ancestor
     @operation:subsumes
@@ -1463,7 +1463,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-expr-conjunction-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-conjunction-response.json"
 
     # an expression that means exactly the same as a precoordinated concept
     @operation:subsumes
@@ -1482,7 +1482,7 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-expr-precoordinated-match-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-precoordinated-match-response.json"
 
     # a post-coordinated expression subsuming a precoordinated concept
     @operation:subsumes
@@ -1501,4 +1501,4 @@ Feature: Terminology server — snomed
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "sct/subsumes-expr-subsumes-precoordinated-response.json"
+      And $response should match the pattern in "sct/subsumes-expr-subsumes-precoordinated-response.json"

@@ -3,8 +3,8 @@
 # Suite "extensions": 12 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:extensions @mode:general
 Feature: Terminology server — extensions
   Testing proper handling of extensions, which depends on the extension
@@ -38,7 +38,7 @@ Feature: Terminology server — extensions
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "extensions/expand-echo-all-valueset.json"
+      And $response should match the pattern in "extensions/expand-echo-all-valueset.json"
 
     @operation:expand
     Scenario: extensions-echo-enumerated
@@ -54,7 +54,7 @@ Feature: Terminology server — extensions
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "extensions/expand-echo-enumerated-valueset.json"
+      And $response should match the pattern in "extensions/expand-echo-enumerated-valueset.json"
 
     @operation:expand @http-code:4xx
     Scenario: extensions-echo-bad-supplement
@@ -70,7 +70,7 @@ Feature: Terminology server — extensions
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "extensions/expand-echo-bad-supplement-outcome.json"
+      And $response should match the pattern in "extensions/expand-echo-bad-supplement-outcome.json"
 
   Rule: ValueSet $validate-code
 
@@ -89,7 +89,7 @@ Feature: Terminology server — extensions
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "extensions/validate-code-bad-supplement-response-outcome.json"
+      And $response should match the pattern in "extensions/validate-code-bad-supplement-response-outcome.json"
 
     @operation:validate-code @http-code:4xx
     Scenario: validate-coding-bad-supplement
@@ -111,7 +111,7 @@ Feature: Terminology server — extensions
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "extensions/validate-coding-bad-supplement-response-outcome.json"
+      And $response should match the pattern in "extensions/validate-coding-bad-supplement-response-outcome.json"
 
     @operation:validate-code @http-code:4xx
     Scenario: validate-codeableconcept-bad-supplement
@@ -137,7 +137,7 @@ Feature: Terminology server — extensions
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "extensions/validate-codeableconcept-bad-supplement-response-outcome.json"
+      And $response should match the pattern in "extensions/validate-codeableconcept-bad-supplement-response-outcome.json"
 
     @operation:validate-code
     Scenario: validate-coding-good-supplement
@@ -160,7 +160,7 @@ Feature: Terminology server — extensions
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "extensions/validate-coding-good-supplement-response-parameters.json"
+      And $response should match the pattern in "extensions/validate-coding-good-supplement-response-parameters.json"
 
     @operation:validate-code
     Scenario: validate-coding-good2-supplement
@@ -184,7 +184,7 @@ Feature: Terminology server — extensions
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "extensions/validate-coding-good2-supplement-response-parameters.json"
+      And $response should match the pattern in "extensions/validate-coding-good2-supplement-response-parameters.json"
 
   Rule: CodeSystem $validate-code
 
@@ -207,7 +207,7 @@ Feature: Terminology server — extensions
         }
         """
       Then $response.status should match "^2"
-      And $response should match the expected response "extensions/validate-coding-bad-supplement-url-response-outcome.json"
+      And $response should match the pattern in "extensions/validate-coding-bad-supplement-url-response-outcome.json"
 
     # Check handling of a deprecated designation (lenient display validation)
     @operation:cs-validate-code
@@ -226,7 +226,7 @@ Feature: Terminology server — extensions
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "extensions/validate-code-inactive-display-lenient-response-outcome.json"
+      And $response should match the pattern in "extensions/validate-code-inactive-display-lenient-response-outcome.json"
 
     # Check handling of a deprecated designation (strict display validation)
     @operation:cs-validate-code
@@ -245,7 +245,7 @@ Feature: Terminology server — extensions
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "extensions/validate-code-inactive-display-not-lenient-response-outcome.json"
+      And $response should match the pattern in "extensions/validate-code-inactive-display-not-lenient-response-outcome.json"
 
     # Check handling of a deprecated concept
     @operation:cs-validate-code
@@ -262,4 +262,4 @@ Feature: Terminology server — extensions
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "extensions/validate-code-inactive-response-outcome.json"
+      And $response should match the pattern in "extensions/validate-code-inactive-response-outcome.json"

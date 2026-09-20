@@ -4,8 +4,8 @@
 # Left out, bound to another FHIR version: translate-reverse-r5+ (!4.0), translate-reverse-r5+-a (!4.0).
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:translate2 @mode:general
 Feature: Terminology server — translate2
   Tests for ConceptMap.$translate
@@ -44,7 +44,7 @@ Feature: Terminology server — translate2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "translate/translate-5-response-parameters.json"
+      And $response should match the pattern in "translate/translate-5-response-parameters.json"
 
     # Testing unmapped functionality which specifying a particular map
     @operation:translate
@@ -63,7 +63,7 @@ Feature: Terminology server — translate2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "translate/translate-5a-response-parameters.json"
+      And $response should match the pattern in "translate/translate-5a-response-parameters.json"
 
     # Testing unmapped functionality which specifying a particular map
     @operation:translate
@@ -82,7 +82,7 @@ Feature: Terminology server — translate2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "translate/translate-5b-response-parameters.json"
+      And $response should match the pattern in "translate/translate-5b-response-parameters.json"
 
     # Testing other map - default concept map
     @operation:translate
@@ -100,7 +100,7 @@ Feature: Terminology server — translate2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "translate/translate-5-response-parameters.json"
+      And $response should match the pattern in "translate/translate-5-response-parameters.json"
 
     # Same translation, but in reverse, using the reverse parameter
     @operation:translate @fhir-version:4.0
@@ -119,7 +119,7 @@ Feature: Terminology server — translate2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "translate/translate-reverse-response-r4-parameters.json"
+      And $response should match the pattern in "translate/translate-reverse-response-r4-parameters.json"
 
     # Same translation, using the reverse parameter (e.g. double reversed)
     @operation:translate @fhir-version:4.0
@@ -138,7 +138,7 @@ Feature: Terminology server — translate2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "translate/translate-reverse-response-r4-a-parameters.json"
+      And $response should match the pattern in "translate/translate-reverse-response-r4-a-parameters.json"
 
     # Same translation, but in reverse, not using the reverse parameter
     @operation:translate @fhir-version:4.0
@@ -156,4 +156,4 @@ Feature: Terminology server — translate2
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "translate/translate-reverse-response-r4-b-parameters.json"
+      And $response should match the pattern in "translate/translate-reverse-response-r4-b-parameters.json"

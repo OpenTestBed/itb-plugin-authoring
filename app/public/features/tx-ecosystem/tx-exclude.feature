@@ -3,8 +3,8 @@
 # Suite "exclude": 8 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:exclude @mode:general
 Feature: Terminology server — exclude
   Tests for proper functioning of exclude
@@ -38,7 +38,7 @@ Feature: Terminology server — exclude
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "exclude/exclude-expand-valueSet.json"
+      And $response should match the pattern in "exclude/exclude-expand-valueSet.json"
 
     # Test a simple exclude combined with a filter
     @operation:expand
@@ -54,7 +54,7 @@ Feature: Terminology server — exclude
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "exclude/exclude-expand-filter-valueSet.json"
+      And $response should match the pattern in "exclude/exclude-expand-filter-valueSet.json"
 
     # include and exclude the same code
     @operation:expand
@@ -70,7 +70,7 @@ Feature: Terminology server — exclude
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "exclude/exclude-expand-zero-response.json"
+      And $response should match the pattern in "exclude/exclude-expand-zero-response.json"
 
     # include and exclude all codes
     @operation:expand
@@ -86,7 +86,7 @@ Feature: Terminology server — exclude
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "exclude/exclude-expand-all-response.json"
+      And $response should match the pattern in "exclude/exclude-expand-all-response.json"
 
     # exclude by value set
     @operation:expand
@@ -141,7 +141,7 @@ Feature: Terminology server — exclude
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "exclude/exclude-expand-combo-response.json"
+      And $response should match the pattern in "exclude/exclude-expand-combo-response.json"
 
     # include limit by value set
     @operation:expand
@@ -186,7 +186,7 @@ Feature: Terminology server — exclude
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "exclude/include-expand-combo-response.json"
+      And $response should match the pattern in "exclude/include-expand-combo-response.json"
 
     # See https://github.com/HealthIntersections/FHIRsmith/issues/156
     @operation:expand
@@ -239,7 +239,7 @@ Feature: Terminology server — exclude
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "exclude/exclude-gender-response.json"
+      And $response should match the pattern in "exclude/exclude-gender-response.json"
 
     # See https://github.com/HealthIntersections/FHIRsmith/issues/156
     @operation:expand
@@ -297,4 +297,4 @@ Feature: Terminology server — exclude
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "exclude/exclude-gender2-response.json"
+      And $response should match the pattern in "exclude/exclude-gender2-response.json"

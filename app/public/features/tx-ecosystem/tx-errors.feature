@@ -3,8 +3,8 @@
 # Suite "errors": 7 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:errors @mode:general
 Feature: Terminology server — errors
   Testing Various Error Conditions
@@ -42,7 +42,7 @@ Feature: Terminology server — errors
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "errors/errors-unknown-system1-response.json"
+      And $response should match the pattern in "errors/errors-unknown-system1-response.json"
 
     # Value set & request refers to an unknown system; request is a different unknown system
     @operation:validate-code
@@ -60,7 +60,7 @@ Feature: Terminology server — errors
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "errors/errors-unknown-system2-response.json"
+      And $response should match the pattern in "errors/errors-unknown-system2-response.json"
 
     # Make sure that filters without value cause an error
     @operation:validate-code @http-code:4xx
@@ -78,7 +78,7 @@ Feature: Terminology server — errors
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "errors/errors-broken-filter-validate-response.json"
+      And $response should match the pattern in "errors/errors-broken-filter-validate-response.json"
 
     # Make sure that filters without value cause an error (extension only)
     @operation:validate-code @http-code:4xx
@@ -96,7 +96,7 @@ Feature: Terminology server — errors
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "errors/errors-broken-filter2-validate-response.json"
+      And $response should match the pattern in "errors/errors-broken-filter2-validate-response.json"
 
     # A value set that contains two identical codes - validates ok
     @operation:validate-code
@@ -114,7 +114,7 @@ Feature: Terminology server — errors
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "errors/errors-combination-ok-response.json"
+      And $response should match the pattern in "errors/errors-combination-ok-response.json"
 
     # A value set that contains two identical codes - error if inferSystem is true
     @operation:validate-code
@@ -132,7 +132,7 @@ Feature: Terminology server — errors
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "errors/errors-combination-bad-response.json"
+      And $response should match the pattern in "errors/errors-combination-bad-response.json"
 
   Rule: ValueSet $expand
 
@@ -150,4 +150,4 @@ Feature: Terminology server — errors
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "errors/errors-broken-filter-expand-response.json"
+      And $response should match the pattern in "errors/errors-broken-filter-expand-response.json"

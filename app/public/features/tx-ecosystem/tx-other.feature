@@ -3,8 +3,8 @@
 # Suite "other": 3 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:other @mode:general
 Feature: Terminology server — other
   Misc tests based on issues submitted by users
@@ -34,7 +34,7 @@ Feature: Terminology server — other
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "other/expand-dual-filter-valueset.json"
+      And $response should match the pattern in "other/expand-dual-filter-valueset.json"
 
   Rule: ValueSet $validate-code
 
@@ -62,7 +62,7 @@ Feature: Terminology server — other
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "other/validation-dual-filter-in-response-parameters.json"
+      And $response should match the pattern in "other/validation-dual-filter-in-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-dual-filter-out
@@ -88,4 +88,4 @@ Feature: Terminology server — other
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "other/validation-dual-filter-out-response-parameters.json"
+      And $response should match the pattern in "other/validation-dual-filter-out-response-parameters.json"

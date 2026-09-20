@@ -3,8 +3,8 @@
 # Suite "icd-11": 50 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:icd-11 @mode:icd-11
 Feature: Terminology server — icd-11
   ICD-11 Test Cases. See tests/icd-11/doco.txt for what these assert and why several of them are
@@ -37,7 +37,7 @@ Feature: Terminology server — icd-11
     Scenario: term-caps
       When Client reads the terminology capabilities of TxServer as $capabilities
       Then $response.status should be 200
-      And $capabilities should match the expected response "icd-11/capterms.json"
+      And $capabilities should match the pattern in "icd-11/capterms.json"
 
   Rule: CodeSystem $lookup
 
@@ -61,7 +61,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/lookup-mms-code-response.json"
+      And $response should match the pattern in "icd-11/lookup-mms-code-response.json"
 
     # The same concept addressed by its entity URI must give the same answer
     @operation:lookup
@@ -82,7 +82,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/lookup-mms-uri-response.json"
+      And $response should match the pattern in "icd-11/lookup-mms-uri-response.json"
 
     # Look up a chapter (a grouper that does have a short code)
     @operation:lookup
@@ -102,7 +102,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/lookup-mms-grouper-response.json"
+      And $response should match the pattern in "icd-11/lookup-mms-grouper-response.json"
 
     # A concept with an entity id but no short code must be marked not-selectable
     @operation:lookup
@@ -123,7 +123,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/lookup-mms-no-code-response.json"
+      And $response should match the pattern in "icd-11/lookup-mms-no-code-response.json"
 
     # Look up a residual category - the id is derived from the parent, the code ends in Y
     @operation:lookup
@@ -144,7 +144,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/lookup-mms-residual-response.json"
+      And $response should match the pattern in "icd-11/lookup-mms-residual-response.json"
 
     # Look up with displayLanguage - display and designations come back in French
     @operation:lookup
@@ -164,7 +164,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/lookup-mms-fr-response.json"
+      And $response should match the pattern in "icd-11/lookup-mms-fr-response.json"
 
     # The same foundation entity in ICF carries a different short code
     @operation:lookup
@@ -184,7 +184,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/lookup-icf-code-response.json"
+      And $response should match the pattern in "icd-11/lookup-icf-code-response.json"
 
     # Look up a Foundation entity - full URI only, there are no short codes
     @operation:lookup
@@ -204,7 +204,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/lookup-foundation-response.json"
+      And $response should match the pattern in "icd-11/lookup-foundation-response.json"
 
     # An unknown code is an error
     @operation:lookup @http-code:4xx
@@ -222,7 +222,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "icd-11/lookup-bad-code-response.json"
+      And $response should match the pattern in "icd-11/lookup-bad-code-response.json"
 
     # An unknown code system is an error
     @operation:lookup @http-code:4xx
@@ -239,7 +239,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "icd-11/lookup-bad-system-response.json"
+      And $response should match the pattern in "icd-11/lookup-bad-system-response.json"
 
     # An unknown version is an error
     @operation:lookup @http-code:4xx
@@ -257,7 +257,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "icd-11/lookup-bad-version-response.json"
+      And $response should match the pattern in "icd-11/lookup-bad-version-response.json"
 
     # A bare numeric id is not a Foundation code (WHO decision - the full URI is required)
     @operation:lookup @http-code:4xx
@@ -275,7 +275,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "icd-11/lookup-foundation-bare-response.json"
+      And $response should match the pattern in "icd-11/lookup-foundation-bare-response.json"
 
     # Residual categories exist only in the linearizations, not in the Foundation
     @operation:lookup @http-code:4xx
@@ -293,7 +293,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "icd-11/lookup-foundation-residual-response.json"
+      And $response should match the pattern in "icd-11/lookup-foundation-residual-response.json"
 
     # An unknown display language must be reported, not silently replaced by English
     @operation:lookup @http-code:4xx
@@ -313,7 +313,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "icd-11/lookup-bad-language-response.json"
+      And $response should match the pattern in "icd-11/lookup-bad-language-response.json"
 
     # Look up a postcoordinated expression in short-code form
     @operation:lookup
@@ -335,7 +335,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/lookup-pc-simple-response.json"
+      And $response should match the pattern in "icd-11/lookup-pc-simple-response.json"
 
     # The same expression in entity-URI form (spaces around the delimiter) must give the same concept
     @operation:lookup
@@ -360,7 +360,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/lookup-pc-uri-form-response.json"
+      And $response should match the pattern in "icd-11/lookup-pc-uri-form-response.json"
 
     # A cluster expression: two stems joined by /, each with its own & extensions
     @operation:lookup
@@ -379,7 +379,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/lookup-pc-cluster-response.json"
+      And $response should match the pattern in "icd-11/lookup-pc-cluster-response.json"
 
     # A value repeated on two different axes must not be silently dropped - the code that comes back
     # must be the code that was asked about
@@ -400,7 +400,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/lookup-pc-repeated-value-response.json"
+      And $response should match the pattern in "icd-11/lookup-pc-repeated-value-response.json"
 
     # Values on two axes drawing from overlapping value sets must each stay on their own axis
     @operation:lookup
@@ -421,7 +421,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/lookup-pc-nondisjoint-response.json"
+      And $response should match the pattern in "icd-11/lookup-pc-nondisjoint-response.json"
 
     # A value that is on no suggested axis of the stem must say so, not just 'not found'
     @operation:lookup @http-code:4xx
@@ -440,7 +440,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "icd-11/lookup-pc-invalid-axis-response.json"
+      And $response should match the pattern in "icd-11/lookup-pc-invalid-axis-response.json"
 
     # 'Other' postcoordination: a value outside the stem's declared scales (unresolved - see doco.txt)
     @operation:lookup @http-code:4xx
@@ -459,7 +459,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "icd-11/lookup-pc-other-response.json"
+      And $response should match the pattern in "icd-11/lookup-pc-other-response.json"
 
     # ICF postcoordination - every property returned must actually carry a value
     @operation:lookup
@@ -481,7 +481,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/lookup-icf-pc-response.json"
+      And $response should match the pattern in "icd-11/lookup-icf-pc-response.json"
 
     # The pre-2026 ICF postcoordination syntax is no longer valid
     @operation:lookup @http-code:4xx
@@ -500,7 +500,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "icd-11/lookup-icf-pc-old-response.json"
+      And $response should match the pattern in "icd-11/lookup-icf-pc-old-response.json"
 
   Rule: CodeSystem $validate-code
 
@@ -520,7 +520,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/cs-validate-good-response.json"
+      And $response should match the pattern in "icd-11/cs-validate-good-response.json"
 
     # Validate a good code with the right display
     @operation:cs-validate-code
@@ -539,7 +539,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/cs-validate-good-display-response.json"
+      And $response should match the pattern in "icd-11/cs-validate-good-display-response.json"
 
     # A wrong display must come back with issues and a message, not a bare result=false
     @operation:cs-validate-code
@@ -558,7 +558,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/cs-validate-bad-display-response.json"
+      And $response should match the pattern in "icd-11/cs-validate-bad-display-response.json"
 
     # An unknown code must come back with issues and a message
     @operation:cs-validate-code
@@ -576,7 +576,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/cs-validate-bad-code-response.json"
+      And $response should match the pattern in "icd-11/cs-validate-bad-code-response.json"
 
     # ICD-11 codes are case sensitive, so a lower case code is not a code (note that WHO declares
     # caseSensitive=false, which is the part that is wrong)
@@ -595,7 +595,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/cs-validate-case-response.json"
+      And $response should match the pattern in "icd-11/cs-validate-case-response.json"
 
     # A display that is right in another language is still wrong for the language that was asked for -
     # the same as validation/simple-coding-bad-language
@@ -616,7 +616,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/cs-validate-lang-response.json"
+      And $response should match the pattern in "icd-11/cs-validate-lang-response.json"
 
     # Validate a postcoordinated expression
     @operation:cs-validate-code
@@ -634,7 +634,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/cs-validate-pc-response.json"
+      And $response should match the pattern in "icd-11/cs-validate-pc-response.json"
 
     # Validate a code given in entity-URI form
     @operation:cs-validate-code
@@ -652,7 +652,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/cs-validate-uri-response.json"
+      And $response should match the pattern in "icd-11/cs-validate-uri-response.json"
 
   Rule: ValueSet $expand
 
@@ -673,7 +673,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/expand-pcs-response.json"
+      And $response should match the pattern in "icd-11/expand-pcs-response.json"
 
     # count is declared in TerminologyCapabilities and must be honoured
     @operation:expand
@@ -693,7 +693,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/expand-pcs-count-response.json"
+      And $response should match the pattern in "icd-11/expand-pcs-count-response.json"
 
     # offset is declared in TerminologyCapabilities and must be honoured
     @operation:expand
@@ -714,7 +714,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/expand-pcs-offset-response.json"
+      And $response should match the pattern in "icd-11/expand-pcs-offset-response.json"
 
     # The text filter must be applied
     @operation:expand
@@ -734,7 +734,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/expand-pcs-filter-response.json"
+      And $response should match the pattern in "icd-11/expand-pcs-filter-response.json"
 
     # displayLanguage is declared in TerminologyCapabilities and must be honoured
     @operation:expand
@@ -754,7 +754,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/expand-pcs-fr-response.json"
+      And $response should match the pattern in "icd-11/expand-pcs-fr-response.json"
 
     # An unknown value set is an error
     @operation:expand @http-code:4xx
@@ -773,7 +773,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "icd-11/expand-bad-url-response.json"
+      And $response should match the pattern in "icd-11/expand-bad-url-response.json"
 
     # A value set supplied inline on the request must be expanded
     @operation:expand
@@ -819,7 +819,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/expand-inline-vs-response.json"
+      And $response should match the pattern in "icd-11/expand-inline-vs-response.json"
 
     # Expand a client-supplied value set enumerating MMS codes
     @operation:expand
@@ -835,7 +835,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/expand-adhoc-enum-response.json"
+      And $response should match the pattern in "icd-11/expand-adhoc-enum-response.json"
 
     # Expand a client-supplied value set enumerating entity URIs
     @operation:expand
@@ -851,7 +851,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/expand-adhoc-enum-uri-response.json"
+      And $response should match the pattern in "icd-11/expand-adhoc-enum-uri-response.json"
 
     # Expand a client-supplied is-a filter, filter value as a short code
     @operation:expand
@@ -867,7 +867,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/expand-adhoc-isa-response.json"
+      And $response should match the pattern in "icd-11/expand-adhoc-isa-response.json"
 
     # Expand the same is-a filter with the filter value as an entity URI - must be identical
     @operation:expand
@@ -883,7 +883,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/expand-adhoc-isa-uri-response.json"
+      And $response should match the pattern in "icd-11/expand-adhoc-isa-uri-response.json"
 
     # A client-supplied value set naming a code that does not exist expands to the codes that do - the
     # same as simple-expand-enum-bad and overload-expand-enum-bad
@@ -900,7 +900,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/expand-adhoc-bad-code-response.json"
+      And $response should match the pattern in "icd-11/expand-adhoc-bad-code-response.json"
 
     # The WHO postcoordination scale as a client-supplied value set, filter values as entity URIs
     @operation:expand
@@ -916,7 +916,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/expand-pcs-uri-form-response.json"
+      And $response should match the pattern in "icd-11/expand-pcs-uri-form-response.json"
 
     # The same value set with filter values as short codes - must expand identically
     @operation:expand
@@ -932,7 +932,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/expand-pcs-code-form-response.json"
+      And $response should match the pattern in "icd-11/expand-pcs-code-form-response.json"
 
   Rule: ValueSet $validate-code
 
@@ -956,7 +956,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/vs-validate-in-response.json"
+      And $response should match the pattern in "icd-11/vs-validate-in-response.json"
 
     # A code that is not in the value set must come back with issues and a message
     @operation:validate-code
@@ -978,7 +978,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/vs-validate-out-response.json"
+      And $response should match the pattern in "icd-11/vs-validate-out-response.json"
 
     # A code that is in a client-supplied value set
     @operation:validate-code
@@ -997,7 +997,7 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/vs-validate-adhoc-response.json"
+      And $response should match the pattern in "icd-11/vs-validate-adhoc-response.json"
 
     # A code that is not in a client-supplied value set
     @operation:validate-code
@@ -1016,4 +1016,4 @@ Feature: Terminology server — icd-11
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "icd-11/vs-validate-adhoc-out-response.json"
+      And $response should match the pattern in "icd-11/vs-validate-adhoc-out-response.json"

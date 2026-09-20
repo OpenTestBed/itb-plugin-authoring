@@ -3,8 +3,8 @@
 # Suite "validation": 59 tests for a FHIR 4.0 server. Do not edit; re-run the generator.
 #
 # Each scenario is one upstream test: the request is the upstream Parameters with the
-# runner's profile parameters merged in, and the expected response is the upstream file,
-# fetched at run time and compared as a matchetype by the FHIR validator.
+# runner's profile parameters merged in, and the pattern is the upstream expected-response
+# file, which is a matchetype — fetched at run time and compared by the FHIR validator.
 @lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:validation @mode:general
 Feature: Terminology server — validation
   Testing various validation parameter combinations
@@ -57,7 +57,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-good-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-good-response-parameters.json"
 
     # child-of picks up a direct child - here the hierarchy is stated by nesting
     @operation:validate-code
@@ -75,7 +75,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-child-of-child-response-parameters.json"
+      And $response should match the pattern in "validation/simple-child-of-child-response-parameters.json"
 
     # and it stops there: a grandchild is not a child
     @operation:validate-code
@@ -93,7 +93,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-child-of-grandchild-response-parameters.json"
+      And $response should match the pattern in "validation/simple-child-of-grandchild-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-code-implied-good
@@ -110,7 +110,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-implied-good-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-implied-good-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-coding-good
@@ -132,7 +132,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-good-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-good-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-codeableconcept-good
@@ -158,7 +158,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-codeableconcept-good-response-parameters.json"
+      And $response should match the pattern in "validation/simple-codeableconcept-good-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-code-bad-code
@@ -175,7 +175,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-bad-code-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-bad-code-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-code-implied-bad-code
@@ -192,7 +192,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-implied-bad-code-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-implied-bad-code-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-coding-bad-code
@@ -214,7 +214,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-bad-code-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-bad-code-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-coding-bad-code-inactive
@@ -237,7 +237,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-bad-code-inactive-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-bad-code-inactive-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-codeableconcept-bad-code
@@ -263,7 +263,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-codeableconcept-bad-code-response-parameters.json"
+      And $response should match the pattern in "validation/simple-codeableconcept-bad-code-response-parameters.json"
 
     @operation:validate-code @http-code:4xx
     Scenario: validation-simple-code-bad-valueSet
@@ -280,7 +280,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "validation/simple-code-bad-valueSet-response-outcome.json"
+      And $response should match the pattern in "validation/simple-code-bad-valueSet-response-outcome.json"
 
     @operation:validate-code @http-code:4xx
     Scenario: validation-simple-coding-bad-valueSet
@@ -302,7 +302,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "validation/simple-coding-bad-valueSet-response-outcome.json"
+      And $response should match the pattern in "validation/simple-coding-bad-valueSet-response-outcome.json"
 
     @operation:validate-code @http-code:4xx
     Scenario: validation-simple-codeableconcept-bad-valueSet
@@ -328,7 +328,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should match "^4"
-      And $response should match the expected response "validation/simple-codeableconcept-bad-valueSet-response-outcome.json"
+      And $response should match the pattern in "validation/simple-codeableconcept-bad-valueSet-response-outcome.json"
 
     @operation:validate-code
     Scenario: validation-simple-code-bad-import
@@ -345,7 +345,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-bad-import-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-bad-import-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-coding-bad-import
@@ -367,7 +367,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-bad-import-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-bad-import-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-codeableconcept-bad-import
@@ -393,7 +393,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-codeableconcept-bad-import-response-parameters.json"
+      And $response should match the pattern in "validation/simple-codeableconcept-bad-import-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-code-bad-system
@@ -410,7 +410,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-bad-system-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-bad-system-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-coding-bad-system
@@ -432,7 +432,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-bad-system-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-bad-system-response-parameters.json"
 
     # A CodeableConcept with a coding from an unknown code system alongside a coding that is in the
     # value set. The unknown system cannot be checked, but membership is satisfied by the other
@@ -465,7 +465,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-codeableconcept-unknown-system-response-parameters.json"
+      And $response should match the pattern in "validation/simple-codeableconcept-unknown-system-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-coding-bad-system2
@@ -487,7 +487,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-bad-system2-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-bad-system2-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-coding-bad-system-local
@@ -503,7 +503,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-bad-system-local-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-bad-system-local-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-coding-no-system
@@ -519,7 +519,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-no-system-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-no-system-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-codeableconcept-bad-system
@@ -545,7 +545,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-codeableconcept-bad-system-response-parameters.json"
+      And $response should match the pattern in "validation/simple-codeableconcept-bad-system-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-code-good-display
@@ -564,7 +564,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-good-display-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-good-display-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-coding-good-display
@@ -587,7 +587,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-good-display-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-good-display-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-codeableconcept-good-display
@@ -614,7 +614,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-codeableconcept-good-display-response-parameters.json"
+      And $response should match the pattern in "validation/simple-codeableconcept-good-display-response-parameters.json"
 
     # a bad display, with lenient display validation - a warning, and the code is valid
     @operation:validate-code
@@ -634,7 +634,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-bad-display-lenient-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-bad-display-lenient-response-parameters.json"
 
     # a bad display, with strict display validation - an error, and the code is not valid
     @operation:validate-code
@@ -654,7 +654,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-bad-display-not-lenient-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-bad-display-not-lenient-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-code-bad-display-ws
@@ -672,7 +672,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-bad-display-ws-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-bad-display-ws-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-coding-bad-display
@@ -695,7 +695,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-bad-display-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-bad-display-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-codeableconcept-bad-display
@@ -722,7 +722,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-codeableconcept-bad-display-response-parameters.json"
+      And $response should match the pattern in "validation/simple-codeableconcept-bad-display-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-code-bad-display-warning
@@ -741,7 +741,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-bad-displayW-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-bad-displayW-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-coding-bad-display-warning
@@ -765,7 +765,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-bad-displayW-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-bad-displayW-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-codeableconcept-bad-display-warning
@@ -793,7 +793,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-codeableconcept-bad-displayW-response-parameters.json"
+      And $response should match the pattern in "validation/simple-codeableconcept-bad-displayW-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-code-good-language
@@ -812,7 +812,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-good-language-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-good-language-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-coding-good-language
@@ -836,7 +836,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-good-language-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-good-language-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-codeableconcept-good-language
@@ -864,7 +864,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-codeableconcept-good-language-response-parameters.json"
+      And $response should match the pattern in "validation/simple-codeableconcept-good-language-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-code-bad-language
@@ -883,7 +883,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-bad-language-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-bad-language-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-code-good-regex
@@ -900,7 +900,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-good-regex-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-good-regex-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-code-bad-regex
@@ -917,7 +917,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-bad-regex-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-bad-regex-response-parameters.json"
 
     # A code that exists in the code system is not in a value set whose only include is a valid regex
     # filter that matches no codes
@@ -936,7 +936,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-regex-none-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-regex-none-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-coding-bad-language
@@ -960,7 +960,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-bad-language-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-bad-language-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-coding-bad-language-header
@@ -984,7 +984,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-bad-language-header-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-bad-language-header-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-coding-bad-language-vs
@@ -1007,7 +1007,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-bad-language-vs-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-bad-language-vs-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-coding-bad-language-vslang
@@ -1030,7 +1030,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-bad-language-vslang-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-bad-language-vslang-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-simple-codeableconcept-bad-language
@@ -1058,7 +1058,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-codeableconcept-bad-language-response-parameters.json"
+      And $response should match the pattern in "validation/simple-codeableconcept-bad-language-response-parameters.json"
 
     # Validate a code where the display is a valid designation in the code system's default language
     # (en), and the requested displayLanguage (de) has no displays for the code. The display is valid,
@@ -1080,7 +1080,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-good-language-none-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-good-language-none-response-parameters.json"
 
     # Validate a code where the display matches no display or designation at all, and the requested
     # displayLanguage (de) has no displays for the code. The display is invalid
@@ -1101,7 +1101,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-code-bad-language-none-response-parameters.json"
+      And $response should match the pattern in "validation/simple-code-bad-language-none-response-parameters.json"
 
     # Validate a Coding where the display is a valid designation in the code system's default language
     # (en), and the requested displayLanguage (de) has no displays for the code. The display is valid,
@@ -1128,7 +1128,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-good-language-none-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-good-language-none-response-parameters.json"
 
     # Validate a Coding where the display matches no display or designation at all, and the requested
     # displayLanguage (de) has no displays for the code. The display is invalid
@@ -1154,7 +1154,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-coding-bad-language-none-response-parameters.json"
+      And $response should match the pattern in "validation/simple-coding-bad-language-none-response-parameters.json"
 
     # Validate a CodeableConcept where the coding display is a valid designation in the code system's
     # default language (en), and the requested displayLanguage (de) has no displays for the code. The
@@ -1185,7 +1185,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-codeableconcept-good-language-none-response-parameters.json"
+      And $response should match the pattern in "validation/simple-codeableconcept-good-language-none-response-parameters.json"
 
     # Validate a CodeableConcept where the coding display matches no display or designation at all,
     # and the requested displayLanguage (de) has no displays for the code. The display is invalid
@@ -1215,7 +1215,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/simple-codeableconcept-bad-language-none-response-parameters.json"
+      And $response should match the pattern in "validation/simple-codeableconcept-bad-language-none-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-complex-codeableconcept-full
@@ -1248,7 +1248,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/complex-codeableconcept-full-response-parameters.json"
+      And $response should match the pattern in "validation/complex-codeableconcept-full-response-parameters.json"
 
     @operation:validate-code
     Scenario: validation-complex-codeableconcept-vsonly
@@ -1282,7 +1282,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/complex-codeableconcept-vsonly-response-parameters.json"
+      And $response should match the pattern in "validation/complex-codeableconcept-vsonly-response-parameters.json"
 
     # Validation where the compose refers to a contained value set (valid code)
     @operation:validate-code
@@ -1343,7 +1343,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/validate-contained-good-response.json"
+      And $response should match the pattern in "validation/validate-contained-good-response.json"
 
     # Validation where the compose refers to a contained value set (invalid code)
     @operation:validate-code
@@ -1404,7 +1404,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/validate-contained-bad-response.json"
+      And $response should match the pattern in "validation/validate-contained-bad-response.json"
 
   Rule: CodeSystem $validate-code
 
@@ -1422,7 +1422,7 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/cs-code-good-response-parameters.json"
+      And $response should match the pattern in "validation/cs-code-good-response-parameters.json"
 
     @operation:cs-validate-code
     Scenario: validation-cs-code-bad-code
@@ -1438,4 +1438,4 @@ Feature: Terminology server — validation
         }
         """
       Then $response.status should be 200
-      And $response should match the expected response "validation/cs-code-bad-code-response-parameters.json"
+      And $response should match the pattern in "validation/cs-code-bad-code-response-parameters.json"
