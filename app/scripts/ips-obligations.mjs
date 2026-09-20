@@ -456,6 +456,7 @@ function writeCreator(model, pkg) {
     if (sc.attest.length) {
       out.push(`      # The reference data does not exercise these; the Creator attests the capability.`);
       out.push(`      When Creator is asked for $canPopulate with "The reference patient has no data for these ${model.profiles[sc.profile].type} elements. Can your system populate each of them when the information is known: ${sc.attest.map(e => `[${e.split('.').slice(1).join('.')}]`).join(', ')}? Answer yes, or list the ones it cannot."`);
+      out.push(`      And Creator submits evidence of "${model.profiles[sc.profile].type} ${sc.attest.map(e => `[${e.split('.').slice(1).join('.')}]`).join(', ')} being entered or exported (screenshot or a document carrying them)" as $canPopulateEvidence`);
       out.push(`      Then $canPopulate should be "yes"`);
     }
     for (const m of sc.mays) {
@@ -506,9 +507,12 @@ function writeConsumer(model, pkg) {
   out.push(`# bed hands the Consumer the IG's own all-sections example and a tester confirms`);
   out.push(`# what the system did with it:`);
   out.push(`#   SHALL:handle     the document, with every listed element, was accepted and`);
-  out.push(`#                    processed without error — one yes/no per profile`);
-  out.push(`#   SHOULD:display   each listed element is shown to a human — the tester names`);
-  out.push(`#                    the ones that are NOT, and every element is asserted separately`);
+  out.push(`#                    processed without error — the operator answers and attaches`);
+  out.push(`#                    the import result (log or screenshot) as evidence`);
+  out.push(`#   SHOULD:display   the operator is instructed to display the listed elements and`);
+  out.push(`#                    attaches a screenshot as evidence; then names the ones NOT`);
+  out.push(`#                    shown, and every element is asserted separately`);
+  out.push(`# Evidence files are kept by the test bed in the session report, beside the step.`);
   out.push(`# A Consumer that is a FHIR server accepting documents can be driven without a`);
   out.push(`# tester: see the last Rule.`);
   out.push(`@lang:itb-core-en@^2 @dialect:fhir-validator@^2 @actor:Consumer @spec:${IPS_ID}@${IPS_VERSION}`);
@@ -548,10 +552,16 @@ function writeConsumer(model, pkg) {
     for (const chunk of chunks(Object.keys(byElement), 4)) out.push(`    ${chunk.map(c => `@covers:${c}`).join(' ')}`);
     out.push(`    Scenario: ips-consumer-${String(n).padStart(3, '0')} ${profile.title ?? pid} — the Consumer handles ${handle.length} element${handle.length === 1 ? '' : 's'}${display.length ? ` and displays ${display.length}` : ''}`);
     const what = sel.kind === 'datatype' ? `every ${profile.type} in the document` : sel.kind === 'bundle' ? 'the document' : `the ${profile.type} resource${sel.cat || sel.code || sel.codes ? 's of this kind' : 's'}`;
+    const slug = short(pid).replace(/[^A-Za-z0-9]+/g, '');
+    // SHALL:handle — the operator reports and proves the import outcome.
     out.push(`      When Consumer is asked for $handled with "For ${what}: were these elements accepted and processed without error — ${handle.map(h => h.item).join(', ')}? Answer yes, or name the ones that caused an error."`);
+    out.push(`      And Consumer submits evidence of "the import of ${what} completing without error (import log or screenshot)" as $handled${slug}Evidence`);
     out.push(`      Then $handled should be "yes"`);
     if (display.length) {
-      out.push(`      When Consumer is asked for $notDisplayed with "Of these, which are NOT displayed to the user (copy the bracketed names, or answer none): ${display.map(d => d.item).join(', ')}"`);
+      // SHOULD:display — the operator displays the elements, attaches a screenshot, then reports what is missing.
+      out.push(`      When Consumer is informed "Open ${refName}'s summary in the system under test and display ${what}, showing: ${display.map(d => d.item).join(', ')}"`);
+      out.push(`      And Consumer submits evidence of "${what} displayed with ${display.map(d => `[${d.shortEl}]`).join(', ')} (screenshot)" as $displayed${slug}Evidence`);
+      out.push(`      And Consumer is asked for $notDisplayed with "Of these, which are NOT displayed to the user (copy the bracketed names, or answer none): ${display.map(d => d.item).join(', ')}"`);
       for (const d of display) out.push(`      Then $notDisplayed should not contain "[${d.shortEl}]"`);
     }
     out.push('');
@@ -564,10 +574,12 @@ function writeConsumer(model, pkg) {
   out.push(`      When Tester gets "${IPS_URL}/Bundle-${NO_INFO}.json" as $ipsNoInfo`);
   out.push(`      And Consumer is informed "Import this IPS, whose problems, allergies and medications sections carry an emptyReason instead of entries." with $ipsNoInfo`);
   out.push(`      And Consumer is asked for $handledNoInfo with "Was the document with emptyReason on [section:sectionProblems.emptyReason], [section:sectionAllergies.emptyReason] and [section:sectionMedications.emptyReason] accepted without error, and are the three sections shown as having no information? (yes/no)"`);
+  out.push(`      And Consumer submits evidence of "the three required sections shown with no information (screenshot)" as $noInfoEvidence`);
   out.push(`      Then $handledNoInfo should be "yes"`);
   out.push(`      When Tester gets "${IPS_URL}/Bundle-${MINIMAL}.json" as $ipsMinimal`);
   out.push(`      And Consumer is informed "Import this minimal IPS (required sections only, no optional elements)." with $ipsMinimal`);
   out.push(`      And Consumer is asked for $handledMinimal with "Was the minimal document accepted without error? (yes/no)"`);
+  out.push(`      And Consumer submits evidence of "the minimal document imported without error (import log or screenshot)" as $minimalEvidence`);
   out.push(`      Then $handledMinimal should be "yes"`);
   out.push('');
   out.push(`  Rule: A Consumer that is a FHIR server is driven directly`);

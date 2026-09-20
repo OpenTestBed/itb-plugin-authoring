@@ -56,8 +56,8 @@ Each obligation code has one test pattern:
 | `SHALL:populate-if-known` | present wherever the reference dataset has it: `all(...)` when every reference instance has it, `where(...).exists()` when some do, tester attestation when none does |
 | `SHALL/SHOULD:able-to-populate` | present in the produced document, else attested |
 | `MAY:able-to-populate` | `log`, no assertion |
-| `SHALL:handle` | the Consumer accepts a document carrying the element without error (yes/no per profile) |
-| `SHOULD:display` | the tester names the elements NOT displayed; one assertion per element |
+| `SHALL:handle` | the Consumer accepts a document carrying the element without error: the operator answers yes/no and attaches the import log or a screenshot (`submits evidence of … as $x`) |
+| `SHOULD:display` | the operator is instructed to display the elements, attaches a screenshot as evidence, then names the ones NOT displayed; one assertion per element |
 
 Rules that keep the tests meaningful:
 
@@ -67,6 +67,10 @@ Rules that keep the tests meaningful:
 - Every scenario carries `@profile:<id>` and `@covers:<element>` tags and
   mentions every covered element in a step (an assertion path, or the prompt
   text). `check` fails otherwise.
+- Every behavioural obligation (display, handle, attested capability) ends
+  with `<Actor> submits evidence of "…" as $x`: an ITB interaction with the
+  instruction, a required file and an optional note, kept in the session
+  report. A yes/no answer alone is not a test.
 - A derived actor gets a feature for its transport only; its inherited
   obligations are the base actor's feature run on the transport's output.
 - Prefer the generator (`generate`) over hand-writing; hand-write only the

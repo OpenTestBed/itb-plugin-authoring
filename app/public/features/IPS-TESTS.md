@@ -48,8 +48,8 @@ One test pattern per obligation code, applied to every element:
 | `SHALL:populate-if-known` | exists wherever the reference dataset has it | — |
 | `SHALL/SHOULD:able-to-populate` | exists in the produced document; attested when the reference data cannot exercise it | — |
 | `MAY:able-to-populate` | logged | — |
-| `SHALL:handle` | — | the document carrying the element is accepted without error (yes/no per profile) |
-| `SHOULD:display` | — | the tester names elements not displayed; one assertion per element |
+| `SHALL:handle` | — | the operator reports the import outcome (yes/no per profile) and attaches the import log or a screenshot as evidence |
+| `SHOULD:display` | — | the operator is instructed to display the listed elements, attaches a screenshot as evidence, then names the ones not shown; one assertion per element |
 
 Decisions taken:
 
@@ -71,6 +71,10 @@ Decisions taken:
   no-information and minimal examples.
 - **Every test case asks for the document once.** ITB runs each scenario as an
   independent test case; a Server is tested without pasting.
+- **Evidence.** Behavioural obligations end with an ITB interaction that
+  instructs the operator, requires a file (screenshot, export or log) and
+  takes an optional note; the test bed keeps the file in the session report
+  beside the step. Attestations of capability (Creator) attach evidence too.
 - **Traceability.** Scenarios carry `@profile:` and `@covers:` tags and must
   mention each covered element in a step. Coverage is checked by script, never
   by eye.
@@ -88,7 +92,8 @@ Decisions taken:
 
 Two things the tests cannot do, stated rather than hidden: a `populate-if-known`
 element that the reference example does not carry is attested by the tester,
-not observed; and `SHOULD:display` is judged by a tester, not a machine.
+not observed; and `SHOULD:display` is judged by a tester, not a machine. In
+both cases the judgement is backed by an evidence file in the session report.
 
 ## 6. Packaging
 

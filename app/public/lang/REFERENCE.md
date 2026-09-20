@@ -93,7 +93,8 @@ After any conformance check, `$validation.errors` and friends are set.
 |---|---|
 | `<Actor> is informed "message" [with $content]` | `Monitor is informed "Please review." with $patient` |
 | `<Actor> is asked for $x [with "prompt"]` | `User is asked for $pin with "Enter the PIN"` |
-| `<Actor> uploads a file as $x` | `User uploads a file as $qrImage` |
+| `<Actor> uploads a file as $x [with "prompt"]` | `User uploads a file as $qrImage` |
+| `<Actor> submits evidence of "what" as $x` | `Consumer submits evidence of "the allergy list displayed" as $allergyEvidence` — one dialog: instruction, required file, optional note in `$allergyEvidence_note` |
 | `log "message"` / `log $x` | `log "checkpoint"` |
 | `call scriptlet "id" [as $x] [with: table] [doc string]` | see GRAMMAR.md |
 
