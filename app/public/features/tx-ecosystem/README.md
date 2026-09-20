@@ -39,7 +39,7 @@ node scripts/tx-tests.mjs --source <checkout>/tests [--server URL] [--validator 
             { "name": "uuid", "valueUuid": "urn:uuid:8acdbfdc-e9d2-11ed-a05b-0242ac120003" } ] }
         """
       Then $response.status should be 200
-      And $response should match the expectedwith a table of `response` rows"simple/simple-expand-all-response-valueSet.json"
+      And $response should match the expected response "simple/simple-expand-all-response-valueSet.json"
 ```
 
 The request is the upstream Parameters with the runner's profile parameters
@@ -47,7 +47,7 @@ merged in (the default `uuid`, or the `version/parameters-*.json` profile the
 test names, plus `lenient-display-validation` where the test sets it), so the
 reader sees exactly what the server receives. The resources a suite depends on
 travel with every request as `tx-resource` parameters, as the HL7 runner sends
-them. The expectedwith a table of `response` rowsis the upstream file, fetched at run time and
+them. The expected response is the upstream file, fetched at run time and
 compared as a matchetype by the FHIR validator.
 
 Upstream modifiers and where they went:
@@ -59,7 +59,7 @@ Upstream modifiers and where they went:
 | `profile`, `lenient-display` | merged into the request Parameters |
 | suite/test `mode` | tags `@mode:…`; a sentence in the feature description |
 | `version` (4.0, 5.0, !4.0) | generator filter `--fhir-version`; the left-out tests are listed in the file header |
-| `response:flat`, `response:tx.fhir.org`, `response2` | `should match one of the expected responses:` with a table of `response` rows\| response \|` table; one match is enough (24 tests) |
+| `response:flat`, `response:tx.fhir.org`, `response2` | `should match one of the expected responses:` with a table of `response` rows; one match is enough (24 tests) |
 | `full-set` | tag only (the runner's handling was not found) |
 
 ## Dialect
