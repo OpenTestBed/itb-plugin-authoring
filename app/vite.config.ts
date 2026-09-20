@@ -385,7 +385,13 @@ function compileApi(): Plugin {
 
           res.statusCode = 200;
           res.setHeader('Content-Type', 'application/zip');
-          res.setHeader('Content-Disposition', `attachment; filename="${result.testcaseName || 'testsuite'}.zip"`);
+          // An HTTP header carries latin-1 only, and a feature title may hold
+          // anything (the terminology suites use an em dash). Send an ASCII
+          // filename, and the real one in filename* as RFC 5987 allows.
+          const suiteName = result.testcaseName || 'testsuite';
+          const asciiName = suiteName.replace(/[^\x20-\x7e]/g, '-').replace(/["\\]/g, '') || 'testsuite';
+          res.setHeader('Content-Disposition',
+            `attachment; filename="${asciiName}.zip"; filename*=UTF-8''${encodeURIComponent(suiteName + '.zip')}`);
           res.end(zipBuffer);
         } catch (e: any) {
           res.statusCode = 500;
