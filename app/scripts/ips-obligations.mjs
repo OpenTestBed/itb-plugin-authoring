@@ -289,7 +289,12 @@ function presence(bundle, sel, segs) {
 
 /** A short human rendering of the example's value, for the Consumer prompts. */
 function sample(bundle, sel, segs) {
-  const vals = selectInstances(bundle, sel).flatMap(i => walk(i, segs));
+  let vals = selectInstances(bundle, sel).flatMap(i => walk(i, segs));
+  const last = segs[segs.length - 1];
+  if (last?.entryType && last.name === 'entry') {
+    const byUrl = new Map(bundle.entry.map(e => [e.fullUrl, e.resource]));
+    vals = vals.filter(e => (e.reference ?? '').startsWith(last.entryType + '/') || byUrl.get(e.reference)?.resourceType === last.entryType);
+  }
   const v = vals[0];
   if (v === undefined) return '';
   const s = render(v);
@@ -299,7 +304,9 @@ function render(v) {
   if (v === null || v === undefined) return '';
   if (typeof v !== 'object') return String(v);
   if (Array.isArray(v)) return render(v[0]);
-  if (v.text) return String(v.text);
+  if (v.title && typeof v.title === 'string') return v.title;           // a section
+  if (typeof v.text === 'string') return v.text;                         // CodeableConcept.text
+  if (v.text && typeof v.text === 'object') return v.text.status ? '(narrative)' : '(present)';
   if (v.coding?.[0]) return v.coding[0].display ?? v.coding[0].code ?? '';
   if (v.display) return v.display;
   if (v.code && typeof v.code === 'string') return v.code;
@@ -307,7 +314,7 @@ function render(v) {
   if (v.reference) return v.reference;
   if (v.family) return [arr(v.given).join(' '), v.family].filter(Boolean).join(' ');
   if (v.name && typeof v.name === 'string') return v.name;
-  if (v.start || v.end) return `${v.start ?? ''}–${v.end ?? ''}`;
+  if (v.start || v.end) return v.start && v.end ? `${v.start} to ${v.end}` : v.start ? `from ${v.start}` : `until ${v.end}`;
   if (v.resourceType) return v.resourceType;
   return '(present)';
 }
