@@ -20,7 +20,7 @@ Feature: IPS Creator — obligations of hl7.fhir.uv.ips 2.0.1
 
   Background:
     Given Creator is the system under test
-    And FHIRValidator is a fhir-validator at "http://fhir-validator:8081"
+    And FHIRValidator is a fhir-validator at "http://fhir-validator:8080"
     And FHIRValidator is loaded with package "hl7.fhir.uv.ips#2.0.1"
     And Creator is informed "Load the reference patient Patricia JORDANA (identifier ABC1234) into your system from https://hl7.org/fhir/uv/ips/Bundle-bundle-ips-all-sections.json, then export her International Patient Summary as a FHIR document Bundle."
     And Creator is asked for $ips with "Paste the exported IPS Bundle (JSON)"

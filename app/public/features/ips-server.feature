@@ -20,7 +20,7 @@ Feature: IPS Server — the $summary operation returns a conformant IPS document
   Background:
     Given IPSServer is the system under test at "http://ips-server:8080/fhir" as defined by "http://hl7.org/fhir/uv/ips/CapabilityStatement/ips-server"
     And Client is infrastructure
-    And FHIRValidator is a fhir-validator at "http://fhir-validator:8081"
+    And FHIRValidator is a fhir-validator at "http://fhir-validator:8080"
     And FHIRValidator is loaded with package "hl7.fhir.uv.ips#2.0.1"
     And set header "Accept" to "application/fhir+json"
     And Client is informed "Load the reference patient Patricia JORDANA (identifier ABC1234) from https://hl7.org/fhir/uv/ips/Bundle-bundle-ips-all-sections.json into the server under test."

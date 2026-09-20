@@ -43,10 +43,17 @@ export async function compileGherkin(gherkinContent: string): Promise<{
     await parser.expandScenarioToIR(parsed);
     const gen = new XMLGenerator(parser);
     const out = gen.generate(parsed);
+    // Parser issues (unknown steps, no SUT, …) and generator issues (missing
+    // scriptlets, TDL the ITB validator would refuse) both block a deploy.
+    const issues = [...(parsed.errors ?? []), ...(out.issues ?? [])];
+    const errors = issues.filter((i: any) => i.severity === 'error');
+    if (errors.length > 0) {
+      return { files: [], testcaseName: '', error: `${errors.length} error(s) in Gherkin`, issues };
+    }
     return {
       files: out.files,
       testcaseName: out.testcaseName,
-      issues: [...(parsed.errors ?? []), ...(out.issues ?? [])],
+      issues,
     };
   } catch (e: any) {
     return { files: [], testcaseName: '', error: String(e?.message ?? e) };

@@ -60,6 +60,7 @@ Three things to know:
 | Binding | `extract "/id" from $response as $docId` |
 | Interaction | `User is asked for $pin with "Enter the PIN"` |
 
+New to the language? Start with the tutorial: [TUTORIAL.md](TUTORIAL.md).
 Full grammar: [GRAMMAR.md](GRAMMAR.md). Every step with examples:
 [REFERENCE.md](REFERENCE.md).
 
@@ -92,6 +93,7 @@ with `@lang:` and `@dialect:` tags; drift is reported by name.
 
 ## Files
 
+- `TUTORIAL.md` — the long-form introduction: concepts, grammar, how a line compiles, the meta-grammar
 - `GRAMMAR.md` — the formal grammar and the dialect contract
 - `REFERENCE.md` — step-by-step reference with examples
 - `../components/<id>/steps.yml` — each dialect

@@ -55,7 +55,7 @@ const DATA = path.join(APP, 'public', 'data', 'ips-obligations.json');
 const COVERAGE = path.join(APP, 'public', 'data', 'ips-obligation-coverage.json');
 const [IPS_ID, IPS_VERSION] = opt('--spec', 'hl7.fhir.uv.ips#2.0.1').split('#');
 const IPS_URL = opt('--url', 'https://hl7.org/fhir/uv/ips');
-const VALIDATOR = opt('--validator', 'http://fhir-validator:8081');
+const VALIDATOR = opt('--validator', 'http://fhir-validator:8080');
 
 // ─────────────────────────────────────────────────────────────────────
 // 1. The package

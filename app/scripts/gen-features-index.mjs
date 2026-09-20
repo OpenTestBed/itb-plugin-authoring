@@ -7,6 +7,13 @@ import { fileURLToPath } from 'url';
 
 const appDir = dirname(dirname(fileURLToPath(import.meta.url)));
 const dir = join(appDir, 'public', 'features');
-const files = readdirSync(dir).filter(f => f.endsWith('.feature')).sort();
+// One level of subfolders is listed too (tx-ecosystem/…), as "folder/file".
+const files = readdirSync(dir, { withFileTypes: true }).flatMap(e => {
+  if (e.isFile() && e.name.endsWith('.feature')) return [e.name];
+  if (e.isDirectory() && !e.name.startsWith('_')) {
+    return readdirSync(join(dir, e.name)).filter(f => f.endsWith('.feature')).map(f => `${e.name}/${f}`);
+  }
+  return [];
+}).sort();
 writeFileSync(join(dir, 'index.json'), JSON.stringify(files, null, 2) + '\n');
 console.log(`features/index.json: ${files.length} files`);

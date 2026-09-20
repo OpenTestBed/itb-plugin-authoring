@@ -10,7 +10,7 @@ Optional parts are in `[brackets]`; `$x` is a variable; `<Actor>` is a bare name
 | `<Actor> is the system under test [at "url"] [as defined by "canonical"]` | `Client is the system under test at "http://sut:8080/fhir"` |
 | `<Actor> is infrastructure [at "url"] [as defined by "canonical"]` | `AuthServer is infrastructure at "https://…/auth"` |
 | `<Actor> is available [as "name"] [at "url"] [as defined by "canonical"]` | `FHIRServer is available` |
-| `<Actor> is a <kind> [at "url"] [as defined by "canonical"]` | `FHIRValidator is a fhir-validator at "http://fhir-validator:8081"` |
+| `<Actor> is a <kind> [at "url"] [as defined by "canonical"]` | `FHIRValidator is a fhir-validator at "http://fhir-validator:8080"` |
 | `<Actor> is configured with data pool "id"` | `FHIRServer is configured with data pool "default"` |
 
 Kinds: `fhir-validator`, `hcert-decoder`, `smart-helper`, `tng-validator`,

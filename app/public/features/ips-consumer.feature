@@ -17,7 +17,7 @@ Feature: IPS Consumer — obligations of hl7.fhir.uv.ips 2.0.1
   Background:
     Given Consumer is the system under test
     And Tester is infrastructure
-    And FHIRValidator is a fhir-validator at "http://fhir-validator:8081"
+    And FHIRValidator is a fhir-validator at "http://fhir-validator:8080"
     And FHIRValidator is loaded with package "hl7.fhir.uv.ips#2.0.1"
     When Tester gets "https://hl7.org/fhir/uv/ips/Bundle-bundle-ips-all-sections.json" as $ips
     Then $ips should conform to "http://hl7.org/fhir/uv/ips/StructureDefinition/Bundle-uv-ips" ignoring slicing errors

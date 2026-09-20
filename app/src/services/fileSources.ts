@@ -51,7 +51,8 @@ export function bundledSource(): FileSource {
       return (await r.json()) as string[];
     },
     async read(name) {
-      const r = await fetch(`${base()}features/${encodeURIComponent(name)}`);
+      // Names may carry one folder level (tx-ecosystem/x.feature): encode per segment.
+      const r = await fetch(`${base()}features/${name.split('/').map(encodeURIComponent).join('/')}`);
       if (!r.ok) throw new Error(`load failed (${r.status})`);
       return r.text();
     },
