@@ -21,11 +21,11 @@ Kinds: `fhir-validator`, `hcert-decoder`, `smart-helper`, `tng-validator`,
 
 | Step | Example |
 |---|---|
-| `<Actor> posts to <Actor> at "path" [with id $x] with:` + doc string | `Client posts to Server at "/Patient" with:` |
-| `<Actor> posts to <Actor> at "path" [with id $x] with body $y` | `Source posts to Responder at "/DocumentReference" with body $doc` |
+| `<Actor> posts to <Actor> at "path" [with id $x | "id"] with:` + doc string | `Client posts to Server at "/Patient" with:` |
+| `<Actor> posts to <Actor> at "path" [with id $x | "id"] with body $y` | `Source posts to Responder at "/DocumentReference" with body $doc` |
 | `<Actor> puts to …` / `<Actor> patches to …` (same forms) | `Source puts to Responder at "/DocumentReference/" with id $docId with body $update` |
-| `<Actor> deletes on <Actor> at "path" [with id $x]` | `User deletes on FHIRServer at "/Patient/" with id $id` |
-| `<Actor> gets from <Actor> at "path" [with id $x] as $y` | `Client gets from Spenser at "/metadata" as $metadata` |
+| `<Actor> deletes on <Actor> at "path" [with id $x | "id"]` | `User deletes on FHIRServer at "/Patient/" with id $id` |
+| `<Actor> gets from <Actor> at "path" [with id $x | "id"] as $y` | `Client gets from Spenser at "/metadata" as $metadata` |
 | `<Actor> gets "absolute url" as $y` | `Client gets "https://…/fixture.json" as $payload` |
 | `<Actor> posts $body to <Actor> at "path" N times, paced manually` | `Client posts $order to Spenser at "/MedicationRequest" $N times, paced manually` |
 | `set header "Name" to "value"` / `to $var` | `set header "Accept" to "application/fhir+json"` |

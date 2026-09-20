@@ -1,0 +1,12 @@
+{
+  "name": "ihe.pharm.meow.test.template",
+  "version": "0.0.1",
+  "type": "fhir.template",
+  "license": "CC0-1.0",
+  "description": "Local template for the MEOW TestPlan demonstration IG. Extends the FHIR base template and recolours the header and footer so this test package is not mistaken for a specification.",
+  "author": "https://github.com/costateixeira/pharm-MEOW-test",
+  "base": "fhir2.base.template",
+  "dependencies": {
+    "fhir2.base.template": "current"
+  }
+}

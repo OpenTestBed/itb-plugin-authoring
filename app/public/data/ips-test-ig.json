@@ -1,0 +1,53 @@
+{
+  "id": "hl7.fhir.uv.ips.test",
+  "canonical": "http://example.com/fhir/hl7.fhir.uv.ips.test",
+  "name": "IPSTesting",
+  "title": "IPS: TestPlans and Gherkin for the IPS actors",
+  "description": "A demonstration IG that declares, as TestPlan resources and Gherkin feature files, the conformance tests for the three actors of the HL7 International Patient Summary (IPS) 2.0.1: Creator, Consumer and Server. The tests are derived mechanically from the obligations the IPS profiles state, and every obligation is traceable to a test case that names its element.",
+  "disclaimer": "This is not an approved HL7 test specification.",
+  "version": "0.1.0",
+  "fhirVersion": "6.0.0-ballot5",
+  "license": "CC0-1.0",
+  "publisher": { "name": "Jose Costa Teixeira", "url": "https://github.com/costateixeira" },
+  "spec": {
+    "id": "hl7.fhir.uv.ips",
+    "alias": "ips",
+    "version": "2.0.1",
+    "uri": "http://hl7.org/fhir/uv/ips/ImplementationGuide/hl7.fhir.uv.ips",
+    "title": "HL7 International Patient Summary (IPS) 2.0.1",
+    "site": "https://hl7.org/fhir/uv/ips/"
+  },
+  "runner": "https://www.itb.ec.europa.eu/docs/guides/latest/",
+  "features": "public/features",
+  "processPage": "../features/IPS-TESTS.md",
+  "out": "../../../../../ImplementationGuides/hl7-ips-test",
+  "actors": [
+    {
+      "id": "ips-creator",
+      "title": "IPS Creator",
+      "actor": "Creator",
+      "scope": "http://hl7.org/fhir/uv/ips/ActorDefinition/Creator",
+      "scopeDescription": "The IPS Creator actor — a system which produces, assembles or creates an IPS document — is the system under test.",
+      "summary": "the document the Creator produces for the reference patient carries every element it is obliged to populate",
+      "feature": "ips-creator.feature"
+    },
+    {
+      "id": "ips-consumer",
+      "title": "IPS Consumer",
+      "actor": "Consumer",
+      "scope": "http://hl7.org/fhir/uv/ips/ActorDefinition/Consumer",
+      "scopeDescription": "The IPS Consumer actor — a system that receives an IPS document and uses its content — is the system under test.",
+      "summary": "the Consumer accepts the reference document without error and displays what it should",
+      "feature": "ips-consumer.feature"
+    },
+    {
+      "id": "ips-server",
+      "title": "IPS Server",
+      "actor": "Server",
+      "scope": "http://hl7.org/fhir/uv/ips/CapabilityStatement/ips-server",
+      "scopeDescription": "The IPS Server actor — a FHIR server acting as an IPS Creator through the $summary operation — is the system under test.",
+      "summary": "the $summary operation returns a conformant IPS document; the Creator plan then applies to it",
+      "feature": "ips-server.feature"
+    }
+  ]
+}

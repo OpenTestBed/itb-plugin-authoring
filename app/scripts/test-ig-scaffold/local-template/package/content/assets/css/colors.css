@@ -1,0 +1,52 @@
+/* ====================================================================
+   MEOW TestPlan demonstration - local palette
+   --------------------------------------------------------------------
+   This IG is a TEST package, not a specification. The header, the header
+   strip and the footer are deliberately teal/slate rather than the usual
+   red or blue of a published spec, so it reads as "test material" at a
+   glance. Amber is used for the publish box, as a second signal.
+
+   Variable names come from project.css in the base template.
+   ==================================================================== */
+:root {
+
+  --ig-status-text-color: #0b4a4c;      /*  1. IG title and status text      */
+  --navbar-bg-color: #0f6466;           /*  2. Header container - deep teal   */
+  --footer-bg-color: #263238;           /*  3. Footer background - slate      */
+  --footer-container-bg-color: #0f6466; /*  4. Footer container - deep teal   */
+  --stripe-bg-color: #0b4a4c;           /*  5. Header strip - darker teal     */
+
+  --btn-hover-color: #0b4a4c;           /*  6. Menu button hover              */
+  --btn-active-color: #14807f;          /*  7. Menu button active             */
+  --btn-text-color: #eaf6f6;            /*  8. Menu button text               */
+  --btn-gradient-start-color: #14807f;  /*  9. Menu item gradient start       */
+  --btn-gradient-end-color: #0f6466;    /* 10. Menu item gradient end         */
+  --btn-gradient-start-color-alpha: #ff14807f; /* 11. gradient start w/ alpha */
+  --btn-gradient-end-color-alpha: #ff0f6466;   /* 12. gradient end w/ alpha   */
+  --link-color: #0f6466;                /* 13. Hyperlink                      */
+  --link-hover-color: #0b4a4c;          /* 14. Hyperlink hover                */
+
+  --publish-box-bg-color: #ffe9a8;      /* 15. Publish box - amber            */
+  --publish-box-border: 1px solid #a67c00; /* 16. Publish box border          */
+
+  --toc-box-bg-color: #e3f2f1;          /* 17. TOC box background             */
+  --toc-box-border: 1px solid #0f6466;  /* 18. TOC box border                 */
+
+  --stu-note-background-color: #fff8e6; /* 19. (STU) note background - amber  */
+  --stu-note-border-left-color: #e0a800;/* 20. (STU) note border              */
+
+  --ig-header-color: #eef5f5;           /* 21. Header sides                   */
+  --ig-header-container-color: #ffffff; /* 22. Header centre                  */
+  --footer-nav-bg-color: #eef5f5;       /* 23. Footer navigation background   */
+
+  --footer-text-color: #ffffff;         /* 24. Footer font                    */
+  --footer-hyperlink-text-color: #8fd6d4; /* 25. Footer hyperlinks            */
+  --footer-highlight-text-color: #ffe9a8; /* 26. Footer highlight             */
+
+  --breadcrumb-bg-color: #eef5f5;       /* 27. Breadcrumb background          */
+  --breadcrumb-text-color: #37474f;     /* 28. Breadcrumb font                */
+
+  --dragon-background-color: #fffbf7;   /* 29. Dragon background              */
+  --dragon-text-color: #101020;         /* 30. Dragon font                    */
+
+}

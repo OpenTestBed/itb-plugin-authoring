@@ -90,11 +90,11 @@ Rules the core imposes on every verb:
 Core actions:
 
 ```ebnf
-http-post   = Actor , "posts" , ("to"|"on") , Actor , "at" , Literal , [ "with id" , Ref ] , ( "with body" , Ref | "with:" DocString ) ;
-http-put    = Actor , "puts"  , ("to"|"on") , Actor , "at" , Literal , [ "with id" , Ref ] , ( "with body" , Ref | "with:" DocString ) ;
-http-patch  = Actor , "patches" , ("to"|"on") , Actor , "at" , Literal , [ "with id" , Ref ] , ( "with body" , Ref | "with:" DocString ) ;
-http-delete = Actor , "deletes" , ("on"|"from") , Actor , "at" , Literal , [ "with id" , Ref ] ;
-http-get    = Actor , "gets from" , Actor , "at" , Literal , [ "with id" , Ref ] , "as" , Var
+http-post   = Actor , "posts" , ("to"|"on") , Actor , "at" , Literal , [ "with id" , Value ] , ( "with body" , Ref | "with:" DocString ) ;
+http-put    = Actor , "puts"  , ("to"|"on") , Actor , "at" , Literal , [ "with id" , Value ] , ( "with body" , Ref | "with:" DocString ) ;
+http-patch  = Actor , "patches" , ("to"|"on") , Actor , "at" , Literal , [ "with id" , Value ] , ( "with body" , Ref | "with:" DocString ) ;
+http-delete = Actor , "deletes" , ("on"|"from") , Actor , "at" , Literal , [ "with id" , Value ] ;
+http-get    = Actor , "gets from" , Actor , "at" , Literal , [ "with id" , Value ] , "as" , Var
             | Actor , "gets" , Literal , "as" , Var ;
 http-loop   = Actor , "posts" , Ref , "to" , Actor , "at" , Literal , Value , "times, paced manually" ;
 header      = "set header" , Literal , "to" , Value ;

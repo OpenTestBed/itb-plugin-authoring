@@ -1,0 +1,5423 @@
+{
+ "spec": {
+  "id": "hl7.fhir.uv.ips",
+  "version": "2.0.1",
+  "url": "https://hl7.org/fhir/uv/ips"
+ },
+ "generated": "2026-09-20",
+ "actors": [
+  "Consumer",
+  "Creator",
+  "Server"
+ ],
+ "obligations": [
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.clinicalStatus",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.clinicalStatus",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.clinicalStatus",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.type",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.type",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.type",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.code",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.code",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.code",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.patient",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.patient",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.patient",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.patient.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.patient.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.onset[x]",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.onset[x]",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.onset[x]",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.onset[x]:onsetDateTime",
+   "code": "SHOULD:able-to-populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.onset[x]:onsetDateTime",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.onset[x]:onsetDateTime",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.reaction",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.reaction",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.reaction",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.reaction.manifestation",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.reaction.manifestation",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.reaction.manifestation",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.reaction.severity",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.reaction.severity",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "AllergyIntolerance-uv-ips",
+   "element": "AllergyIntolerance.reaction.severity",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-007"
+  },
+  {
+   "profile": "Bundle-uv-ips",
+   "element": "Bundle.identifier",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-001"
+  },
+  {
+   "profile": "Bundle-uv-ips",
+   "element": "Bundle.identifier",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-001"
+  },
+  {
+   "profile": "Bundle-uv-ips",
+   "element": "Bundle.timestamp",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-001"
+  },
+  {
+   "profile": "Bundle-uv-ips",
+   "element": "Bundle.timestamp",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-001"
+  },
+  {
+   "profile": "Bundle-uv-ips",
+   "element": "Bundle.entry:composition",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-001"
+  },
+  {
+   "profile": "Bundle-uv-ips",
+   "element": "Bundle.entry:composition",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-001"
+  },
+  {
+   "profile": "Bundle-uv-ips",
+   "element": "Bundle.entry:composition",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-001"
+  },
+  {
+   "profile": "CodeableConcept-uv-ips",
+   "element": "CodeableConcept.coding",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-028"
+  },
+  {
+   "profile": "CodeableConcept-uv-ips",
+   "element": "CodeableConcept.coding",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-028"
+  },
+  {
+   "profile": "CodeableConcept-uv-ips",
+   "element": "CodeableConcept.text",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-028"
+  },
+  {
+   "profile": "CodeableConcept-uv-ips",
+   "element": "CodeableConcept.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-028"
+  },
+  {
+   "profile": "CodeableConcept-uv-ips",
+   "element": "CodeableConcept.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-028"
+  },
+  {
+   "profile": "Coding-uv-ips",
+   "element": "Coding.system",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-029"
+  },
+  {
+   "profile": "Coding-uv-ips",
+   "element": "Coding.system",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-029"
+  },
+  {
+   "profile": "Coding-uv-ips",
+   "element": "Coding.code",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-029"
+  },
+  {
+   "profile": "Coding-uv-ips",
+   "element": "Coding.code",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-029"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.meta.profile",
+   "code": "MAY:able-to-populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.text",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.identifier",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.identifier",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.status",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.status",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.status",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.type",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.type",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.subject",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.subject",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.subject",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.subject.reference",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.subject.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.date",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.date",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.date",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.author",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.author",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.author",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.attester",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.attester",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.attester",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.attester.mode",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.attester.mode",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.attester.mode",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.attester.time",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.attester.time",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.attester.time",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.attester.party",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.attester.party",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.attester.party",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.custodian",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.custodian",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.custodian",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.event:careProvisioningEvent",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.event:careProvisioningEvent",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.event:careProvisioningEvent",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.event:careProvisioningEvent.code",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.event:careProvisioningEvent.code",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.event:careProvisioningEvent.code",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.event:careProvisioningEvent.period",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.event:careProvisioningEvent.period",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.event:careProvisioningEvent.period",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section.code",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section.text",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProblems",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProblems",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProblems",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProblems.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProblems.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProblems.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProblems.text",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProblems.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProblems.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProblems.entry:problem",
+   "code": "SHALL:able-to-populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProblems.entry:problem",
+   "code": "SHOULD:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProblems.entry:problem",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProblems.entry:problem",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProblems.emptyReason",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProblems.emptyReason",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProblems.emptyReason",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAllergies",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAllergies",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAllergies",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAllergies.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAllergies.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAllergies.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAllergies.text",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAllergies.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAllergies.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAllergies.entry:allergyOrIntolerance",
+   "code": "SHALL:able-to-populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAllergies.entry:allergyOrIntolerance",
+   "code": "SHOULD:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAllergies.entry:allergyOrIntolerance",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAllergies.entry:allergyOrIntolerance",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAllergies.emptyReason",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAllergies.emptyReason",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAllergies.emptyReason",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedications",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedications",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedications",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedications.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedications.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedications.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedications.text",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedications.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedications.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedications.entry:medicationStatementOrRequest",
+   "code": "SHALL:able-to-populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedications.entry:medicationStatementOrRequest",
+   "code": "SHOULD:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedications.entry:medicationStatementOrRequest",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedications.entry:medicationStatementOrRequest",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedications.emptyReason",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedications.emptyReason",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedications.emptyReason",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionImmunizations",
+   "code": "SHOULD:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionImmunizations",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionImmunizations",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionImmunizations.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionImmunizations.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionImmunizations.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionImmunizations.text",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionImmunizations.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionImmunizations.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionImmunizations.entry:immunization",
+   "code": "SHOULD:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionImmunizations.entry:immunization",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionImmunizations.entry:immunization",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionResults",
+   "code": "SHOULD:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionResults",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionResults",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionResults.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionResults.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionResults.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionResults.text",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionResults.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionResults.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionResults.entry:results-observation-laboratory-pathology",
+   "code": "SHOULD:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionResults.entry:results-observation-laboratory-pathology",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionResults.entry:results-observation-laboratory-pathology",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionResults.entry:results-observation-radiology",
+   "code": "SHOULD:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionResults.entry:results-observation-radiology",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionResults.entry:results-observation-radiology",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionResults.entry:results-diagnosticReport",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionResults.entry:results-diagnosticReport",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProceduresHx",
+   "code": "SHOULD:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProceduresHx",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProceduresHx",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProceduresHx.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProceduresHx.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProceduresHx.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProceduresHx.text",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProceduresHx.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProceduresHx.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProceduresHx.entry:procedure",
+   "code": "SHOULD:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProceduresHx.entry:procedure",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionProceduresHx.entry:procedure",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedicalDevices",
+   "code": "SHOULD:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedicalDevices",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedicalDevices",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedicalDevices.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedicalDevices.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedicalDevices.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedicalDevices.text",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedicalDevices.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedicalDevices.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedicalDevices.entry:deviceStatement",
+   "code": "SHOULD:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedicalDevices.entry:deviceStatement",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionMedicalDevices.entry:deviceStatement",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAdvanceDirectives",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAdvanceDirectives",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAdvanceDirectives.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAdvanceDirectives.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAdvanceDirectives.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAdvanceDirectives.text",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAdvanceDirectives.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAdvanceDirectives.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAlerts",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAlerts",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAlerts.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAlerts.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAlerts.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAlerts.text",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAlerts.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionAlerts.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionFunctionalStatus",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionFunctionalStatus",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionFunctionalStatus.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionFunctionalStatus.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionFunctionalStatus.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionFunctionalStatus.text",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionFunctionalStatus.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionFunctionalStatus.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPastProblems",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPastProblems",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPastProblems.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPastProblems.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPastProblems.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPastProblems.text",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPastProblems.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPastProblems.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPregnancyHx",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPregnancyHx",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPregnancyHx.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPregnancyHx.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPregnancyHx.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPregnancyHx.text",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPregnancyHx.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPregnancyHx.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPatientStory",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPatientStory",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPatientStory.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPatientStory.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPatientStory.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPatientStory.text",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPatientStory.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPatientStory.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPlanOfCare",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPlanOfCare",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPlanOfCare.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPlanOfCare.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPlanOfCare.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPlanOfCare.text",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPlanOfCare.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionPlanOfCare.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionSocialHistory",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionSocialHistory",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionSocialHistory.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionSocialHistory.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionSocialHistory.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionSocialHistory.text",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionSocialHistory.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionSocialHistory.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionVitalSigns",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionVitalSigns",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionVitalSigns.title",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionVitalSigns.title",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionVitalSigns.title",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionVitalSigns.text",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionVitalSigns.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Composition-uv-ips",
+   "element": "Composition.section:sectionVitalSigns.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-002"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.clinicalStatus",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.clinicalStatus",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.clinicalStatus",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.category",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.category",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.category",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.severity",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.severity",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.severity",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.code",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.code",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.code",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.subject",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.subject",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.subject",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.subject.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.subject.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.onset[x]",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.onset[x]",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.onset[x]",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.onset[x]:onsetDateTime",
+   "code": "SHOULD:able-to-populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.onset[x]:onsetDateTime",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-008"
+  },
+  {
+   "profile": "Condition-uv-ips",
+   "element": "Condition.onset[x]:onsetDateTime",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-008"
+  },
+  {
+   "profile": "Device-observer-uv-ips",
+   "element": "Device.identifier",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-019"
+  },
+  {
+   "profile": "Device-observer-uv-ips",
+   "element": "Device.identifier",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-019"
+  },
+  {
+   "profile": "Device-observer-uv-ips",
+   "element": "Device.identifier",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-019"
+  },
+  {
+   "profile": "Device-observer-uv-ips",
+   "element": "Device.manufacturer",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-019"
+  },
+  {
+   "profile": "Device-observer-uv-ips",
+   "element": "Device.manufacturer",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-019"
+  },
+  {
+   "profile": "Device-observer-uv-ips",
+   "element": "Device.manufacturer",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-019"
+  },
+  {
+   "profile": "Device-observer-uv-ips",
+   "element": "Device.modelNumber",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-019"
+  },
+  {
+   "profile": "Device-observer-uv-ips",
+   "element": "Device.modelNumber",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-019"
+  },
+  {
+   "profile": "Device-observer-uv-ips",
+   "element": "Device.modelNumber",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-019"
+  },
+  {
+   "profile": "Device-uv-ips",
+   "element": "Device.type",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-020"
+  },
+  {
+   "profile": "Device-uv-ips",
+   "element": "Device.type",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-020"
+  },
+  {
+   "profile": "Device-uv-ips",
+   "element": "Device.type",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-020"
+  },
+  {
+   "profile": "DeviceUseStatement-uv-ips",
+   "element": "DeviceUseStatement.subject",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-021"
+  },
+  {
+   "profile": "DeviceUseStatement-uv-ips",
+   "element": "DeviceUseStatement.subject",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-021"
+  },
+  {
+   "profile": "DeviceUseStatement-uv-ips",
+   "element": "DeviceUseStatement.subject",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-021"
+  },
+  {
+   "profile": "DeviceUseStatement-uv-ips",
+   "element": "DeviceUseStatement.subject.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-021"
+  },
+  {
+   "profile": "DeviceUseStatement-uv-ips",
+   "element": "DeviceUseStatement.subject.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-021"
+  },
+  {
+   "profile": "DeviceUseStatement-uv-ips",
+   "element": "DeviceUseStatement.timing[x]",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-021"
+  },
+  {
+   "profile": "DeviceUseStatement-uv-ips",
+   "element": "DeviceUseStatement.timing[x]",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-021"
+  },
+  {
+   "profile": "DeviceUseStatement-uv-ips",
+   "element": "DeviceUseStatement.timing[x]",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-021"
+  },
+  {
+   "profile": "DeviceUseStatement-uv-ips",
+   "element": "DeviceUseStatement.timing[x]:timingDateTime",
+   "code": "SHOULD:able-to-populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-021"
+  },
+  {
+   "profile": "DeviceUseStatement-uv-ips",
+   "element": "DeviceUseStatement.timing[x]:timingDateTime",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-021"
+  },
+  {
+   "profile": "DeviceUseStatement-uv-ips",
+   "element": "DeviceUseStatement.timing[x]:timingDateTime",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-021"
+  },
+  {
+   "profile": "DeviceUseStatement-uv-ips",
+   "element": "DeviceUseStatement.device",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-021"
+  },
+  {
+   "profile": "DeviceUseStatement-uv-ips",
+   "element": "DeviceUseStatement.device",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-021"
+  },
+  {
+   "profile": "DeviceUseStatement-uv-ips",
+   "element": "DeviceUseStatement.device",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-021"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.code",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.code",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.code",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.subject",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.subject",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.subject",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.subject.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.subject.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.effective[x]",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.effective[x]",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.effective[x]",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.effective[x]:effectiveDateTime",
+   "code": "SHOULD:able-to-populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.effective[x]:effectiveDateTime",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.effective[x]:effectiveDateTime",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.performer",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.performer",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.performer",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.result:observation-results",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.result:observation-results",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-015"
+  },
+  {
+   "profile": "DiagnosticReport-uv-ips",
+   "element": "DiagnosticReport.result:observation-results",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-015"
+  },
+  {
+   "profile": "Flag-alert-uv-ips",
+   "element": "Flag.extension:flag-priority",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-022"
+  },
+  {
+   "profile": "Flag-alert-uv-ips",
+   "element": "Flag.extension:flag-priority",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-022"
+  },
+  {
+   "profile": "Flag-alert-uv-ips",
+   "element": "Flag.extension:flag-priority",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-022"
+  },
+  {
+   "profile": "Flag-alert-uv-ips",
+   "element": "Flag.category",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-022"
+  },
+  {
+   "profile": "Flag-alert-uv-ips",
+   "element": "Flag.category",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-022"
+  },
+  {
+   "profile": "Flag-alert-uv-ips",
+   "element": "Flag.category",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-022"
+  },
+  {
+   "profile": "Flag-alert-uv-ips",
+   "element": "Flag.code",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-022"
+  },
+  {
+   "profile": "Flag-alert-uv-ips",
+   "element": "Flag.code",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-022"
+  },
+  {
+   "profile": "Flag-alert-uv-ips",
+   "element": "Flag.code",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-022"
+  },
+  {
+   "profile": "Flag-alert-uv-ips",
+   "element": "Flag.subject",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-022"
+  },
+  {
+   "profile": "Flag-alert-uv-ips",
+   "element": "Flag.subject",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-022"
+  },
+  {
+   "profile": "Flag-alert-uv-ips",
+   "element": "Flag.subject",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-022"
+  },
+  {
+   "profile": "Flag-alert-uv-ips",
+   "element": "Flag.subject.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-022"
+  },
+  {
+   "profile": "Flag-alert-uv-ips",
+   "element": "Flag.subject.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-022"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.identifier",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.identifier",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.identifier",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.subject",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.subject",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.subject",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.subject.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.subject.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.started",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.started",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.started",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.procedureCode",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.procedureCode",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.procedureCode",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.reasonCode",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.reasonCode",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.reasonCode",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series.uid",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series.uid",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series.uid",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series.modality",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series.modality",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series.modality",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series.instance",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series.instance",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series.instance",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series.instance.uid",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series.instance.uid",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series.instance.uid",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series.instance.sopClass",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series.instance.sopClass",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "ImagingStudy-uv-ips",
+   "element": "ImagingStudy.series.instance.sopClass",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-017"
+  },
+  {
+   "profile": "Immunization-uv-ips",
+   "element": "Immunization.status",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-012"
+  },
+  {
+   "profile": "Immunization-uv-ips",
+   "element": "Immunization.status",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-012"
+  },
+  {
+   "profile": "Immunization-uv-ips",
+   "element": "Immunization.status",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-012"
+  },
+  {
+   "profile": "Immunization-uv-ips",
+   "element": "Immunization.vaccineCode",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-012"
+  },
+  {
+   "profile": "Immunization-uv-ips",
+   "element": "Immunization.vaccineCode",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-012"
+  },
+  {
+   "profile": "Immunization-uv-ips",
+   "element": "Immunization.vaccineCode",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-012"
+  },
+  {
+   "profile": "Immunization-uv-ips",
+   "element": "Immunization.patient",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-012"
+  },
+  {
+   "profile": "Immunization-uv-ips",
+   "element": "Immunization.patient",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-012"
+  },
+  {
+   "profile": "Immunization-uv-ips",
+   "element": "Immunization.patient",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-012"
+  },
+  {
+   "profile": "Immunization-uv-ips",
+   "element": "Immunization.patient.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-012"
+  },
+  {
+   "profile": "Immunization-uv-ips",
+   "element": "Immunization.patient.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-012"
+  },
+  {
+   "profile": "Immunization-uv-ips",
+   "element": "Immunization.occurrence[x]",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-012"
+  },
+  {
+   "profile": "Immunization-uv-ips",
+   "element": "Immunization.occurrence[x]",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-012"
+  },
+  {
+   "profile": "Immunization-uv-ips",
+   "element": "Immunization.occurrence[x]",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-012"
+  },
+  {
+   "profile": "Immunization-uv-ips",
+   "element": "Immunization.occurrence[x]:occurrenceDateTime",
+   "code": "SHOULD:able-to-populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-012"
+  },
+  {
+   "profile": "Immunization-uv-ips",
+   "element": "Immunization.occurrence[x]:occurrenceDateTime",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-012"
+  },
+  {
+   "profile": "Immunization-uv-ips",
+   "element": "Immunization.occurrence[x]:occurrenceDateTime",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-012"
+  },
+  {
+   "profile": "Medication-uv-ips",
+   "element": "Medication.code",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-009"
+  },
+  {
+   "profile": "Medication-uv-ips",
+   "element": "Medication.code",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-009"
+  },
+  {
+   "profile": "Medication-uv-ips",
+   "element": "Medication.code",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-009"
+  },
+  {
+   "profile": "Medication-uv-ips",
+   "element": "Medication.form",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-009"
+  },
+  {
+   "profile": "Medication-uv-ips",
+   "element": "Medication.form",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-009"
+  },
+  {
+   "profile": "Medication-uv-ips",
+   "element": "Medication.form",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-009"
+  },
+  {
+   "profile": "Medication-uv-ips",
+   "element": "Medication.ingredient",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-009"
+  },
+  {
+   "profile": "Medication-uv-ips",
+   "element": "Medication.ingredient",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-009"
+  },
+  {
+   "profile": "Medication-uv-ips",
+   "element": "Medication.ingredient",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-009"
+  },
+  {
+   "profile": "Medication-uv-ips",
+   "element": "Medication.ingredient.item[x]",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-009"
+  },
+  {
+   "profile": "Medication-uv-ips",
+   "element": "Medication.ingredient.item[x]",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-009"
+  },
+  {
+   "profile": "Medication-uv-ips",
+   "element": "Medication.ingredient.item[x]",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-009"
+  },
+  {
+   "profile": "Medication-uv-ips",
+   "element": "Medication.ingredient.strength",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-009"
+  },
+  {
+   "profile": "Medication-uv-ips",
+   "element": "Medication.ingredient.strength",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-009"
+  },
+  {
+   "profile": "Medication-uv-ips",
+   "element": "Medication.ingredient.strength",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-009"
+  },
+  {
+   "profile": "MedicationRequest-uv-ips",
+   "element": "MedicationRequest.medication[x]",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-010"
+  },
+  {
+   "profile": "MedicationRequest-uv-ips",
+   "element": "MedicationRequest.medication[x]",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-010"
+  },
+  {
+   "profile": "MedicationRequest-uv-ips",
+   "element": "MedicationRequest.medication[x]",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-010"
+  },
+  {
+   "profile": "MedicationRequest-uv-ips",
+   "element": "MedicationRequest.subject",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-010"
+  },
+  {
+   "profile": "MedicationRequest-uv-ips",
+   "element": "MedicationRequest.subject",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-010"
+  },
+  {
+   "profile": "MedicationRequest-uv-ips",
+   "element": "MedicationRequest.subject",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-010"
+  },
+  {
+   "profile": "MedicationRequest-uv-ips",
+   "element": "MedicationRequest.subject.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-010"
+  },
+  {
+   "profile": "MedicationRequest-uv-ips",
+   "element": "MedicationRequest.subject.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-010"
+  },
+  {
+   "profile": "MedicationRequest-uv-ips",
+   "element": "MedicationRequest.dosageInstruction",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-010"
+  },
+  {
+   "profile": "MedicationRequest-uv-ips",
+   "element": "MedicationRequest.dosageInstruction",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-010"
+  },
+  {
+   "profile": "MedicationRequest-uv-ips",
+   "element": "MedicationRequest.dosageInstruction",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-010"
+  },
+  {
+   "profile": "MedicationRequest-uv-ips",
+   "element": "MedicationRequest.dosageInstruction.text",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-010"
+  },
+  {
+   "profile": "MedicationRequest-uv-ips",
+   "element": "MedicationRequest.dosageInstruction.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-010"
+  },
+  {
+   "profile": "MedicationRequest-uv-ips",
+   "element": "MedicationRequest.dosageInstruction.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-010"
+  },
+  {
+   "profile": "MedicationRequest-uv-ips",
+   "element": "MedicationRequest.dosageInstruction.timing",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-010"
+  },
+  {
+   "profile": "MedicationRequest-uv-ips",
+   "element": "MedicationRequest.dosageInstruction.timing",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-010"
+  },
+  {
+   "profile": "MedicationRequest-uv-ips",
+   "element": "MedicationRequest.dosageInstruction.timing",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-010"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.medication[x]",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.medication[x]",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.medication[x]",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.subject",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.subject",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.subject",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.subject.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.subject.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.effective[x]",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.effective[x]",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.effective[x]",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.effective[x]:effectiveDateTime",
+   "code": "SHOULD:able-to-populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.effective[x]:effectiveDateTime",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.effective[x]:effectiveDateTime",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.dosage",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.dosage",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.dosage",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.dosage.text",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.dosage.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.dosage.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.dosage.timing",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.dosage.timing",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-011"
+  },
+  {
+   "profile": "MedicationStatement-uv-ips",
+   "element": "MedicationStatement.dosage.timing",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-011"
+  },
+  {
+   "profile": "Observation-alcoholuse-uv-ips",
+   "element": "Observation.code",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-027"
+  },
+  {
+   "profile": "Observation-alcoholuse-uv-ips",
+   "element": "Observation.code",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-027"
+  },
+  {
+   "profile": "Observation-alcoholuse-uv-ips",
+   "element": "Observation.code",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-027"
+  },
+  {
+   "profile": "Observation-alcoholuse-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-027"
+  },
+  {
+   "profile": "Observation-alcoholuse-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-027"
+  },
+  {
+   "profile": "Observation-alcoholuse-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-027"
+  },
+  {
+   "profile": "Observation-alcoholuse-uv-ips",
+   "element": "Observation.subject.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-027"
+  },
+  {
+   "profile": "Observation-alcoholuse-uv-ips",
+   "element": "Observation.subject.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-027"
+  },
+  {
+   "profile": "Observation-alcoholuse-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-027"
+  },
+  {
+   "profile": "Observation-alcoholuse-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-027"
+  },
+  {
+   "profile": "Observation-alcoholuse-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-027"
+  },
+  {
+   "profile": "Observation-pregnancy-edd-uv-ips",
+   "element": "Observation.code",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-023"
+  },
+  {
+   "profile": "Observation-pregnancy-edd-uv-ips",
+   "element": "Observation.code",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-023"
+  },
+  {
+   "profile": "Observation-pregnancy-edd-uv-ips",
+   "element": "Observation.code",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-023"
+  },
+  {
+   "profile": "Observation-pregnancy-edd-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-023"
+  },
+  {
+   "profile": "Observation-pregnancy-edd-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-023"
+  },
+  {
+   "profile": "Observation-pregnancy-edd-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-023"
+  },
+  {
+   "profile": "Observation-pregnancy-edd-uv-ips",
+   "element": "Observation.subject.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-023"
+  },
+  {
+   "profile": "Observation-pregnancy-edd-uv-ips",
+   "element": "Observation.subject.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-023"
+  },
+  {
+   "profile": "Observation-pregnancy-edd-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-023"
+  },
+  {
+   "profile": "Observation-pregnancy-edd-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-023"
+  },
+  {
+   "profile": "Observation-pregnancy-edd-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-023"
+  },
+  {
+   "profile": "Observation-pregnancy-edd-uv-ips",
+   "element": "Observation.value[x]:valueDateTime",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-023"
+  },
+  {
+   "profile": "Observation-pregnancy-edd-uv-ips",
+   "element": "Observation.value[x]:valueDateTime",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-023"
+  },
+  {
+   "profile": "Observation-pregnancy-edd-uv-ips",
+   "element": "Observation.value[x]:valueDateTime",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-023"
+  },
+  {
+   "profile": "Observation-pregnancy-outcome-uv-ips",
+   "element": "Observation.code",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-024"
+  },
+  {
+   "profile": "Observation-pregnancy-outcome-uv-ips",
+   "element": "Observation.code",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-024"
+  },
+  {
+   "profile": "Observation-pregnancy-outcome-uv-ips",
+   "element": "Observation.code",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-024"
+  },
+  {
+   "profile": "Observation-pregnancy-outcome-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-024"
+  },
+  {
+   "profile": "Observation-pregnancy-outcome-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-024"
+  },
+  {
+   "profile": "Observation-pregnancy-outcome-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-024"
+  },
+  {
+   "profile": "Observation-pregnancy-outcome-uv-ips",
+   "element": "Observation.subject.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-024"
+  },
+  {
+   "profile": "Observation-pregnancy-outcome-uv-ips",
+   "element": "Observation.subject.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-024"
+  },
+  {
+   "profile": "Observation-pregnancy-outcome-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-024"
+  },
+  {
+   "profile": "Observation-pregnancy-outcome-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-024"
+  },
+  {
+   "profile": "Observation-pregnancy-outcome-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-024"
+  },
+  {
+   "profile": "Observation-pregnancy-outcome-uv-ips",
+   "element": "Observation.value[x]:valueQuantity",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-024"
+  },
+  {
+   "profile": "Observation-pregnancy-outcome-uv-ips",
+   "element": "Observation.value[x]:valueQuantity",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-024"
+  },
+  {
+   "profile": "Observation-pregnancy-outcome-uv-ips",
+   "element": "Observation.value[x]:valueQuantity",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-024"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.code",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.code",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.code",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.subject.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.subject.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.value[x]:valueCodeableConcept",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.value[x]:valueCodeableConcept",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.value[x]:valueCodeableConcept",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.hasMember",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.hasMember",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.hasMember",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.hasMember.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.hasMember.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-025"
+  },
+  {
+   "profile": "Observation-pregnancy-status-uv-ips",
+   "element": "Observation.hasMember.reference",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-025"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.category:laboratory",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.category:laboratory",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.category:laboratory",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.code",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.code",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.code",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.subject.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.subject.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.effective[x]:effectiveDateTime",
+   "code": "SHOULD:able-to-populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.effective[x]:effectiveDateTime",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.effective[x]:effectiveDateTime",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.performer",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.performer",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.performer",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.value[x]:valueString",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.value[x]:valueString",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.value[x]:valueString",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.value[x]:valueQuantity",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.value[x]:valueQuantity",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.value[x]:valueQuantity",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.value[x]:valueCodeableConcept",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.value[x]:valueCodeableConcept",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.value[x]:valueCodeableConcept",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.component",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.component",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-laboratory-pathology-uv-ips",
+   "element": "Observation.component",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-013"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.category:radiology",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.category:radiology",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.category:radiology",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.code",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.code",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.code",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.subject.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.subject.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.effective[x]:effectiveDateTime",
+   "code": "SHOULD:able-to-populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.effective[x]:effectiveDateTime",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.effective[x]:effectiveDateTime",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.performer",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.performer",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.performer",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.value[x]:valueString",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.value[x]:valueString",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.value[x]:valueString",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.component",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.component",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-014"
+  },
+  {
+   "profile": "Observation-results-radiology-uv-ips",
+   "element": "Observation.component",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-014"
+  },
+  {
+   "profile": "Observation-tobaccouse-uv-ips",
+   "element": "Observation.code",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-026"
+  },
+  {
+   "profile": "Observation-tobaccouse-uv-ips",
+   "element": "Observation.code",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-026"
+  },
+  {
+   "profile": "Observation-tobaccouse-uv-ips",
+   "element": "Observation.code",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-026"
+  },
+  {
+   "profile": "Observation-tobaccouse-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-026"
+  },
+  {
+   "profile": "Observation-tobaccouse-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-026"
+  },
+  {
+   "profile": "Observation-tobaccouse-uv-ips",
+   "element": "Observation.subject",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-026"
+  },
+  {
+   "profile": "Observation-tobaccouse-uv-ips",
+   "element": "Observation.subject.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-026"
+  },
+  {
+   "profile": "Observation-tobaccouse-uv-ips",
+   "element": "Observation.subject.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-026"
+  },
+  {
+   "profile": "Observation-tobaccouse-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-026"
+  },
+  {
+   "profile": "Observation-tobaccouse-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-026"
+  },
+  {
+   "profile": "Observation-tobaccouse-uv-ips",
+   "element": "Observation.effective[x]",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-026"
+  },
+  {
+   "profile": "Organization-uv-ips",
+   "element": "Organization.name",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-006"
+  },
+  {
+   "profile": "Organization-uv-ips",
+   "element": "Organization.name",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-006"
+  },
+  {
+   "profile": "Organization-uv-ips",
+   "element": "Organization.name",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-006"
+  },
+  {
+   "profile": "Organization-uv-ips",
+   "element": "Organization.telecom",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-006"
+  },
+  {
+   "profile": "Organization-uv-ips",
+   "element": "Organization.telecom",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-006"
+  },
+  {
+   "profile": "Organization-uv-ips",
+   "element": "Organization.telecom",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-006"
+  },
+  {
+   "profile": "Organization-uv-ips",
+   "element": "Organization.address",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-006"
+  },
+  {
+   "profile": "Organization-uv-ips",
+   "element": "Organization.address",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-006"
+  },
+  {
+   "profile": "Organization-uv-ips",
+   "element": "Organization.address",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-006"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.identifier",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.identifier",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.identifier",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.name",
+   "code": "SHALL:populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.name",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.name",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.name.use",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.name.use",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.name.use",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.name.text",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.name.text",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.name.text",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.name.family",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.name.family",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.name.family",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.name.given",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.name.given",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.name.given",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.telecom",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.telecom",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.telecom",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.gender",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.gender",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.gender",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.birthDate",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.birthDate",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.birthDate",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.address",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.address",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.address",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.generalPractitioner",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.generalPractitioner",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Patient-uv-ips",
+   "element": "Patient.generalPractitioner",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-003"
+  },
+  {
+   "profile": "Practitioner-uv-ips",
+   "element": "Practitioner.name",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-004"
+  },
+  {
+   "profile": "Practitioner-uv-ips",
+   "element": "Practitioner.name",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-004"
+  },
+  {
+   "profile": "Practitioner-uv-ips",
+   "element": "Practitioner.name",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-004"
+  },
+  {
+   "profile": "Practitioner-uv-ips",
+   "element": "Practitioner.name.family",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-004"
+  },
+  {
+   "profile": "Practitioner-uv-ips",
+   "element": "Practitioner.name.family",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-004"
+  },
+  {
+   "profile": "Practitioner-uv-ips",
+   "element": "Practitioner.name.family",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-004"
+  },
+  {
+   "profile": "Practitioner-uv-ips",
+   "element": "Practitioner.name.given",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-004"
+  },
+  {
+   "profile": "Practitioner-uv-ips",
+   "element": "Practitioner.name.given",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-004"
+  },
+  {
+   "profile": "Practitioner-uv-ips",
+   "element": "Practitioner.name.given",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-004"
+  },
+  {
+   "profile": "Practitioner-uv-ips",
+   "element": "Practitioner.telecom",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-004"
+  },
+  {
+   "profile": "Practitioner-uv-ips",
+   "element": "Practitioner.telecom",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-004"
+  },
+  {
+   "profile": "Practitioner-uv-ips",
+   "element": "Practitioner.telecom",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-004"
+  },
+  {
+   "profile": "Practitioner-uv-ips",
+   "element": "Practitioner.address",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-004"
+  },
+  {
+   "profile": "Practitioner-uv-ips",
+   "element": "Practitioner.address",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-004"
+  },
+  {
+   "profile": "Practitioner-uv-ips",
+   "element": "Practitioner.address",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-004"
+  },
+  {
+   "profile": "PractitionerRole-uv-ips",
+   "element": "PractitionerRole.organization",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-005"
+  },
+  {
+   "profile": "PractitionerRole-uv-ips",
+   "element": "PractitionerRole.organization",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-005"
+  },
+  {
+   "profile": "PractitionerRole-uv-ips",
+   "element": "PractitionerRole.organization",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-005"
+  },
+  {
+   "profile": "Procedure-uv-ips",
+   "element": "Procedure.code",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-018"
+  },
+  {
+   "profile": "Procedure-uv-ips",
+   "element": "Procedure.code",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-018"
+  },
+  {
+   "profile": "Procedure-uv-ips",
+   "element": "Procedure.code",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-018"
+  },
+  {
+   "profile": "Procedure-uv-ips",
+   "element": "Procedure.subject",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-018"
+  },
+  {
+   "profile": "Procedure-uv-ips",
+   "element": "Procedure.subject",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-018"
+  },
+  {
+   "profile": "Procedure-uv-ips",
+   "element": "Procedure.subject",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-018"
+  },
+  {
+   "profile": "Procedure-uv-ips",
+   "element": "Procedure.subject.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-018"
+  },
+  {
+   "profile": "Procedure-uv-ips",
+   "element": "Procedure.subject.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-018"
+  },
+  {
+   "profile": "Procedure-uv-ips",
+   "element": "Procedure.performed[x]",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-018"
+  },
+  {
+   "profile": "Procedure-uv-ips",
+   "element": "Procedure.performed[x]",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-018"
+  },
+  {
+   "profile": "Procedure-uv-ips",
+   "element": "Procedure.performed[x]",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-018"
+  },
+  {
+   "profile": "Procedure-uv-ips",
+   "element": "Procedure.performed[x]:performedDateTime",
+   "code": "SHOULD:able-to-populate",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-018"
+  },
+  {
+   "profile": "Procedure-uv-ips",
+   "element": "Procedure.performed[x]:performedDateTime",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-018"
+  },
+  {
+   "profile": "Procedure-uv-ips",
+   "element": "Procedure.performed[x]:performedDateTime",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-018"
+  },
+  {
+   "profile": "Specimen-uv-ips",
+   "element": "Specimen.type",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-016"
+  },
+  {
+   "profile": "Specimen-uv-ips",
+   "element": "Specimen.type",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-016"
+  },
+  {
+   "profile": "Specimen-uv-ips",
+   "element": "Specimen.type",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-016"
+  },
+  {
+   "profile": "Specimen-uv-ips",
+   "element": "Specimen.subject",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-016"
+  },
+  {
+   "profile": "Specimen-uv-ips",
+   "element": "Specimen.subject",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-016"
+  },
+  {
+   "profile": "Specimen-uv-ips",
+   "element": "Specimen.subject",
+   "code": "SHOULD:display",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-016"
+  },
+  {
+   "profile": "Specimen-uv-ips",
+   "element": "Specimen.subject.reference",
+   "code": "SHALL:populate-if-known",
+   "actor": "Creator",
+   "status": "covered",
+   "by": "ips-creator.feature: ips-creator-016"
+  },
+  {
+   "profile": "Specimen-uv-ips",
+   "element": "Specimen.subject.reference",
+   "code": "SHALL:handle",
+   "actor": "Consumer",
+   "status": "covered",
+   "by": "ips-consumer.feature: ips-consumer-016"
+  }
+ ]
+}

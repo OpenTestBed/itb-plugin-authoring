@@ -1,0 +1,14 @@
+<div xmlns="http://www.w3.org/1999/xhtml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://hl7.org/fhir ../../input-cache/schemas/R5/fhir-single.xsd">
+	<p>
+    This provides a list of changes to this demonstration guide.
+  </p>
+  <a name="1.0.0"> </a>
+	<p>
+		<b>2026-08-27 v1.0.0 - TestPlan and Gherkin demonstration</b> based on FHIR R6 (6.0.0-ballot5)
+  </p>
+  <ul>
+    <li>TestPlan resources for the MEOW Consumer and Responder actors, sourced from hl7.fhir.uv.testing</li>
+    <li>Gherkin feature files for both actors, packaged under tests/gherkin/</li>
+    <li>Initial version</li>
+  </ul>
+</div>

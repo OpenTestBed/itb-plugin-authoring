@@ -18,14 +18,14 @@
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "@monaco-editor/react": "^4.6.0",
+    "@opentestbed/otb-gherkin": "file:../../itb-cli/packages/gherkin",
     "fast-xml-parser": "^5.2.5",
     "js-yaml": "^4.1.0",
     "jszip": "^3.10.1",
     "lucide-react": "^0.263.1",
     "monaco-editor": "^0.44.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@opentestbed/otb-gherkin": "file:../../itb-cli/packages/gherkin"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
@@ -39,6 +39,7 @@
     "eslint": "^8.53.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",
+    "fhirpath": "^3.18.0",
     "gh-pages": "^6.1.0",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.5",
