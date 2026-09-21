@@ -11,7 +11,7 @@
 //                      (default: raw GitHub at --commit)
 //   --server <url>     the terminology server under test
 //   --validator <url>  the FHIR validator that runs the matchetype comparison
-//   --fhir-version <v> the FHIR version the server speaks, 4.0 or 5.0 (default 4.0); tests bound to another version are left out
+//   --fhir-version <v> the FHIR version the server speaks, 4.0 or 5.0 (default 5.0); tests bound to another version are left out
 //   --suite <name>     only this suite (repeatable)
 //   --no-merged        do not write tx-all.feature
 //
@@ -40,9 +40,13 @@ const suites = args.flatMap((a, i) => a === '--suite' ? [args[i + 1]] : []);
 const source = opt('--source');
 if (!source) { console.error('--source <tests folder> is required'); process.exit(2); }
 const out = opt('--out', path.join(appDir, 'public', 'features', 'tx-ecosystem'));
-const server = opt('--server', 'https://178.104.103.200.sslip.io/tx/r4');
+// The expected files are R5-shaped, so the tests go to an R5 endpoint: an R4 server
+// cannot return the R5-only elements they require (expansion.property, for one) and
+// fails tests it is not wrong about.
+const server = opt('--server', 'https://178.104.103.200.sslip.io/tx/r5');
 const validator = opt('--validator', 'http://fhir-validator:8080');
-const fhirVersion = opt('--fhir-version', '4.0');
+// 5.0 by default, to match the endpoint: the expected files are R5-shaped.
+const fhirVersion = opt('--fhir-version', '5.0');
 // Upstream binds a test to a server version with "version": "4.0", "5.0" or "!4.0".
 const appliesToVersion = t => !t.version || (t.version.startsWith('!') ? t.version.slice(1) !== fhirVersion : t.version === fhirVersion);
 

@@ -108,18 +108,31 @@ The capability-statement tests ask for `mode=partial` instead, through the step
 `should contain the pattern in`, because their expected files state a minimum rather than
 a whole document. That is how the runner compares them too.
 
-**What to expect today.** Three things decide whether a comparison is trustworthy, and two
-of them are outside these tests (all measured 2026-09-21 against a conformant server, where the
-validator's own `txTests` runner passes every test of the `simple-cases` suite):
+**Where this stands** (measured 2026-09-21 against FHIRsmith 0.13.2 at `/tx/r5`, with the
+validator build of that afternoon):
 
 | | |
 |---|---|
-| Optional markers | An expectation file's `$optional$` and `$optional-properties$` were ignored: the comparer reads extensions and nothing converted the markers. Fixed in the fork, not yet released. With a released validator, expect "array item count differs" and "missing element" where the file says the element is optional. |
-| Model version | The service must run on the **R5** model (`-version 5.0`). The expectation files are R5-shaped, and under `-version 4.0` an R5-only element such as `contains.property` is silently dropped from the pattern, so a response missing it **passes**. A false pass is worse than a false failure. |
-| Version reconciliation | The files are R5 and a server may be R4. The runner knows the server's version and reconciles; the matchetype service has no notion of modes or versions, so an R5-only element is demanded of an R4 server. 11 of the 37 `simple-cases` tests still fail this way after the fix above, all on `expansion.contains.property`. |
+| The server, judged by the validator's own `txTests` runner | 3 failures in 664 general-mode tests |
+| The same tests through this dialect and the matchetype service | 524 of 671 general-mode tests pass |
 
-Pass rates on `simple-cases` against the same server: 16 of 37 with the released validator on
-`-version 4.0`, 26 of 37 with the fix on `-version 5.0`, all of them with the runner itself.
+So the server is in good shape and the remaining ~144 differences are in the comparison
+path, not in it. They cluster: `OperationOutcome: unexpected element issue` (103), missing
+elements inside `parameter.resource.issue` (121), and `array item count differs at
+Parameters.parameter` (106). Two candidates worth separating before blaming the comparer:
+this dialect fetches the test material from the IG's `main` branch while the runner used
+the published package `1.9.3`, and the runner may send requests these tests do not
+reproduce exactly.
+
+**Use an endpoint whose version matches the files.** The expectation files are R5-shaped.
+Against an R4 endpoint they demand R5-only elements (`expansion.property`, for one) that no
+R4 server can return: `simple-cases` scored 26 of 37 against `/tx/r4` and 37 of 37 against
+`/tx/r5`, same server, same build. The generator therefore targets an R5 endpoint and
+selects the R5 test set by default.
+
+**Mode-gated suites are not failures.** `sct-ecl`, `tx.fhir.org`, `snomed`, `icd-11`,
+`omop` and `mimetypes` apply only to a server that carries that content, and they are 325 of
+the 1178 tests. Judge a server on the general-mode suites unless it claims the rest.
 
 ## Running in ITB
 
