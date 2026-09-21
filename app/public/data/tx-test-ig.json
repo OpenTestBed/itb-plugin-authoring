@@ -131,16 +131,17 @@
     {
       "id": "tx-server",
       "title": "Terminology Server",
-      "features": "tx-ecosystem",
       "scope": "http://example.com/fhir/hl7.fhir.uv.tx-ecosystem.test/CapabilityStatement/tx-server-requirements",
       "scopeDescription": "A FHIR terminology server: the operations of the terminology module, as the requirements CapabilityStatement of this guide states them.",
       "summary": "a FHIR terminology server, tested with the HL7 terminology-ecosystem test set",
       "planDescription": "The HL7 terminology-ecosystem test cases for a FHIR terminology server, as Gherkin.",
-      "resourceDescription": "The HL7 terminology-ecosystem test cases for a FHIR terminology server, grouped into the suites the test set defines.",
+      "resourceDescription": "Every HL7 terminology-ecosystem test case for a FHIR terminology server, in one plan and one Gherkin script.",
       "intro": "Test plan for a **FHIR terminology server**, as described by the [requirements CapabilityStatement](CapabilityStatement-tx-server-requirements.html) this guide publishes.",
       "description": "The test cases are the HL7 terminology-ecosystem test set ([Terminology Ecosystem IG](https://github.com/HL7/fhir-tx-ecosystem-ig), `tests/test-cases.json`), expressed as Gherkin for the [Interoperability Test Bed](https://www.itb.ec.europa.eu/docs/guides/latest/).",
       "note": "The expected responses are not copied into this guide: a test fetches the upstream file at run time and compares the server's answer with it as a matchetype, so the expectations cannot drift from the source.",
-      "purpose": "To declare, in a machine-readable and runnable form, the behaviour a FHIR terminology server must demonstrate to be considered conformant with the HL7 terminology-ecosystem test set."
+      "purpose": "To declare, in a machine-readable and runnable form, the behaviour a FHIR terminology server must demonstrate to be considered conformant with the HL7 terminology-ecosystem test set.",
+      "instanceId": "tx-tests-full",
+      "feature": "tx-ecosystem/tx-all.feature"
     }
   ],
   "dependencies": {

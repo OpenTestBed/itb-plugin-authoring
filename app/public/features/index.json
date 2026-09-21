@@ -46,6 +46,7 @@
   "tng-certificate-governance.feature",
   "transform-icvp.feature",
   "tutorial.feature",
+  "tx-ecosystem/tx-all.feature",
   "tx-ecosystem/tx-batch.feature",
   "tx-ecosystem/tx-big.feature",
   "tx-ecosystem/tx-bugs.feature",

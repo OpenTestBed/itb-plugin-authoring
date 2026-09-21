@@ -13,6 +13,15 @@
 //   --validator <url>  the FHIR validator that runs the matchetype comparison
 //   --fhir-version <v> the FHIR version the server speaks, 4.0 or 5.0 (default 4.0); tests bound to another version are left out
 //   --suite <name>     only this suite (repeatable)
+//   --no-merged        do not write tx-all.feature
+//
+// Two shapes come out of the same model, because ITB stores one test suite
+// per feature file:
+//   tx-<suite>.feature   one file per upstream suite - 38 suites in ITB
+//   tx-all.feature       the whole set in one file - ONE suite of 1182 test
+//                        cases. Each scenario names its own resources there,
+//                        because a Background belongs to the whole file and
+//                        these suites do not share one.
 //
 // Upstream, a test is: operation, request (Parameters), expected response (a
 // matchetype), and a few modifiers. The feature says the same thing in the
@@ -96,9 +105,9 @@ function formatParameters(p, indent) {
     else lines.push(JSON.stringify(param, null, 2).split('\n').map(l => `${pad}    ${l}`).join('\n') + comma);
   });
   lines.push(`${pad}  ]`, `${pad}}`);
-  // A doc string becomes a TDL string literal in single quotes: keep the
-  // apostrophe out of it. JSON reads the \u0027 escape as the same character.
-  return lines.join('\n').replace(/'/g, '\\u0027');
+  // Returned as it stands. inlinable() decides whether a payload can live in a
+  // TDL literal at all, and one it rejects is named rather than rewritten.
+  return lines.join('\n');
 }
 
 // The runner appends the profile parameters to every request. Say so in the
@@ -122,6 +131,69 @@ const wrap = (text, width = 96) => {
   return lines;
 };
 const comment = (indent, text) => wrap(text).map(l => `${' '.repeat(indent)}# ${l}`);
+
+/**
+ * One test as Gherkin at the given indent. `resources` is the suite's setup
+ * list, written into the scenario when the file holds more than one suite.
+ */
+function scenarioLines(t, name, indent, resources) {
+  const pad = ' '.repeat(indent);
+  const words = OPS[t.operation];
+  if (!words) throw new Error(`unknown operation ${t.operation} for ${t.name}`);
+  const L = [];
+  if (t.description && t.description !== 'to be provided') L.push(...comment(indent, t.description));
+  if (t.explanation) L.push(...comment(indent, t.explanation));
+  const tags = [`@operation:${t.operation}`];
+  if (t.mode) tags.push(`@mode:${t.mode}`);
+  if (t.version) tags.push(`@fhir-version:${t.version}`);
+  if (t['full-set']) tags.push('@full-set');
+  if (t['http-code']) tags.push(`@http-code:${t['http-code']}`);
+  L.push(`${pad}${tags.join(' ')}`);
+  L.push(`${pad}Scenario: ${name}`);
+  if (resources?.length) {
+    L.push(`${pad}  Given TxServer is given the resources:`);
+    const w = Math.max(...resources.map(r => r.length), 8);
+    L.push(`${pad}    | ${'resource'.padEnd(w)} |`);
+    for (const r of resources) L.push(`${pad}    | ${r.padEnd(w)} |`);
+  }
+  if (t['Accept-Language']) L.push(`${pad}  Given set header "Accept-Language" to "${t['Accept-Language']}"`);
+  if (t.header) L.push(`${pad}  Given set header "${t.header.name}" to "${t.header.value}"`);
+  if (words.get) {
+    L.push(`${pad}  When ${words.step}`);
+  } else {
+    const json = formatParameters(requestFor(t), indent + 4);
+    if (inlinable(json)) {
+      L.push(`${pad}  When ${words.step}`);
+      L.push(`${pad}    """`);
+      L.push(json);
+      L.push(`${pad}    """`);
+    } else {
+      // Named, not written out. Say why, or the next reader will "fix" it.
+      L.push(`${pad}  # The request holds a character an ITB expression cannot carry, so it is`);
+      L.push(`${pad}  # fetched from the test material rather than written out here.`);
+      if (t['lenient-display'] !== undefined) {
+        throw new Error(`${t.name}: lenient-display is merged into the request, which this test cannot inline`);
+      }
+      L.push(`${pad}  When Client ${words.verb} TxServer with the request in "${t.request}" and the parameters in "${profileOf(t)}"`);
+    }
+  }
+  L.push(t['http-code']
+    ? `${pad}  Then $response.status should match "^${String(t['http-code']).replace(/x+$/i, '')}"`
+    : `${pad}  Then $response.status should be 200`);
+  const subject = words.get ? '$capabilities' : '$response';
+  // Upstream accepts more than one answer for some tests: the flat form of an
+  // expansion, tx.fhir.org's own, or a second error shape. One match is enough.
+  const alternatives = [t.response, t['response:flat'], t['response:tx.fhir.org'], t.response2].filter(Boolean);
+  if (alternatives.length === 1) {
+    L.push(`${pad}  And ${subject} should match the pattern in "${alternatives[0]}"`);
+  } else {
+    L.push(`${pad}  And ${subject} should match one of the patterns in:`);
+    const w = Math.max(...alternatives.map(a => a.length), 7);
+    L.push(`${pad}    | ${'pattern'.padEnd(w)} |`);
+    for (const a of alternatives) L.push(`${pad}    | ${a.padEnd(w)} |`);
+  }
+  return L;
+}
 
 // ---------------------------------------------------------------------------
 function feature(suite) {
@@ -161,61 +233,73 @@ function feature(suite) {
 
   const seen = new Map();
   for (const [op, list] of byOp) {
-    const words = OPS[op];
-    if (!words) throw new Error(`unknown operation ${op} in suite ${suite.name}`);
     L.push('');
-    L.push(`  Rule: ${words.rule}`);
+    L.push(`  Rule: ${OPS[op].rule}`);
     for (const t of list) {
       L.push('');
-      if (t.description && t.description !== 'to be provided') L.push(...comment(4, t.description));
-      if (t.explanation) L.push(...comment(4, t.explanation));
-      const stags = [`@operation:${op}`];
-      if (t.mode) stags.push(`@mode:${t.mode}`);
-      if (t.version) stags.push(`@fhir-version:${t.version}`);
-      if (t['full-set']) stags.push('@full-set');
-      if (t['http-code']) stags.push(`@http-code:${t['http-code']}`);
-      L.push(`    ${stags.join(' ')}`);
       let name = t.name; const n = (seen.get(name) ?? 0) + 1; seen.set(name, n); if (n > 1) name = `${name}-${n}`;
-      L.push(`    Scenario: ${name}`);
-      if (t['Accept-Language']) L.push(`      Given set header "Accept-Language" to "${t['Accept-Language']}"`);
-      if (t.header) L.push(`      Given set header "${t.header.name}" to "${t.header.value}"`);
-      if (words.get) {
-        L.push(`      When ${words.step}`);
-      } else {
-        const json = formatParameters(requestFor(t), 8);
-        if (inlinable(json)) {
-          L.push(`      When ${words.step}`);
-          L.push(`        """`);
-          L.push(json);
-          L.push(`        """`);
-        } else {
-          // Named, not written out. Say why, or the next reader will "fix" it.
-          L.push(`      # The request holds a character an ITB expression cannot carry, so it is`);
-          L.push(`      # fetched from the test material rather than written out here.`);
-          if (t['lenient-display'] !== undefined) {
-            throw new Error(`${t.name}: lenient-display is merged into the request, which this test cannot inline`);
-          }
-          L.push(`      When Client ${words.verb} TxServer with the request in "${t.request}" and the parameters in "${profileOf(t)}"`);
-        }
-      }
-      if (t['http-code']) {
-        L.push(`      Then $response.status should match "^${String(t['http-code']).replace(/x+$/i, '')}"`);
-      } else {
-        L.push(`      Then $response.status should be 200`);
-      }
-      const subject = words.get ? '$capabilities' : '$response';
-      // Upstream accepts more than one answer for some tests: the flat form of
-      // an expansion, tx.fhir.org's own, or a second error shape. List them all;
-      // one match is enough.
-      const alternatives = [t.response, t['response:flat'], t['response:tx.fhir.org'], t.response2].filter(Boolean);
-      if (alternatives.length === 1) {
-        L.push(`      And ${subject} should match the pattern in "${alternatives[0]}"`);
-      } else {
-        L.push(`      And ${subject} should match one of the patterns in:`);
-        const w = Math.max(...alternatives.map(a => a.length), 7);
-        L.push(`        | ${'pattern'.padEnd(w)} |`);
-        for (const a of alternatives) L.push(`        | ${a.padEnd(w)} |`);
-      }
+      L.push(...scenarioLines(t, name, 4, null));
+    }
+  }
+  L.push('');
+  return L.join('\n');
+}
+
+/**
+ * The whole set as one feature, which ITB stores as ONE test suite holding
+ * every test case. A `Rule:` per upstream suite keeps the grouping, and each
+ * scenario carries its suite's resources: a Background is per file, and the
+ * suites do not share one.
+ */
+function mergedFeature(suites) {
+  const total = suites.reduce((n, s) => n + s.tests.length, 0);
+  const L = [];
+  L.push(`# Generated by scripts/tx-tests.mjs from the HL7 FHIR terminology-ecosystem tests`);
+  L.push(`# (https://github.com/HL7/fhir-tx-ecosystem-ig, tests/test-cases.json at ${commit}).`);
+  L.push(`# The whole set in one file: ${total} test cases in ${suites.length} suites, for a FHIR`);
+  L.push(`# ${fhirVersion} server. Do not edit; re-run the generator.`);
+  L.push(`#`);
+  L.push(`# ITB stores one test suite per feature file, so this file is the whole test set`);
+  L.push(`# as a single suite. The per-suite files beside it hold the same tests split 38`);
+  L.push(`# ways; deploy either shape, not both.`);
+  L.push(`#`);
+  L.push(`# Each scenario names the resources its suite depends on, which travel with the`);
+  L.push(`# request as tx-resource parameters. That repeats per test case, which is what`);
+  L.push(`# already happens at run time: a Background runs once per test case too.`);
+  L.push(`@lang:itb-core-en@^2 @dialect:fhir-terminology@^1 @dialect:fhir-validator@^2 @suite:all`);
+  // The feature title becomes the ITB test suite's identifier and its name, so
+  // it is the name the suite is known by rather than a sentence.
+  L.push(`Feature: tx-tests-full`);
+  L.push(`  Every test case of the HL7 terminology-ecosystem test set, in the suites the set`);
+  L.push(`  defines: ${total} of them, for a FHIR ${fhirVersion} server. A suite whose upstream mode is`);
+  L.push(`  not "general" is expected only of a server that supports that mode.`);
+  L.push('');
+  L.push(`  Background:`);
+  L.push(`    Given TxServer is the system under test at "${server}"`);
+  L.push(`    And FHIRValidator is a fhir-validator at "${validator}"`);
+  L.push(`    And Client is infrastructure`);
+  L.push(`    And Client fetches the test material from "${material}"`);
+
+  const seen = new Map();
+  for (const suite of suites) {
+    if (!suite.tests.length) continue;
+    L.push('');
+    const notes = [
+      suite.description ? `${suite.description[0].toUpperCase()}${suite.description.slice(1)}.` : '',
+      suite.mode && suite.mode !== 'general' ? `Upstream mode "${suite.mode}".` : '',
+      suite['mode-note'] || '',
+    ].filter(Boolean).join(' ');
+    if (notes) L.push(...comment(2, notes));
+    L.push(`  Rule: ${suite.name}`);
+    for (const t of suite.tests) {
+      L.push('');
+      // A handful of test names repeat across suites; ITB needs one id per
+      // test case, so those carry their suite.
+      let name = t.name;
+      const n = (seen.get(name) ?? 0) + 1;
+      seen.set(name, n);
+      if (n > 1) name = `${suite.name}-${t.name}`;
+      L.push(...scenarioLines(t, name, 4, suite.setup));
     }
   }
   L.push('');
@@ -229,5 +313,14 @@ for (const suite of cases.suites) {
   const file = path.join(out, `tx-${slug(suite.name)}.feature`);
   fs.writeFileSync(file, feature(suite));
   files++; count += suite.tests.filter(appliesToVersion).length;
+}
+// The same tests as one file, for deploying a single ITB suite.
+const wanted = cases.suites.filter(s => (!suites.length || suites.includes(s.name)) && s.tests.some(appliesToVersion))
+  .map(s => ({ ...s, tests: s.tests.filter(appliesToVersion) }));
+if (!flag('--no-merged')) {
+  const mergedPath = path.join(out, 'tx-all.feature');
+  fs.writeFileSync(mergedPath, mergedFeature(wanted));
+  const kb = Math.round(fs.statSync(mergedPath).size / 1024);
+  console.log(`  + tx-all.feature: the same ${count} scenarios as one suite (${kb} KB)`);
 }
 console.log(`${files} features, ${count} scenarios → ${path.relative(process.cwd(), out)} (material ${material})`);
