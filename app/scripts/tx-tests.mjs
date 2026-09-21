@@ -70,8 +70,11 @@ const OPS = {
   'translate':        { rule: 'ConceptMap $translate',         verb: 'translates on' },
   'compare':          { rule: 'ValueSet $compare',             verb: 'compares value sets on' },
   'batch-validate':   { rule: 'ValueSet $batch-validate-code', verb: 'validates a batch on' },
-  'metadata':          { rule: 'Capability statement',     step: 'Client reads the capability statement of TxServer as $capabilities', get: true },
-  'term-caps':         { rule: 'Terminology capabilities', step: 'Client reads the terminology capabilities of TxServer as $capabilities', get: true },
+  // partial: the expected files for these two state the minimum a server must
+  // declare, not its whole capability statement, which is how the runner
+  // compares them.
+  'metadata':          { rule: 'Capability statement',     step: 'Client reads the capability statement of TxServer as $capabilities', get: true, partial: true },
+  'term-caps':         { rule: 'Terminology capabilities', step: 'Client reads the terminology capabilities of TxServer as $capabilities', get: true, partial: true },
 };
 for (const o of Object.values(OPS)) if (o.verb) o.step = `Client ${o.verb} TxServer with:`;
 
@@ -184,8 +187,9 @@ function scenarioLines(t, name, indent, resources) {
   // Upstream accepts more than one answer for some tests: the flat form of an
   // expansion, tx.fhir.org's own, or a second error shape. One match is enough.
   const alternatives = [t.response, t['response:flat'], t['response:tx.fhir.org'], t.response2].filter(Boolean);
+  const verb = words.partial ? 'should contain the pattern in' : 'should match the pattern in';
   if (alternatives.length === 1) {
-    L.push(`${pad}  And ${subject} should match the pattern in "${alternatives[0]}"`);
+    L.push(`${pad}  And ${subject} ${verb} "${alternatives[0]}"`);
   } else {
     L.push(`${pad}  And ${subject} should match one of the patterns in:`);
     const w = Math.max(...alternatives.map(a => a.length), 7);

@@ -37,7 +37,7 @@ Feature: Terminology server — icd-11
     Scenario: term-caps
       When Client reads the terminology capabilities of TxServer as $capabilities
       Then $response.status should be 200
-      And $capabilities should match the pattern in "icd-11/capterms.json"
+      And $capabilities should contain the pattern in "icd-11/capterms.json"
 
   Rule: CodeSystem $lookup
 

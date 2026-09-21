@@ -30,14 +30,14 @@ Feature: tx-tests-full
     Scenario: metadata
       When Client reads the capability statement of TxServer as $capabilities
       Then $response.status should be 200
-      And $capabilities should match the pattern in "capstmt.json"
+      And $capabilities should contain the pattern in "capstmt.json"
 
     # Check that the minimum expected things are found in the server TerminologyCapabilities
     @operation:term-caps
     Scenario: term-caps
       When Client reads the terminology capabilities of TxServer as $capabilities
       Then $response.status should be 200
-      And $capabilities should match the pattern in "capterms.json"
+      And $capabilities should contain the pattern in "capterms.json"
 
   # Testing the ValueSet.compose.property element.
   Rule: properties
@@ -39829,7 +39829,7 @@ Feature: tx-tests-full
         | icd-11/valueset-bad-code.json       |
       When Client reads the terminology capabilities of TxServer as $capabilities
       Then $response.status should be 200
-      And $capabilities should match the pattern in "icd-11/capterms.json"
+      And $capabilities should contain the pattern in "icd-11/capterms.json"
 
     # Look up an MMS stem code by its short code, restricting the returned properties with the
     # property parameter

@@ -96,27 +96,29 @@ Endpoints, taken from the HL7 runner and its terminology client: `ValueSet/$expa
   is absent fails) and `$optional$` on an array item is ignored (a missing
   optional item fails the item count)**.
 
-## Why most comparisons fail today, and where to fix it
+## How a response is judged
 
-The HL7 runner (`TxTester`) compares with `org.hl7.fhir.r5.test.utils.CompareUtilities`
-in pattern mode, after `TxTesterSorters` sorts the actual response
-(Parameters.parameter by name, expansion.contains by code, issues by
-severity/code/…) and `TxTesterScrubbers` strips `issue.diagnostics`, `id`, and
-extensions it does not care about. The validator's GITB endpoint
-(`GitbMatchetypeHandler`) instead uses `org.hl7.fhir.validation.instance.MatchetypeValidator`,
-the element-model comparer, which knows `$optional$`/`$choice$`/`$external$`/`$fragments$`
-but not `$optional-properties$`, does not sort, and does not scrub. The upstream
-expected files are written for the first comparer. Observed against FHIRsmith:
-"unexpected element extension", "missing element id/offset" (both optional
-upstream), "parameter count 3 vs 2" (the `$optional$` displayLanguage
-parameter), "parameter[0].name expected abstract found name" (unsorted lookup
-output).
+The comparison goes through the validator's matchetype service with `normalize=tx`, which
+applies the same normalisation the terminology test runner does: server detail removed,
+and parameters, parts, expansion contents, designations and issues sorted. Without it the
+comparison fails on array order alone, because the expectation files are stored in the
+order those sorters produce.
 
-The fix belongs in the validator's matchetype endpoint, not in these features:
-either route the tx comparisons through `CompareUtilities` with the TxTester
-sorters and scrubbers applied to the actual, or teach `MatchetypeValidator`
-`$optional-properties$`, order-insensitive arrays and the scrubbing. Until
-then, a test here fails where the HL7 runner would pass.
+The capability-statement tests ask for `mode=partial` instead, through the step
+`should contain the pattern in`, because their expected files state a minimum rather than
+a whole document. That is how the runner compares them too.
+
+Two gaps remain in the service, measured on the 2026-09-21 build:
+
+- `ValueSet.expansion.parameter` is sorted by the normalisation although the stored files
+  are not in that order, so expansion tests still fail. An expectation file compared with
+  itself passes without `normalize=tx` and fails with it.
+- What a file marks optional must still be present, both an `$optional$` array item and a
+  property listed in `$optional-properties$`.
+
+Measured on the `simple-cases` suite against a conformant server: the validator's own runner
+passes every test in it; the same comparisons through the service pass 16 of 37. The 21
+failures are all expansions and both lookups, and none of them is the server.
 
 ## Running in ITB
 
