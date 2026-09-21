@@ -123,6 +123,10 @@
         "things to reach each other: the terminology server under test, a FHIR validator that serves the",
         "matchetype comparison, and the upstream test material over HTTP.",
         "",
+        "**Run the validator on the R5 model** (`-version 5.0`). The expected files are R5-shaped; under",
+        "an R4 model an R5-only element such as `expansion.contains.property` is dropped from the pattern,",
+        "and a response missing it passes when it should not.",
+        "",
         "The same test cases run without a test bed, straight from the FHIR validator, which carries its own",
         "runner:",
         "",
@@ -130,11 +134,11 @@
         "java -jar validator_cli.jar txTests -tx {server url} -input {tests folder} -output {folder}",
         "```",
         "",
-        "The two runners should now agree, because both compare through the same normalisation. Two",
-        "differences remain in the service as of 2026-09-21: `ValueSet.expansion.parameter` is sorted",
-        "although the stored files are not in that order, and an array item marked `$optional$` must still",
-        "be present. Expansion tests and a few others therefore still fail here while passing under the",
-        "runner. Both are in the validator, not in these test cases."
+        "The two runners do not yet agree, and where they differ the runner is right. Measured on",
+        "2026-09-21 against a server the runner passes completely: 16 of the 37 `simple-cases` tests pass",
+        "through the service as released, 26 with a fix to the optional markers that is written but not",
+        "released, and the remaining 11 need the service to reconcile R5 expectations with an R4 server the",
+        "way the runner does. All three differences are in the validator, not in these test cases."
       ]
     }
   ],

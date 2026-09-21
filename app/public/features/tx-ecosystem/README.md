@@ -108,17 +108,18 @@ The capability-statement tests ask for `mode=partial` instead, through the step
 `should contain the pattern in`, because their expected files state a minimum rather than
 a whole document. That is how the runner compares them too.
 
-Two gaps remain in the service, measured on the 2026-09-21 build:
+**What to expect today.** Three things decide whether a comparison is trustworthy, and two
+of them are outside these tests (all measured 2026-09-21 against a conformant server, where the
+validator's own `txTests` runner passes every test of the `simple-cases` suite):
 
-- `ValueSet.expansion.parameter` is sorted by the normalisation although the stored files
-  are not in that order, so expansion tests still fail. An expectation file compared with
-  itself passes without `normalize=tx` and fails with it.
-- What a file marks optional must still be present, both an `$optional$` array item and a
-  property listed in `$optional-properties$`.
+| | |
+|---|---|
+| Optional markers | An expectation file's `$optional$` and `$optional-properties$` were ignored: the comparer reads extensions and nothing converted the markers. Fixed in the fork, not yet released. With a released validator, expect "array item count differs" and "missing element" where the file says the element is optional. |
+| Model version | The service must run on the **R5** model (`-version 5.0`). The expectation files are R5-shaped, and under `-version 4.0` an R5-only element such as `contains.property` is silently dropped from the pattern, so a response missing it **passes**. A false pass is worse than a false failure. |
+| Version reconciliation | The files are R5 and a server may be R4. The runner knows the server's version and reconciles; the matchetype service has no notion of modes or versions, so an R5-only element is demanded of an R4 server. 11 of the 37 `simple-cases` tests still fail this way after the fix above, all on `expansion.contains.property`. |
 
-Measured on the `simple-cases` suite against a conformant server: the validator's own runner
-passes every test in it; the same comparisons through the service pass 16 of 37. The 21
-failures are all expansions and both lookups, and none of them is the server.
+Pass rates on `simple-cases` against the same server: 16 of 37 with the released validator on
+`-version 4.0`, 26 of 37 with the fix on `-version 5.0`, all of them with the runner itself.
 
 ## Running in ITB
 
