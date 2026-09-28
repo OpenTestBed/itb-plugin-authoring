@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "gen:features-index": "node scripts/gen-features-index.mjs",
+    "gen:language-docs": "node scripts/gen-language-docs.mjs",
     "prebuild": "npm run gen:features-index",
     "prebuild-only": "npm run gen:features-index",
     "build": "tsc --noEmit && vite build",
@@ -18,7 +19,7 @@
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "@monaco-editor/react": "^4.6.0",
-    "@opentestbed/otb-gherkin": "file:../../itb-cli/packages/gherkin",
+    "@opentestbed/otb-gherkin": "^0.3.5",
     "fast-xml-parser": "^5.2.5",
     "js-yaml": "^4.1.0",
     "jszip": "^3.10.1",

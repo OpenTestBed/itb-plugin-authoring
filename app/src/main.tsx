@@ -9,6 +9,12 @@ import { setAssetBase, setCatalogSource, createBrowserSource } from '@opentestbe
 import enYml from '@opentestbed/otb-gherkin/lang/en.yml?raw'
 // The previous generation, for feature files tagged `@lang:itb-core-en@^1`.
 import en1Yml from '@opentestbed/otb-gherkin/lang/en-1.yml?raw'
+// The scriptlets the core language itself calls, bundled the same way. They
+// used to come from a dialect (serializeJsonObject) or from nowhere at all
+// (instructUser), which made `is informed` and `paced manually` depend on a
+// copy happening to sit beside the feature files.
+import instructUserXml from '@opentestbed/otb-gherkin/lang/scriptlets/instructUser.xml?raw'
+import serializeJsonObjectXml from '@opentestbed/otb-gherkin/lang/scriptlets/serializeJsonObject.xml?raw'
 import App from './App.tsx'
 import './index.css'
 
@@ -24,7 +30,14 @@ setAssetBase(import.meta.env.BASE_URL || '/')
 // Serve lang/en.yml from the bundle; everything else (component dialects, which
 // are genuinely external and synced from their plugin repos) still goes over
 // fetch, and enablement still comes from localStorage.
-setCatalogSource(createBrowserSource({ assets: { 'lang/en.yml': enYml, 'lang/en-1.yml': en1Yml } }))
+setCatalogSource(createBrowserSource({
+  assets: {
+    'lang/en.yml': enYml,
+    'lang/en-1.yml': en1Yml,
+    'lang/scriptlets/instructUser.xml': instructUserXml,
+    'lang/scriptlets/serializeJsonObject.xml': serializeJsonObjectXml,
+  },
+}))
 // Plugin-dialect step colours for the Monaco decorations set in Editor.tsx.
 import './App.css'
 

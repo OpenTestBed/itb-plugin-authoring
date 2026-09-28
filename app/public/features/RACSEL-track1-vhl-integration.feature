@@ -8,7 +8,6 @@ Feature: Track 1: HCERT VHL — QR to Verified LAC IPS Bundle
     Given User is the system under test
     And HCertDecoder is a hcert-decoder at "http://hcert-validator:8080"
     And VHLResponder is a hcert-decoder at "http://hcert-validator:8080"
-    And SmartHelper is a smart-helper at "http://smart-helper:8000"
     And FHIRValidator is a fhir-validator at "http://fhir-validator:8080"
 
   @continue-on-error

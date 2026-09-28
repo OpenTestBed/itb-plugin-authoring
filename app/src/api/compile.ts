@@ -5,7 +5,7 @@
  * The language comes from @opentestbed/otb-gherkin (both generations);
  * components/ is read from public/ on disk, exactly as the CLI does it.
  */
-import { readFileSync } from 'fs';
+import { readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 import { GherkinParser, XMLGenerator, setCatalogSource } from '@opentestbed/otb-gherkin';
@@ -21,9 +21,21 @@ function lang(file: string): string {
 let sourceReady = false;
 function ensureSource() {
   if (sourceReady) return;
-  setCatalogSource(createNodeSource(publicDir, {
-    assets: { 'lang/en.yml': lang('en.yml'), 'lang/en-1.yml': lang('en-1.yml') },
-  }));
+  // The language, and the scriptlets the language itself calls. The second
+  // used to come from a dialect or from nowhere, so `is informed` and
+  // `paced manually` only compiled where a copy happened to sit beside the
+  // feature files.
+  const assets: Record<string, string> = {
+    'lang/en.yml': lang('en.yml'),
+    'lang/en-1.yml': lang('en-1.yml'),
+  };
+  try {
+    const dir = fileURLToPath(new URL('../lang/scriptlets/', import.meta.resolve('@opentestbed/otb-gherkin')));
+    for (const f of readdirSync(dir)) {
+      if (f.endsWith('.xml')) assets[`lang/scriptlets/${f}`] = readFileSync(join(dir, f), 'utf8');
+    }
+  } catch { /* an older package ships none */ }
+  setCatalogSource(createNodeSource(publicDir, { assets }));
   sourceReady = true;
 }
 
