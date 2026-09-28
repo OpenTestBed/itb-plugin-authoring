@@ -19,7 +19,7 @@
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "@monaco-editor/react": "^4.6.0",
-    "@opentestbed/otb-gherkin": "^0.3.5",
+    "@opentestbed/otb-gherkin": "^0.4.0",
     "fast-xml-parser": "^5.2.5",
     "js-yaml": "^4.1.0",
     "jszip": "^3.10.1",
