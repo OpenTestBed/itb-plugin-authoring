@@ -10,6 +10,11 @@ ITB installation, not the test language):
   Run / Status. Every button shells out to the mounted `itb-cli` 1:1, so CLI
   and UI can never disagree.
 
+It also carries the **skills**: the written procedures for deriving tests from a
+specification, authoring features, diagnosing failures and extending the
+language. If you came here to write tests rather than to run the app, start at
+[Skills](#skills).
+
 ## Run (docker compose, next to the ITB core)
 
 ```powershell
@@ -31,7 +36,8 @@ The image build compiles the SPA (npm inside docker build — no local npm neede
 | `compose.plugin.yml` | the service fragment; mounts `../itb-cli` at `/cli` |
 | `Dockerfile` | stage 1 vite-builds `app/`, stage 2 runs `server.mjs` (no npm deps) |
 | `server.mjs` | static SPA + `/manager` + `/api/cli` (allowlisted itb-suite commands) + `/itb-proxy` (same contract as the Vite dev proxy) |
-| `app/` | the workbench sources (former test-workbench) — canonical parser home; `itb-cli` transpiles its parser from here (`build-compiler.mjs`) and syncs plugin dialects into `app/public/components/` (`sync-dialects.mjs`) |
+| `app/` | the workbench sources; `itb-cli` syncs plugin dialects into `app/public/components/` (`sync-dialects.mjs`) |
+| `.claude/skills/` | the procedures — see below |
 
 ## Dev mode (hot reload)
 
@@ -43,10 +49,38 @@ npm run dev        # Vite dev server with the same /itb-proxy middleware
 
 ## Skills
 
-`.claude/skills/` holds the procedures for the recurring jobs in this project.
-Each is written to be followed literally, and each was checked against the code
-rather than the prose docs. Invoke one by name in an agent session, or read the
-`SKILL.md` yourself.
+`.claude/skills/` holds the procedures for the recurring jobs here. Each was
+written against the code rather than the prose docs, and each is meant to be
+followed literally, by a person or by an agent.
+
+### Getting them
+
+Clone this repository and the skills are on the path for any agent session
+started in it. To use them elsewhere, copy the directory:
+
+```bash
+cp -r itb-plugin-authoring/.claude/skills/spec-to-tests  my-project/.claude/skills/
+```
+
+`spec-to-tests` is the one to hand to someone else. It is self-contained: it
+carries its own scripts, depends only on the published `@opentestbed/otb-gherkin`
+package and on the Test Bed's documented REST API, and needs neither this
+repository nor the OpenTestBed CLI.
+
+### What you need
+
+Node 18 or newer, and the language:
+
+```bash
+npm install @opentestbed/otb-gherkin
+npm install @opentestbed/dialect-fhir-validator @opentestbed/dialect-hcert-decoder
+```
+
+A Test Bed is **optional**. Authoring, compiling and packaging a deployable
+suite need nothing else. Connect one only to execute the tests; the five keys it
+wants are listed in `.claude/skills/spec-to-tests/references/setup.md`.
+
+### The skills
 
 | Skill | Use it when |
 |---|---|
@@ -57,33 +91,119 @@ rather than the prose docs. Invoke one by name in an agent session, or read the
 | `change-core-language` | A new comparator, sentence shape or placeholder. Rare |
 | `spec-to-test-ig` | Publishing a finished suite as a FHIR TestPlan and implementation guide |
 
-`spec-to-tests` is the one to hand to someone else. It is self-contained: it
-carries its own compile and run scripts, which depend only on the published
-`@opentestbed/otb-gherkin` package and on ITB's documented REST API, so it
-works without this repository or the OpenTestBed CLI. Its `references/setup.md`
-lists what a newcomer has to install. Copy the whole
-`.claude/skills/spec-to-tests/` directory into any project to use it there.
+Two notes on choosing. **Adding verbs is not a core change** — new verbs, actor
+kinds and value types belong in a dialect, while `change-core-language` touches
+the grammar and makes every project recompile. And **`diagnose-test-failure` is
+the one that pays for itself**: its single rule is that you may not call
+something a defect in software you do not own until you have reproduced it
+outside the test bed.
 
-The rest are ordered by how often you will want them, not by size. Two notes on
-picking between them:
+## A full example: from a specification to a test IG
 
-- **Adding verbs is not a core change.** New verbs, actor kinds and value types
-  belong in a dialect. `change-core-language` is only for the grammar itself,
-  and it makes every project recompile.
-- **`diagnose-test-failure` is the one that pays for itself.** Its single rule
-  is that you may not call something a defect in software you do not own until
-  you have reproduced it outside the test bed. Most of the wasted effort in this
-  project has been confident wrong readings of a red result.
+The whole path, using the WHO ICVP guide. Numbered steps are prompts to an agent
+in a session started in this repository. Code blocks are what gets run.
 
-`add-language-dialect` ships a `reference.md` beside it with the action
-vocabulary, the `$N` substitution rules and the full list of traps. Read that
-before writing actions; the `CatalogAction` type in the compiler source is stale
-and omits fields the compiler does read.
+**1. Check the ground.**
+
+> Confirm I can author tests here: which dialects are available, what version of
+> the language, and is a test bed reachable?
+
+```bash
+npx otb-gherkin dialects --installed --out assets
+```
+
+Setup gaps surface here rather than at the run gate, which is where they
+otherwise bite.
+
+**2. Read the specification.**
+
+> Read the WHO ICVP build at `<path>/smart-icvp` and tell me what is testable.
+> Is it actor-scoped or profile-scoped? Propose a scope and say what the
+> alternative would cover.
+
+Expect: ICVP declares no actors and no capability statements, so it is
+profile-scoped. Its substance is four IPS resource profiles, nine logical models
+describing the QR payload, and seven StructureMaps forming a QR to claim to
+logical model to IPS chain. It ships no example instances of the resource
+profiles, so test data has to be generated rather than borrowed.
+
+**3. Fix the scope.** The agent stops here and makes you choose, because the
+options lead to genuinely different suites.
+
+> Scope it to the conversion pipeline: the StructureMaps from QR through claim
+> to IPS, ending in conformance against `Bundle-uv-ips-ICVP`. Write the scope
+> sentence down.
+
+**4. Choose the kinds of test.**
+
+> Which kinds of test should this round include? Show me the catalogue and your
+> recommendation, then give me a case list with the requirement each one covers.
+
+Positive paths are assumed. The question is whether negative, boundary,
+value-set binding and operator-attested cases are in. Insist on the case list
+before any Gherkin exists: a list is cheap to change and a suite is not.
+
+**5. Author.**
+
+> Approved, with the negative cases for a vaccine product id outside
+> `ICVPProductIds`. Write the features.
+
+`ICVPProductIds` is the only required binding in the ICVP build, on
+`ICVPMinVaccineDetails.vp`, and it is the same field `ICVPProductIdToVaccineType`
+translates — so it is the natural place for a must-reject case.
+
+**6. Compile.** The gate: non-zero on any error, every diagnostic printed.
+
+> Compile them and fix everything, including the warnings.
+
+```bash
+ITB_ASSET_ROOT=./assets npx otb-gherkin compile features/ --out build --zip suite.zip
+```
+
+**7. Run.** Compiling proves the suite is well formed and nothing whatever about
+the system under test.
+
+> Deploy to the test bed and run every case. If anything fails, localise it
+> before telling me it is a defect.
+
+```bash
+node .claude/skills/spec-to-tests/scripts/run-on-itb.mjs deploy build/suite.zip
+node .claude/skills/spec-to-tests/scripts/run-on-itb.mjs run <testCaseId>
+```
+
+A session ending `UNDEFINED` is not a pass — it means nobody answered the
+dialog. A failure hands over to `diagnose-test-failure` rather than to a
+conclusion.
+
+**8. Package as a FHIR IG.**
+
+> Package these as a FHIR IG with the features as TestPlans, output to
+> `<path>/smart-icvp-test`.
+
+```bash
+node app/scripts/build-test-ig.mjs app/public/data/icvp-test-ig.json --package
+```
+
+The config names the IG, the specification under test, and the plans; one plan
+is one TestPlan, meaning a scope and its test cases. Take
+`app/public/data/ips-test-ig.json` as the model. The builder writes
+`sushi-config.yaml`, one TestPlan FSH per plan, the Binaries that render the
+Gherkin, the pages and the scaffold. `--package` runs SUSHI and produces
+`dist/package.tgz`.
+
+**9. Hand it over.**
+
+> Write the README: the scope sentence, the confirmed case list with requirement
+> references, the compile and run output with dates and builds, and what is not
+> covered and why.
+
+That last item is the one people skip and reviewers need. A suite that does not
+say what it leaves out reads as a claim of completeness it cannot support.
 
 ### The vocabulary
 
-`app/public/lang/` documents the language itself, and two of those files are
-generated — regenerate rather than editing them.
+`app/public/lang/` documents the language. Two files are generated — regenerate
+rather than editing them.
 
 | File | What |
 |---|---|
@@ -91,31 +211,34 @@ generated — regenerate rather than editing them.
 | `GENERATIONS.md` | Generation 1 against generation 2: what changed, why, how to migrate |
 | `TUTORIAL.md`, `GRAMMAR.md`, `REFERENCE.md` | The long-form introduction, the formal grammar, the step reference |
 
+`add-language-dialect` ships a `reference.md` with the action vocabulary, the
+`$N` substitution rules and the full list of traps. Read it before writing
+actions: the `CatalogAction` type in the compiler source is stale and omits
+fields the compiler does read.
+
 ### Checking your work
 
-```powershell
-# the feature you changed compiles (exits non-zero on any error; --verbose adds warnings)
-node ..\itb-cli\packages\gherkin\scripts\check-features.mjs app\public app\public\features\<file>.feature
+```bash
+# one feature, or a folder; exits non-zero on any error
+ITB_ASSET_ROOT=./assets npx otb-gherkin compile app/public/features/<file>.feature
 
-# the language itself still emits identical TDL
-npm test --workspace packages/gherkin        # in ..\itb-cli
+# the language itself still emits identical TDL (run in ../itb-cli)
+npm test --workspace packages/gherkin
 
 # a plugin or the registry is well formed
-node ..\itb-plugins\scripts\registry-validate.mjs ..\itb-plugin-<name>
-node ..\itb-plugins\scripts\registry-validate.mjs ..\itb-plugins
+node ../itb-plugins/scripts/registry-validate.mjs ../itb-plugin-<name>
+node ../itb-plugins/scripts/registry-validate.mjs ../itb-plugins
 ```
 
-The last one cross-checks the registry against what is on disk when the plugin
-repos sit beside it: a plugin that is not listed, a required capability with no
-spec, an orphan capability. Those checks are skipped, never failed, when the
-siblings are absent, so the same command works in CI.
+The registry check also cross-checks against what is on disk when the plugin
+repos sit beside it: a plugin missing from the index, a required capability with
+no spec, an orphan capability. Those checks are skipped rather than failed when
+the siblings are absent, so the same command works in CI.
 
-`check-features.mjs` also takes a whole directory, but `app/public/features/`
-is not green today and is not meant to be read as a gate. Every maintained
-suite in it compiles — the IPS, MHD, RACSEL, MEOW, SPENSER, terminology and
-certificate-governance files. Alongside them sit about twenty older sample
-files with no `@lang:` tag whose steps belong to no released generation of the
-language; `tutorial.feature` and `language-showcase.feature` are among them.
-They compile under neither generation and adding a tag does not rescue them.
-Until they are rewritten or removed, check the file you are working on rather
-than the folder.
+One caveat on `app/public/features/`: it is not green as a whole and is not a
+gate. Every maintained suite in it compiles — IPS, MHD, RACSEL, MEOW, SPENSER,
+terminology, certificate governance. Alongside them sit about twenty older
+sample files with no `@lang:` tag whose steps belong to no released generation
+of the language, `tutorial.feature` and `language-showcase.feature` among them.
+They compile under neither generation, and adding a tag does not rescue them.
+Check the file you are working on rather than the folder.
