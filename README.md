@@ -92,16 +92,15 @@ rather than copying.
 | `spec-to-tests` | Someone brings a specification and wants tests for it. Scope, agree the test kinds, author, compile, run |
 | `write-test-feature` | Adding or changing a test case. The day-to-day job |
 | `diagnose-test-failure` | A suite went red and you need to know whose fault it is |
-| `add-language-dialect` | Teaching the language a new service or domain |
-| `change-core-language` | A new comparator, sentence shape or placeholder. Rare |
 | `spec-to-test-ig` | Publishing a finished suite as a FHIR TestPlan and implementation guide |
 
-Two notes on choosing. **Adding verbs is not a core change** — new verbs, actor
-kinds and value types belong in a dialect, while `change-core-language` touches
-the grammar and makes every project recompile. And **`diagnose-test-failure` is
-the one that pays for itself**: its single rule is that you may not call
-something a defect in software you do not own until you have reproduced it
-outside the test bed.
+**`diagnose-test-failure` is the one that pays for itself.** Its single rule is
+that you may not call something a defect in software you do not own until you
+have reproduced it outside the test bed.
+
+Two more skills exist for extending the language itself — adding a dialect for a
+new service or domain, or changing the core grammar. You do not need them to
+write tests. See [EXTENDING.md](EXTENDING.md).
 
 ## A full example: from a specification to a test IG
 
@@ -219,29 +218,16 @@ rather than editing them.
 | `GENERATIONS.md` | Generation 1 against generation 2: what changed, why, how to migrate |
 | `TUTORIAL.md`, `GRAMMAR.md`, `REFERENCE.md` | The long-form introduction, the formal grammar, the step reference |
 
-`add-language-dialect` ships a `reference.md` with the action vocabulary, the
-`$N` substitution rules and the full list of traps. Read it before writing
-actions: the `CatalogAction` type in the compiler source is stale and omits
-fields the compiler does read.
 
 ### Checking your work
 
 ```bash
-# one feature, or a folder; exits non-zero on any error
+# the feature you changed, or a folder; exits non-zero on any error
 ITB_ASSET_ROOT=./assets npx otb-gherkin compile app/public/features/<file>.feature
-
-# the language itself still emits identical TDL (run in ../itb-cli)
-npm test --workspace packages/gherkin
-
-# a plugin or the registry is well formed
-node ../itb-plugins/scripts/registry-validate.mjs ../itb-plugin-<name>
-node ../itb-plugins/scripts/registry-validate.mjs ../itb-plugins
 ```
 
-The registry check also cross-checks against what is on disk when the plugin
-repos sit beside it: a plugin missing from the index, a required capability with
-no spec, an orphan capability. Those checks are skipped rather than failed when
-the siblings are absent, so the same command works in CI.
+Add `--verbose` for warnings. Read those too: an undeclared actor or a dialect
+that is not enabled shows up there and is usually the real problem.
 
 One caveat on `app/public/features/`: it is not green as a whole and is not a
 gate. Every maintained suite in it compiles — IPS, MHD, RACSEL, MEOW, SPENSER,
