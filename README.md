@@ -1,108 +1,81 @@
 # itb-plugin-authoring
 
-Two things live here, and they have different prerequisites.
+Write conformance tests in Gherkin, compile them to a GITB TDL test suite, and
+package them as a FHIR implementation guide with the features as TestPlans.
 
-**The skills** — written procedures for deriving tests from a specification,
-authoring features, diagnosing failures and extending the language. These need
-Node and nothing else. **No Interoperability Test Bed, no Docker.** Start at
-[Skills](#skills).
+You need Node 18 or newer. You do **not** need an Interoperability Test Bed or
+Docker to write, compile or package tests — only to execute them.
 
-**The app** — a workbench and a test manager that run *inside* an ITB
-installation as a functionality plugin. These need a Test Bed. See
-[Running the app](#running-the-app-optional), which is optional and not the
-first step.
+## 1. Set up
 
-A Test Bed is only required to **execute** tests. Writing them, compiling them
-and packaging a deployable suite need none of it.
-
-## Skills
-
-`.claude/skills/` holds the procedures for the recurring jobs here. Each was
-written against the code rather than the prose docs, and each is meant to be
-followed literally, by a person or by an agent.
-
-### Getting set up
-
-Two commands. The clone brings all six skills; the install brings the language
-and the dialects.
+Clone this repository. That gives you the skills, the written procedures an agent
+follows.
 
 ```bash
 git clone https://github.com/OpenTestBed/itb-plugin-authoring
 cd itb-plugin-authoring
-
-npm install @opentestbed/otb-gherkin             @opentestbed/dialect-fhir-validator             @opentestbed/dialect-hcert-decoder
 ```
 
-Node 18 or newer. There is no `package.json` at the repo root and you do not
-need one — npm creates a throwaway one, and everything it writes here is
-ignored, so the checkout stays clean.
+Install the language and the dialects you need:
 
-Then assemble the dialects into the directory the compiler reads, and check it
-works:
+```bash
+npm install @opentestbed/otb-gherkin @opentestbed/dialect-fhir-validator @opentestbed/dialect-hcert-decoder
+```
+
+There is no `package.json` at the repo root and you do not need to make one. npm
+creates a throwaway, and everything it writes here is ignored, so the checkout
+stays clean.
+
+Assemble the dialects into the directory the compiler reads, then check it works:
 
 ```bash
 npx otb-gherkin dialects --installed --out assets
 npx otb-gherkin --version
 ```
 
-`dialects --installed` finds packages carrying an `otbDialect` field in
-`node_modules`, so the set is pinned by your lockfile and needs no network
-afterwards. That is the whole setup.
+That is the whole setup.
 
-**No Test Bed is involved.** Authoring, compiling and packaging a deployable
-suite need nothing above. A Test Bed is only for executing tests, and the five
-keys it wants are listed in
-`.claude/skills/spec-to-tests/references/setup.md`.
+## 2. Write tests
 
-### Starting work
-
-Start an agent session in the clone and the skills are on its path. Ask for what
+Start an agent session in the clone. The skills are on its path, so ask for what
 you want and the right one loads:
 
 ```
 Read the specification at <path> and propose test cases for it
 ```
 
-You can also read any `SKILL.md` and follow it by hand — they are written as
-procedures, not as prompts.
-[The worked example](#a-full-example-from-a-specification-to-a-test-ig) below
-runs the whole path, from a specification to a packaged test IG.
+Follow [the full path](#3-the-full-path-specification-to-test-ig) below for the
+whole sequence, or read any `SKILL.md` and work through it by hand — they are
+written as procedures, not as prompts.
 
-<details>
-<summary>Using a skill in another project</summary>
+Use these four:
 
-Copy the directory. `spec-to-tests` is self-contained: it carries its own
-scripts, depends only on the published `@opentestbed/otb-gherkin` package and on
-the Test Bed's documented REST API, and needs neither this repository nor the
-OpenTestBed CLI.
+| Skill | Use it when |
+|---|---|
+| `spec-to-tests` | Someone brings a specification and wants tests for it. Scope it, agree the test kinds, author, compile, run |
+| `write-test-feature` | Adding or changing a test case. The day-to-day job |
+| `diagnose-test-failure` | A suite went red and you need to know whose fault it is |
+| `spec-to-test-ig` | Publishing a finished suite as a FHIR TestPlan and implementation guide |
+
+Reach for `diagnose-test-failure` whenever something goes red. Its rule: do not
+call anything a defect in software you do not own until you have reproduced it
+outside the test bed.
+
+Two further skills extend the language itself — adding a dialect for a new
+service, or changing the core grammar. You do not need them to write tests; see
+[EXTENDING.md](EXTENDING.md).
+
+To use a skill in a project that is not this one, copy its directory:
 
 ```bash
 cp -r itb-plugin-authoring/.claude/skills/spec-to-tests  my-project/.claude/skills/
 ```
 
-The other five reference paths inside this repository, so they are worth reading
-rather than copying.
+Copy `spec-to-tests` and it will work anywhere: it carries its own scripts and
+needs only the published `@opentestbed/otb-gherkin` package. Read the other five
+where they are, since they reference paths inside this repository.
 
-</details>
-
-### The skills
-
-| Skill | Use it when |
-|---|---|
-| `spec-to-tests` | Someone brings a specification and wants tests for it. Scope, agree the test kinds, author, compile, run |
-| `write-test-feature` | Adding or changing a test case. The day-to-day job |
-| `diagnose-test-failure` | A suite went red and you need to know whose fault it is |
-| `spec-to-test-ig` | Publishing a finished suite as a FHIR TestPlan and implementation guide |
-
-**`diagnose-test-failure` is the one that pays for itself.** Its single rule is
-that you may not call something a defect in software you do not own until you
-have reproduced it outside the test bed.
-
-Two more skills exist for extending the language itself — adding a dialect for a
-new service or domain, or changing the core grammar. You do not need them to
-write tests. See [EXTENDING.md](EXTENDING.md).
-
-## A full example: from a specification to a test IG
+## 3. The full path: specification to test IG
 
 The whole path. Numbered steps are prompts to an agent in a session started in
 the clone; code blocks are what gets run. Substitute your own specification
@@ -220,7 +193,7 @@ That last item is the one people skip and reviewers need. A suite that does not
 say what it leaves out reads as a claim of completeness it cannot support.
 `app/public/features/IPS-TESTS.md` is what one looks like.
 
-### The vocabulary
+## Reference: the language
 
 `app/public/lang/` documents the language. Two files are generated — regenerate
 rather than editing them.
@@ -232,7 +205,7 @@ rather than editing them.
 | `TUTORIAL.md`, `GRAMMAR.md`, `REFERENCE.md` | The long-form introduction, the formal grammar, the step reference |
 
 
-### Checking your work
+## Reference: checking your work
 
 ```bash
 # the feature you changed, or a folder; exits non-zero on any error
@@ -287,7 +260,7 @@ The image build compiles the SPA (npm inside docker build — no local npm neede
 | `Dockerfile` | stage 1 vite-builds `app/`, stage 2 runs `server.mjs` (no npm deps) |
 | `server.mjs` | static SPA + `/manager` + `/api/cli` (allowlisted itb-suite commands) + `/itb-proxy` (same contract as the Vite dev proxy) |
 | `app/` | the workbench sources; `itb-cli` syncs plugin dialects into `app/public/components/` (`sync-dialects.mjs`) |
-| `.claude/skills/` | the procedures — see [Skills](#skills) |
+| `.claude/skills/` | the procedures — see [Write tests](#2-write-tests) |
 
 ### Dev mode (hot reload)
 
