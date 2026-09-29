@@ -1,51 +1,19 @@
 # itb-plugin-authoring
 
-ONE app for test authoring on ITB — a **functionality plugin** (it extends the
-ITB installation, not the test language):
+Two things live here, and they have different prerequisites.
 
-- **/** — the Gherkin workbench: Monaco editor, dialect-aware step catalog
-  (`fhir:`, `hcert:`, ... synced from the language plugins), live suite-XML
-  preview, direct deploy (via the built-in ITB proxy).
-- **/manager** — the test manager: pick a feature, Compile / Init / Deploy /
-  Run / Status. Every button shells out to the mounted `itb-cli` 1:1, so CLI
-  and UI can never disagree.
-
-It also carries the **skills**: the written procedures for deriving tests from a
-specification, authoring features, diagnosing failures and extending the
-language. If you came here to write tests rather than to run the app, start at
+**The skills** — written procedures for deriving tests from a specification,
+authoring features, diagnosing failures and extending the language. These need
+Node and nothing else. **No Interoperability Test Bed, no Docker.** Start at
 [Skills](#skills).
 
-## Run (docker compose, next to the ITB core)
+**The app** — a workbench and a test manager that run *inside* an ITB
+installation as a functionality plugin. These need a Test Bed. See
+[Running the app](#running-the-app-optional), which is optional and not the
+first step.
 
-```powershell
-cd itb-starter
-docker compose -f docker-compose.yml `
-  -f ..\itb-plugin-fhir-validator\compose.plugin.yml `
-  -f ..\itb-plugin-hcert-decoder\compose.plugin.yml `
-  -f ..\itb-plugin-authoring\compose.plugin.yml up -d --build
-```
-
-Then: http://localhost:10004 (workbench) and http://localhost:10004/manager.
-The image build compiles the SPA (npm inside docker build — no local npm needed).
-
-## Layout
-
-| Path | What |
-|---|---|
-| `itb-plugin.yaml` | manifest (`kind: functionality`, no dialect, no GITB handler) |
-| `compose.plugin.yml` | the service fragment; mounts `../itb-cli` at `/cli` |
-| `Dockerfile` | stage 1 vite-builds `app/`, stage 2 runs `server.mjs` (no npm deps) |
-| `server.mjs` | static SPA + `/manager` + `/api/cli` (allowlisted itb-suite commands) + `/itb-proxy` (same contract as the Vite dev proxy) |
-| `app/` | the workbench sources; `itb-cli` syncs plugin dialects into `app/public/components/` (`sync-dialects.mjs`) |
-| `.claude/skills/` | the procedures — see below |
-
-## Dev mode (hot reload)
-
-```powershell
-cd app
-npm install
-npm run dev        # Vite dev server with the same /itb-proxy middleware
-```
+A Test Bed is only required to **execute** tests. Writing them, compiling them
+and packaging a deployable suite need none of it.
 
 ## Skills
 
@@ -53,19 +21,37 @@ npm run dev        # Vite dev server with the same /itb-proxy middleware
 written against the code rather than the prose docs, and each is meant to be
 followed literally, by a person or by an agent.
 
-### Getting them
+### Using them
 
-Clone this repository and the skills are on the path for any agent session
-started in it. To use them elsewhere, copy the directory:
+If you cloned this repository, you already have them. Start an agent session
+here and they are on the path — ask for what you want and the right one loads:
+
+```
+Read the specification at <path> and propose test cases for it
+```
+
+You can also read any `SKILL.md` yourself and follow it by hand. They are
+written as procedures, not as prompts.
+
+[The worked example](#a-full-example-from-a-specification-to-a-test-ig) below
+runs the whole path, from a specification to a packaged test IG.
+
+<details>
+<summary>Using them in another project</summary>
+
+Copy the directory. `spec-to-tests` is self-contained: it carries its own
+scripts, depends only on the published `@opentestbed/otb-gherkin` package and on
+the Test Bed's documented REST API, and needs neither this repository nor the
+OpenTestBed CLI.
 
 ```bash
 cp -r itb-plugin-authoring/.claude/skills/spec-to-tests  my-project/.claude/skills/
 ```
 
-`spec-to-tests` is the one to hand to someone else. It is self-contained: it
-carries its own scripts, depends only on the published `@opentestbed/otb-gherkin`
-package and on the Test Bed's documented REST API, and needs neither this
-repository nor the OpenTestBed CLI.
+The other five reference paths inside this repository, so they are worth reading
+rather than copying.
+
+</details>
 
 ### What you need
 
@@ -105,8 +91,9 @@ in a session started in this repository. Code blocks are what gets run.
 
 **1. Check the ground.**
 
-> Confirm I can author tests here: which dialects are available, what version of
-> the language, and is a test bed reachable?
+> Confirm I can author tests here: which dialects are available and what version
+> of the language. Tell me whether a test bed is configured, but do not set one
+> up — I only need it later, to execute.
 
 ```bash
 npx otb-gherkin dialects --installed --out assets
@@ -160,8 +147,10 @@ translates — so it is the natural place for a must-reject case.
 ITB_ASSET_ROOT=./assets npx otb-gherkin compile features/ --out build --zip suite.zip
 ```
 
-**7. Run.** Compiling proves the suite is well formed and nothing whatever about
-the system under test.
+**7. Run — the one step that needs a Test Bed.** Skip it if you have none: steps
+1 to 6 and step 8 all work without one, and you still end up with a packaged IG.
+But compiling only proves the suite is well formed, and nothing whatever about
+the system under test, so a suite that has never run has established nothing.
 
 > Deploy to the test bed and run every case. If anything fails, localise it
 > before telling me it is a defect.
@@ -242,3 +231,50 @@ sample files with no `@lang:` tag whose steps belong to no released generation
 of the language, `tutorial.feature` and `language-showcase.feature` among them.
 They compile under neither generation, and adding a tag does not rescue them.
 Check the file you are working on rather than the folder.
+
+## Running the app (optional)
+
+Only needed to use the graphical tools and to execute tests. Everything above
+works without any of this.
+
+The app is a **functionality plugin**: it extends an ITB installation rather
+than the test language, and serves two things.
+
+- **/** — the Gherkin workbench. Monaco editor, dialect-aware step catalogue on
+  Ctrl+Space, live problems as you type, the compiled suite XML beside your
+  feature, and a deploy button.
+- **/manager** — the test manager. Pick a feature, then Compile, Init, Deploy,
+  Run or Status. Every button shells out to the mounted `itb-cli` one-to-one, so
+  the CLI and the UI cannot disagree.
+
+### With docker compose, next to the ITB core
+
+```powershell
+cd itb-starter
+docker compose -f docker-compose.yml `
+  -f ..\itb-plugin-fhir-validator\compose.plugin.yml `
+  -f ..\itb-plugin-hcert-decoder\compose.plugin.yml `
+  -f ..\itb-plugin-authoring\compose.plugin.yml up -d --build
+```
+
+Then: http://localhost:10004 (workbench) and http://localhost:10004/manager.
+The image build compiles the SPA (npm inside docker build — no local npm needed).
+
+### Layout
+
+| Path | What |
+|---|---|
+| `itb-plugin.yaml` | manifest (`kind: functionality`, no dialect, no GITB handler) |
+| `compose.plugin.yml` | the service fragment; mounts `../itb-cli` at `/cli` |
+| `Dockerfile` | stage 1 vite-builds `app/`, stage 2 runs `server.mjs` (no npm deps) |
+| `server.mjs` | static SPA + `/manager` + `/api/cli` (allowlisted itb-suite commands) + `/itb-proxy` (same contract as the Vite dev proxy) |
+| `app/` | the workbench sources; `itb-cli` syncs plugin dialects into `app/public/components/` (`sync-dialects.mjs`) |
+| `.claude/skills/` | the procedures — see [Skills](#skills) |
+
+### Dev mode (hot reload)
+
+```powershell
+cd app
+npm install
+npm run dev        # Vite dev server with the same /itb-proxy middleware
+```
