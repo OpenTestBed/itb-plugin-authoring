@@ -104,8 +104,14 @@ write tests. See [EXTENDING.md](EXTENDING.md).
 
 ## A full example: from a specification to a test IG
 
-The whole path, using the WHO ICVP guide. Numbered steps are prompts to an agent
-in a session started in this repository. Code blocks are what gets run.
+The whole path. Numbered steps are prompts to an agent in a session started in
+the clone; code blocks are what gets run. Substitute your own specification
+throughout.
+
+The repository ships one worked case to compare against: the IPS suite, in
+`app/public/features/ips-creator.feature`, `ips-consumer.feature` and
+`ips-server.feature`, its config in `app/public/data/ips-test-ig.json`, and the
+record of how it was produced in `app/public/features/IPS-TESTS.md`.
 
 **1. Check the ground.**
 
@@ -122,22 +128,26 @@ otherwise bite.
 
 **2. Read the specification.**
 
-> Read the WHO ICVP build at `<path>/smart-icvp` and tell me what is testable.
-> Is it actor-scoped or profile-scoped? Propose a scope and say what the
-> alternative would cover.
+> Read the specification at `<path>` and tell me what is testable. Is it
+> actor-scoped or profile-scoped? Propose a scope and say what the alternative
+> would cover.
 
-Expect: ICVP declares no actors and no capability statements, so it is
-profile-scoped. Its substance is four IPS resource profiles, nine logical models
-describing the QR payload, and seven StructureMaps forming a QR to claim to
-logical model to IPS chain. It ships no example instances of the resource
-profiles, so test data has to be generated rather than borrowed.
+The agent reads the package, the profiles, the capability statements and the
+examples, not the website. What comes back should say which of two shapes the
+specification has, because they lead to different suites. **Actor-scoped**: it
+names actors with their own obligations, so one test plan per actor and the
+system under test plays one at a time. **Profile-scoped**: it constrains
+resources and the question is whether an instance conforms.
+
+It should also say what the specification does *not* give you. A guide with no
+example instances means test data has to be generated rather than borrowed, and
+that changes the work.
 
 **3. Fix the scope.** The agent stops here and makes you choose, because the
 options lead to genuinely different suites.
 
-> Scope it to the conversion pipeline: the StructureMaps from QR through claim
-> to IPS, ending in conformance against `Bundle-uv-ips-ICVP`. Write the scope
-> sentence down.
+> Scope it to `<the actor or the profile you care about>`. Write the scope
+> sentence down, and say what is out of scope.
 
 **4. Choose the kinds of test.**
 
@@ -145,24 +155,23 @@ options lead to genuinely different suites.
 > recommendation, then give me a case list with the requirement each one covers.
 
 Positive paths are assumed. The question is whether negative, boundary,
-value-set binding and operator-attested cases are in. Insist on the case list
-before any Gherkin exists: a list is cheap to change and a suite is not.
+value-set binding and operator-attested cases are in. Negative tests are where
+most real defects surface and the most commonly skipped, so decide about them
+deliberately rather than by omission.
+
+Insist on the case list before any Gherkin exists: a list is cheap to change and
+a suite is not.
 
 **5. Author.**
 
-> Approved, with the negative cases for a vaccine product id outside
-> `ICVPProductIds`. Write the features.
-
-`ICVPProductIds` is the only required binding in the ICVP build, on
-`ICVPMinVaccineDetails.vp`, and it is the same field `ICVPProductIdToVaccineType`
-translates — so it is the natural place for a must-reject case.
+> Approved, with `<any changes to the list>`. Write the features.
 
 **6. Compile.** The gate: non-zero on any error, every diagnostic printed.
 
 > Compile them and fix everything, including the warnings.
 
 ```bash
-ITB_ASSET_ROOT=./assets npx otb-gherkin compile features/ --out build --zip suite.zip
+ITB_ASSET_ROOT=./assets npx otb-gherkin compile app/public/features/ --out build --zip suite.zip
 ```
 
 **7. Run — the one step that needs a Test Bed.** Skip it if you have none: steps
@@ -184,19 +193,22 @@ conclusion.
 
 **8. Package as a FHIR IG.**
 
-> Package these as a FHIR IG with the features as TestPlans, output to
-> `<path>/smart-icvp-test`.
+> Package these as a FHIR IG with the features as TestPlans.
 
 ```bash
-node app/scripts/build-test-ig.mjs app/public/data/icvp-test-ig.json --package
+node app/scripts/build-test-ig.mjs app/public/data/<spec>-test-ig.json --package
 ```
 
-The config names the IG, the specification under test, and the plans; one plan
-is one TestPlan, meaning a scope and its test cases. Take
-`app/public/data/ips-test-ig.json` as the model. The builder writes
-`sushi-config.yaml`, one TestPlan FSH per plan, the Binaries that render the
-Gherkin, the pages and the scaffold. `--package` runs SUSHI and produces
-`dist/package.tgz`.
+The config names the IG, the specification under test, and the plans; one plan is
+one TestPlan, meaning a scope and its test cases. A plan takes its cases either
+as one `feature` whose `Rule:` groupings become suites — the shape for an
+actor-scoped specification — or as a `features` folder where each file becomes a
+suite. Model yours on `app/public/data/ips-test-ig.json`.
+
+The builder writes `sushi-config.yaml`, one TestPlan FSH per plan, the Binaries
+that render the Gherkin, the pages and the scaffold. `--package` runs SUSHI and
+produces `dist/package.tgz`. The output goes to its own directory outside this
+repository, to be committed as its own guide.
 
 **9. Hand it over.**
 
@@ -206,6 +218,7 @@ Gherkin, the pages and the scaffold. `--package` runs SUSHI and produces
 
 That last item is the one people skip and reviewers need. A suite that does not
 say what it leaves out reads as a claim of completeness it cannot support.
+`app/public/features/IPS-TESTS.md` is what one looks like.
 
 ### The vocabulary
 
