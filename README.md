@@ -48,6 +48,23 @@ Follow [the full path](#3-the-full-path-specification-to-test-ig) below for the
 whole sequence, or read any `SKILL.md` and work through it by hand — they are
 written as procedures, not as prompts.
 
+### Or write them in the editor
+
+For editing one file, run the workbench:
+
+```bash
+cd app
+npm install
+npm run dev
+```
+
+Open the URL it prints — `http://localhost:3000/test-workbench/`, or the next
+free port. You get Monaco with the dialect-aware step catalogue on Ctrl+Space,
+problems as you type, and the compiled suite XML beside your feature.
+
+This needs no Test Bed. Everything except the deploy button works offline. Note
+that `app/` has its own `npm install`, separate from the one in step 1.
+
 Use these four:
 
 | Skill | Use it when |
@@ -223,22 +240,23 @@ of the language, `tutorial.feature` and `language-showcase.feature` among them.
 They compile under neither generation, and adding a tag does not rescue them.
 Check the file you are working on rather than the folder.
 
-## Running the app (optional)
+## Deploying inside an ITB installation (optional)
 
-Only needed to use the graphical tools and to execute tests. Everything above
-works without any of this.
+Skip this unless you want the tools served from your Test Bed rather than run
+locally. To edit features you only need `npm run dev`
+([above](#or-write-them-in-the-editor)); to execute tests you only need the five
+keys in `.claude/skills/spec-to-tests/references/setup.md`.
 
-The app is a **functionality plugin**: it extends an ITB installation rather
-than the test language, and serves two things.
+Deployed this way the app is a **functionality plugin** — it extends an ITB
+installation rather than the test language — and serves two things the local dev
+server does not:
 
-- **/** — the Gherkin workbench. Monaco editor, dialect-aware step catalogue on
-  Ctrl+Space, live problems as you type, the compiled suite XML beside your
-  feature, and a deploy button.
+- **/** — the same workbench, but with deploy wired to that Test Bed.
 - **/manager** — the test manager. Pick a feature, then Compile, Init, Deploy,
   Run or Status. Every button shells out to the mounted `itb-cli` one-to-one, so
   the CLI and the UI cannot disagree.
 
-### With docker compose, next to the ITB core
+Bring it up beside the ITB core:
 
 ```powershell
 cd itb-starter
@@ -261,11 +279,3 @@ The image build compiles the SPA (npm inside docker build — no local npm neede
 | `server.mjs` | static SPA + `/manager` + `/api/cli` (allowlisted itb-suite commands) + `/itb-proxy` (same contract as the Vite dev proxy) |
 | `app/` | the workbench sources; `itb-cli` syncs plugin dialects into `app/public/components/` (`sync-dialects.mjs`) |
 | `.claude/skills/` | the procedures — see [Write tests](#2-write-tests) |
-
-### Dev mode (hot reload)
-
-```powershell
-cd app
-npm install
-npm run dev        # Vite dev server with the same /itb-proxy middleware
-```
