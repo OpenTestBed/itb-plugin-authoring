@@ -1,2 +1,13 @@
 app/node_modules/
 app/dist/
+
+# Authoring setup at the repo root. `npm install @opentestbed/...` creates the
+# first three, and `otb-gherkin dialects` / `otb-gherkin compile` write the
+# rest. None of it belongs in the repository, but all of it has to be allowed
+# to exist here so that getting started needs no ceremony.
+/node_modules/
+/package.json
+/package-lock.json
+/assets/
+/build/
+/work/

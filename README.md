@@ -21,23 +21,55 @@ and packaging a deployable suite need none of it.
 written against the code rather than the prose docs, and each is meant to be
 followed literally, by a person or by an agent.
 
-### Using them
+### Getting set up
 
-If you cloned this repository, you already have them. Start an agent session
-here and they are on the path — ask for what you want and the right one loads:
+Two commands. The clone brings all six skills; the install brings the language
+and the dialects.
+
+```bash
+git clone https://github.com/OpenTestBed/itb-plugin-authoring
+cd itb-plugin-authoring
+
+npm install @opentestbed/otb-gherkin             @opentestbed/dialect-fhir-validator             @opentestbed/dialect-hcert-decoder
+```
+
+Node 18 or newer. There is no `package.json` at the repo root and you do not
+need one — npm creates a throwaway one, and everything it writes here is
+ignored, so the checkout stays clean.
+
+Then assemble the dialects into the directory the compiler reads, and check it
+works:
+
+```bash
+npx otb-gherkin dialects --installed --out assets
+npx otb-gherkin --version
+```
+
+`dialects --installed` finds packages carrying an `otbDialect` field in
+`node_modules`, so the set is pinned by your lockfile and needs no network
+afterwards. That is the whole setup.
+
+**No Test Bed is involved.** Authoring, compiling and packaging a deployable
+suite need nothing above. A Test Bed is only for executing tests, and the five
+keys it wants are listed in
+`.claude/skills/spec-to-tests/references/setup.md`.
+
+### Starting work
+
+Start an agent session in the clone and the skills are on its path. Ask for what
+you want and the right one loads:
 
 ```
 Read the specification at <path> and propose test cases for it
 ```
 
-You can also read any `SKILL.md` yourself and follow it by hand. They are
-written as procedures, not as prompts.
-
+You can also read any `SKILL.md` and follow it by hand — they are written as
+procedures, not as prompts.
 [The worked example](#a-full-example-from-a-specification-to-a-test-ig) below
 runs the whole path, from a specification to a packaged test IG.
 
 <details>
-<summary>Using them in another project</summary>
+<summary>Using a skill in another project</summary>
 
 Copy the directory. `spec-to-tests` is self-contained: it carries its own
 scripts, depends only on the published `@opentestbed/otb-gherkin` package and on
@@ -52,19 +84,6 @@ The other five reference paths inside this repository, so they are worth reading
 rather than copying.
 
 </details>
-
-### What you need
-
-Node 18 or newer, and the language:
-
-```bash
-npm install @opentestbed/otb-gherkin
-npm install @opentestbed/dialect-fhir-validator @opentestbed/dialect-hcert-decoder
-```
-
-A Test Bed is **optional**. Authoring, compiling and packaging a deployable
-suite need nothing else. Connect one only to execute the tests; the five keys it
-wants are listed in `.claude/skills/spec-to-tests/references/setup.md`.
 
 ### The skills
 
