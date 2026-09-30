@@ -1,0 +1,36 @@
+# Test Image Component: JSON Web Token
+#
+# NO SERVICE OF ITS OWN. Decoding a compact JWS is base64url plus a JSON parse,
+# and GITB TDL has no base64 processor, so these verbs borrow the FHIR
+# validator's FHIRPath endpoint:
+#
+#   POST /itb/fhirPath/process  { operation: evaluate, input: [content, expression] }
+#     -> /output/0/value
+#
+# with expressions of the form
+#
+#   '<jws>'.split('.')[1].decode('urlbase64')
+#
+# Verified against validator_cli server -version 5.0: split() returns the
+# segment, decode('urlbase64') returns the claims as JSON, and
+# split('.').count() gives the segment count for well-formedness.
+#
+# CAVEAT, stated because it decides who owns a future break: neither split()
+# nor decode() is in the FHIRPath N1 specification or in FHIR R5's list of
+# added functions. They exist in the HL7 Java implementation. This dialect
+# therefore depends on an implementation detail rather than on a standard. If a
+# validator release drops them, the fix is a small service of our own, not a
+# change here.
+id: jwt
+name: JSON Web Token
+version: "0.1"
+implementsDialect: "^1.0"
+description: >
+  Decode a JSON Web Token and assert on its claims. For any profile that
+  carries authorization in a bearer token.
+
+language:
+  steps: steps.yml
+  version: "1.0.0"
+  base: itb-core-en
+  baseVersion: ">=2 <3"

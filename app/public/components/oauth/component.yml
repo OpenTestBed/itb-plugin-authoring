@@ -1,0 +1,29 @@
+# Test Image Component: OAuth 2.1
+#
+# NO SERVICE OF ITS OWN. Every verb is an HTTP request to the system under test
+# through HttpMessagingV2, exactly as the core's own HTTP verbs are. What the
+# core cannot do, and what this dialect is for, is send
+# application/x-www-form-urlencoded with a body assembled from run-time values:
+# the core's POST verbs fix Content-Type to application/json inside the verb,
+# and its {value} slot takes a literal or a $variable but not an expression.
+#
+# The form bodies are built with concat() in an assign, so no template engine
+# and no backslash is involved (TDL-042 forbids backslashes in expressions).
+#
+# NOT URL-ENCODED. concat() joins the values as given. A scope or a resource
+# identifier containing & or = would corrupt the body, so the verbs take them
+# as already-safe values. In practice scopes and endpoint URLs are safe; an
+# authorization code is base64url by convention and therefore also safe.
+id: oauth
+name: OAuth 2.1
+version: "0.1"
+implementsDialect: "^1.0"
+description: >
+  Request, exchange and introspect OAuth 2.1 access tokens. For any profile
+  that delegates authorization to an authorization server.
+
+language:
+  steps: steps.yml
+  version: "1.0.0"
+  base: itb-core-en
+  baseVersion: ">=2 <3"
