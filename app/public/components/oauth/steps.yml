@@ -1,0 +1,177 @@
+# OAuth 2.1 dialect — generation 2
+#
+#   types  oauth:TokenResponse   the token endpoint's JSON response
+#          oauth:Introspection   the introspection endpoint's JSON response
+#
+#   Client requests a token from AuthorizationServer at "/token" with grant "client_credentials" and scope "patient/*.read"
+#   Client exchanges the code $authCode for a token on AuthorizationServer at "/token" with verifier $codeVerifier
+#   Client introspects the token $accessToken on AuthorizationServer at "/introspect" as $introspection
+#   Client posts form-encoded to AuthorizationServer at "/token" with:
+#   $response.body should be the OAuth error "invalid_client"
+#
+# There is no actor kind here. The authorization server is the system under
+# test, named by an ordinary {actor} slot, so the base URL is read as
+# $<Actor>Base exactly as the core's HTTP verbs read it.
+#
+# CLIENT AUTHENTICATION is not a slot. It is a request header, so it is set the
+# ordinary way and these verbs leave it alone:
+#
+#   Given set header "Authorization" to $clientAuth
+#
+# That works because these verbs write into the core's own `jsonHeaders` map
+# rather than one of their own. They override Content-Type and Accept, since a
+# token endpoint takes form encoding and answers with JSON, and touch nothing
+# else.
+id: oauth
+name: OAuth 2.1 Steps
+language: 2
+description: >
+  Request, exchange and introspect OAuth 2.1 access tokens, and assert on the
+  error responses.
+
+types:
+  oauth:TokenResponse:
+    name: OAuth token response
+  oauth:Introspection:
+    name: OAuth introspection response
+
+# Form encoding, and JSON back. Written into the core's header map so that
+# `set header` and `set bearer token from` still apply.
+x-form-headers: &formHeaders
+  - assign: { to: 'jsonHeaders{Content-Type}', value: '"application/x-www-form-urlencoded"' }
+  - assign: { to: 'jsonHeaders{Accept}', value: '"application/json"' }
+
+verbs:
+  # ==================================================================
+  # GETTING A TOKEN
+  # ==================================================================
+
+  - text: '{actor} requests a token from {actor} at {string} with grant {value}( and scope {value})?( for resource {value})?'
+    doc: A token request whose parameters are the grant type and, optionally, a scope and the resource the token is for.
+    output: { type: 'oauth:TokenResponse' }
+    actions:
+      - *formHeaders
+      # Built up with concat() because a form body has to carry run-time values
+      # and TDL string literals do not interpolate. `when:` adds a parameter
+      # only when its slot was written, so an omitted scope leaves no empty
+      # `&scope=` behind for the server to puzzle over.
+      - assign: { to: 'oauthBody', value: 'concat("grant_type=", $4)' }
+      - assign: { to: 'oauthBody', value: 'concat($oauthBody, "&scope=", $5)' }
+        when: '$5.raw'
+      - assign: { to: 'oauthBody', value: 'concat($oauthBody, "&resource=", $6)' }
+        when: '$6.raw'
+      - send:
+          id: 'lastRequest'
+          desc: 'Token request, grant $4.raw'
+          handler: 'HttpMessagingV2'
+          from: '$1'
+          to: '$2'
+          inputs:
+            uri: 'concat($$2Base, "$3")'
+            method: '"POST"'
+            headers: '$jsonHeaders'
+            body: '$oauthBody'
+
+  - text: '{actor} exchanges the code {ref} for a token on {actor} at {string}( with verifier {ref})?( and redirect {value})?'
+    doc: The authorization-code half of the code flow. Send the PKCE verifier when the server requires one.
+    output: { type: 'oauth:TokenResponse' }
+    actions:
+      - *formHeaders
+      - assign: { to: 'oauthBody', value: 'concat("grant_type=authorization_code&code=", $2)' }
+      - assign: { to: 'oauthBody', value: 'concat($oauthBody, "&code_verifier=", $5)' }
+        when: '$5.raw'
+      - assign: { to: 'oauthBody', value: 'concat($oauthBody, "&redirect_uri=", $6)' }
+        when: '$6.raw'
+      - send:
+          id: 'lastRequest'
+          desc: 'Exchange authorization code $$2'
+          handler: 'HttpMessagingV2'
+          from: '$1'
+          to: '$3'
+          inputs:
+            uri: 'concat($$3Base, "$4")'
+            method: '"POST"'
+            headers: '$jsonHeaders'
+            body: '$oauthBody'
+
+  # ==================================================================
+  # INTROSPECTION
+  # ==================================================================
+
+  - text: '{actor} introspects the token {ref} on {actor} at {string} as {var}'
+    doc: Ask the authorization server whether a token is still active. The caller authenticates with its own credentials, set as a header beforehand.
+    output: { type: 'oauth:Introspection' }
+    actions:
+      - *formHeaders
+      - assign: { to: 'oauthBody', value: 'concat("token=", $2)' }
+      - send:
+          id: 'lastRequest'
+          desc: 'Introspect $$2'
+          handler: 'HttpMessagingV2'
+          from: '$1'
+          to: '$3'
+          inputs:
+            uri: 'concat($$3Base, "$4")'
+            method: '"POST"'
+            headers: '$jsonHeaders'
+            body: '$oauthBody'
+      - assign: { to: '$5', value: '$lastRequest{response}{body}' }
+
+  # ==================================================================
+  # AN ARBITRARY FORM BODY
+  # ==================================================================
+
+  # The escape hatch, for the cases the verbs above deliberately cannot express
+  # — a malformed request, an unsupported grant type, a parameter the profile
+  # does not use. The doc string is sent verbatim, so it is on the author to
+  # form-encode it.
+  - text: '{actor} posts form-encoded to {actor} at {string} with:'
+    doc: POST the doc string as an application/x-www-form-urlencoded body, exactly as written.
+    actions:
+      - *formHeaders
+      - send:
+          id: 'lastRequest'
+          desc: 'Form POST $3'
+          handler: 'HttpMessagingV2'
+          from: '$1'
+          to: '$2'
+          inputs:
+            uri: 'concat($$2Base, "$3")'
+            method: '"POST"'
+            headers: '$jsonHeaders'
+            body: '$docString'
+
+  # ==================================================================
+  # ERROR RESPONSES
+  # ==================================================================
+
+  # OAuth 2.1 section 5.3. Asserts the code AND, implicitly, the shape: reading
+  # /error from something that is not a JSON object with that member yields
+  # nothing and the comparison fails.
+  - text: '{ref} should be the OAuth error {string}'
+    doc: The body is a JSON error response carrying this error code.
+    actions:
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'oauthError'
+          inputs: { content: '$1', pointer: '"/error"' }
+      - verify:
+          handler: 'StringValidator'
+          desc: 'The OAuth error code is $2'
+          inputs: { actualstring: '$oauthError', expectedstring: '"$2"' }
+
+  # For the cases where any error will do but the shape still matters: a 400
+  # carrying HTML tells a client nothing it can act on.
+  - text: '{ref} should carry an OAuth error code'
+    doc: The body is a JSON error response, whatever the code.
+    actions:
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'oauthError'
+          inputs: { content: '$1', pointer: '"/error"' }
+      - verify:
+          handler: 'StringValidator'
+          desc: 'The response carries an OAuth error code'
+          inputs: { actualstring: 'if (empty($oauthError)) then "missing" else "present"', expectedstring: '"present"' }

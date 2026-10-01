@@ -1,0 +1,130 @@
+# JSON Web Token dialect — generation 2
+#
+#   types  jwt:Claims     the decoded claim set; a JSON pointer reads it
+#
+#   Client decodes the JWT $token as $claims
+#   $claims at "/iss" should be "https://as.example.org"
+#   $claims at "/aud" should contain "https://rs.example.org"
+#   Client reads the JWT header of $token as $header
+#   $token should be a well-formed JWT
+#
+# There is no actor kind here. Decoding borrows the FHIR validator's FHIRPath
+# endpoint, so every verb takes `( on <Validator> )?` and resolves to the one
+# declared fhir-validator when you leave it out. Kinds are a global namespace,
+# so referring to another dialect's kind is legitimate; what would not work is
+# omitting the slot on a dialect that owns no kinds, hence the slot is always
+# there even when unwritten.
+id: jwt
+name: JSON Web Token Steps
+language: 2
+description: >
+  Decode a JSON Web Token and assert on its claims.
+
+types:
+  jwt:Claims:
+    name: JWT claims
+  jwt:Header:
+    name: JWT header
+
+# The FHIRPath call. $jwtExpr is set by each verb before this runs.
+x-fhirpath: &fhirpath
+  - assign: { to: 'jwtHeaders{Content-Type}', value: '"application/json"' }
+  - assign: { to: 'jwtHeaders{Accept}', value: '"application/json"' }
+  # A FHIRPath evaluation needs a resource to evaluate against even when the
+  # expression only touches a literal. The smallest valid one does.
+  - assign: { to: 'jwtTplParams{resource}', value: '''{"resourceType":"Basic","id":"jwt"}''' }
+  - assign: { to: 'jwtTplParams{expression}', value: '$jwtExpr' }
+  - process:
+      handler: 'TemplateProcessor'
+      operation: 'process'
+      output: 'jwtBody'
+      inputs:
+        syntax: '"freemarker"'
+        template: "'{ \"operation\": \"evaluate\", \"input\": [ { \"name\": \"content\", \"value\": \"${resource?json_string}\", \"embeddingMethod\": \"STRING\" }, { \"name\": \"expression\", \"value\": \"${expression?json_string}\", \"embeddingMethod\": \"STRING\" } ] }'"
+        parameters: '$jwtTplParams'
+  - send:
+      id: 'lastRequest'
+      desc: 'Evaluate the JWT segment'
+      handler: 'HttpMessagingV2'
+      to: '$target'
+      inputs:
+        uri: 'concat($targetBase, "/itb/fhirPath/process")'
+        method: '"POST"'
+        headers: '$jwtHeaders'
+        body: '$jwtBody'
+  - verify:
+      handler: 'NumberValidator'
+      desc: 'The validator answered (HTTP 200)'
+      inputs: { actualnumber: '$lastRequest{response}{status}', expectednumber: '"200"' }
+
+verbs:
+  # ==================================================================
+  # DECODING
+  # ==================================================================
+
+  - text: '{actor} decodes the JWT {ref}( on {actor:fhir-validator})? as {var}'
+    doc: Decode a compact JWS and bind its claim set for path assertions.
+    output: { type: 'jwt:Claims' }
+    actions:
+      # The token is a TDL variable, so the expression is assembled with
+      # concat() rather than interpolated — a single-quoted FHIRPath literal
+      # around it, because TDL forbids backslashes and so forbids escaping.
+      - assign:
+          to: 'jwtExpr'
+          value: 'concat("''", $2, "''.split(''.'')[1].decode(''urlbase64'')")'
+      - *fhirpath
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: '$4'
+          inputs: { content: '$lastRequest{response}{body}', pointer: '"/output/0/value"' }
+
+  - text: '{actor} reads the JWT header of {ref}( on {actor:fhir-validator})? as {var}'
+    doc: Decode the first segment — alg and typ — rather than the claims.
+    output: { type: 'jwt:Header' }
+    actions:
+      - assign:
+          to: 'jwtExpr'
+          value: 'concat("''", $2, "''.split(''.'')[0].decode(''urlbase64'')")'
+      - *fhirpath
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: '$4'
+          inputs: { content: '$lastRequest{response}{body}', pointer: '"/output/0/value"' }
+
+  # ==================================================================
+  # ASSERTIONS
+  # ==================================================================
+
+  - text: '{ref} should be a well-formed JWT( on {actor:fhir-validator})?'
+    doc: Three dot-separated segments, and the claim segment decodes to JSON.
+    actions:
+      - assign:
+          to: 'jwtExpr'
+          value: 'concat("''", $1, "''.split(''.'').count()")'
+      - *fhirpath
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'jwtSegments'
+          inputs: { content: '$lastRequest{response}{body}', pointer: '"/output/0/value"' }
+      - verify:
+          handler: 'NumberValidator'
+          desc: '$$1 has three segments'
+          inputs: { actualnumber: '$jwtSegments', expectednumber: '"3"' }
+      # A segment count of three is necessary and not sufficient: the claim
+      # segment must also decode. An undecodable one comes back empty.
+      - assign:
+          to: 'jwtExpr'
+          value: 'concat("''", $1, "''.split(''.'')[1].decode(''urlbase64'')")'
+      - *fhirpath
+      - process:
+          handler: 'JsonPointerProcessor'
+          operation: 'process'
+          output: 'jwtDecoded'
+          inputs: { content: '$lastRequest{response}{body}', pointer: '"/output/0/value"' }
+      - verify:
+          handler: 'StringValidator'
+          desc: '$$1 claim segment decodes'
+          inputs: { actualstring: 'if (empty($jwtDecoded)) then "undecodable" else "ok"', expectedstring: '"ok"' }

@@ -55,10 +55,94 @@ dialect is dropped with only a console warning, and then every one of its steps
 reports `No mapping for step`. If a vocabulary seems to have vanished, look for
 that warning first.
 
+## A dialect of your own, without publishing anything
+
+**You do not need an npm package, a repository, or membership of any
+organisation.** A dialect is two YAML files in a folder. The compiler has no
+idea whether a dialect arrived from npm or from your text editor.
+
+Put it in your asset root beside the dialects you downloaded:
+
+```
+my-tests/
+  components/
+    index.json            <- add your id to the list
+    weather/
+      component.yml
+      steps.yml
+  features/
+    weather-smoke.feature
+```
+
+`index.json` is a plain list and it is **not** optional — a folder missing from
+it is invisible to the compiler, and the only symptom is `No mapping for step`
+against your feature file:
+
+```json
+{ "components": ["fhir-validator", "weather"] }
+```
+
+Then compile as usual:
+
+```bash
+ITB_ASSET_ROOT=./my-tests npx otb-gherkin compile my-tests/features
+```
+
+That is the whole mechanism. `component.yml` declares the id and which steps
+file to read; `steps.yml` holds the verbs. Copy the smallest existing dialect and
+edit it — `jwt` is a good model, because it has no service of its own.
+
+Mixing yours with downloaded ones is the normal case and is safe:
+
+```bash
+npx otb-gherkin dialects --installed --out my-tests   # or --from <url>
+```
+
+Re-running that **keeps** a dialect it did not fetch and reports it as
+`kept <id>`, so your own work is not unlisted by the next refresh. (It used to
+be: `index.json` was rewritten with only what that run fetched, your folder
+stayed on disk, and the failure surfaced as `No mapping for step` against the
+feature file — pointing at the wrong thing entirely. Fixed, but if you are on
+`@opentestbed/otb-gherkin` 0.4.0 or earlier you still have the old behaviour, so
+check `index.json` after a refresh.)
+
+### Sharing it without publishing
+
+Any URL that serves the two files works, so your own repository is enough — no
+`@opentestbed` scope and no org membership:
+
+```bash
+npx otb-gherkin dialects --from https://raw.githubusercontent.com/<you>/<repo>/main/dialect --out my-tests
+```
+
+In the browser workbench, add the same base URL under **Components → Plugin
+dialects**, or pass `?dialects=<url>,<url>` for a session. A remote dialect
+overrides a bundled one with the same id, which is what makes a fork testable.
+
+Publishing to npm (below) buys one thing: pinning by your lockfile. It is not a
+prerequisite for anything else.
+
+### Two traps that cost the most time
+
+**`kinds:` is a list, not a mapping.** `kinds: [weather-service]`. Written as a
+mapping it is valid YAML, so it loads — and then the compiler used to die with
+`object is not iterable`, no file and no line. `otb-gherkin dialects` now rejects
+the shape by name, and the merge warns and reads the keys, but write it as a
+list.
+
+**A dialect whose target is the system under test must use a plain `{actor}`
+slot, not `{actor:your-kind}`.** `is the system under test` has no kind slot, so
+a kind-qualified slot can never bind to the SUT, and the error you get is
+`No system under test among the declared actors`. Actor kinds are for
+infrastructure — a validator, a decoder, a peer you stand up. Compare `oauth`
+(the authorization server is the SUT: plain `{actor}`) with `jwt` (borrows a
+validator: `{actor:fhir-validator}`).
+
 ## Verifying a change
 
-Editing a dialect in its plugin repository tests nothing on its own. The
-compiler reads dialects from the workbench's `app/public/components/`, so:
+If you are working in a **plugin repository** inside the OTB checkout, editing
+`dialect/steps.yml` tests nothing on its own: the compiler reads dialects from
+the workbench's `app/public/components/`, so sync first.
 
 ```bash
 node ../itb-cli/src/sync-dialects.mjs          # plugin repos -> workbench
@@ -68,6 +152,12 @@ npm test --workspace packages/gherkin           # in ../itb-cli: the golden corp
 
 The sync is a destructive whole-folder replace, so edit in the plugin repository
 and sync, never the other way round.
+
+If you are working in **your own folder** as above, there is no sync: the file
+you edit is the file the compiler reads, and `otb-gherkin compile` is the whole
+loop. The golden corpus belongs to the language package and is not something you
+need. Write a feature that exercises every verb and keep it next to the dialect —
+that is your regression test.
 
 The golden corpus keeps **frozen copies** of the language and the dialects, so
 changing a real dialect does not move its snapshots. Add a feature that
@@ -79,6 +169,10 @@ snapshot you did not read is a test that now asserts whatever you did, including
 the bug.
 
 ## Publishing a dialect
+
+**Optional.** Everything above works without it; publishing buys pinning by a
+lockfile and a name others can `npm install`. Skip this section unless you want
+that.
 
 Each dialect is an npm package whose root *is* the dialect folder, so
 `dialect/package.json` sits beside `component.yml`:
@@ -111,7 +205,14 @@ node ../itb-plugins/scripts/registry-validate.mjs ../itb-plugin-<name>
 
 That checks both generations of step format, allows a dialect-only plugin with
 no runtime, and catches the two identity mistakes above along with unknown
-placeholders and non-conforming actor kinds.
+placeholders, non-conforming actor kinds and `kinds`/`verbs`/`steps` written as
+mappings instead of lists.
+
+It needs the `itb-plugins` checkout and `js-yaml`. Without them, `otb-gherkin
+dialects --from <your folder>` already rejects the mistakes that otherwise fail
+silently — a folder name that disagrees with `component.yml`'s `id`, a missing
+steps file or scriptlet, a list-shaped key written as a mapping, and a
+`baseVersion` the installed core does not satisfy.
 
 ## Scriptlets
 

@@ -4,6 +4,8 @@
     "fhir-terminology",
     "fhir-validator",
     "hcert-decoder",
+    "jwt",
+    "oauth",
     "tng-certificate"
   ]
 }

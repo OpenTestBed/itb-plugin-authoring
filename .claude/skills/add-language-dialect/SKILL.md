@@ -18,6 +18,39 @@ Everything here was checked against the compiler, not the prose docs. Where
 
 ## 0. What you produce
 
+**First decide which of two situations you are in**, because the whole shape of
+the job differs and only one of them needs a repository.
+
+### You are extending the language for your own tests
+
+Then a dialect is **two YAML files in a folder**, and you need no npm package, no
+repository and no membership of any organisation. Put it in your asset root:
+
+```
+my-tests/
+  components/
+    index.json            <- your id must be in this list or the dialect is invisible
+    <id>/
+      component.yml       identity, and which core language you target
+      steps.yml           kinds, types, conforms, verbs
+      scriptlets/*.xml    optional, each listed in component.yml
+  features/
+```
+
+```bash
+ITB_ASSET_ROOT=./my-tests npx otb-gherkin compile my-tests/features
+```
+
+The file you edit is the file the compiler reads — no sync step, no checkout of
+`itb-cli`, and the golden corpus is not yours to maintain. Sections 1–4 below
+apply in full; in section 5 read only "If the dialect is your own", and skip
+section 6 entirely. `EXTENDING.md` in `itb-plugin-authoring` covers sharing it by
+URL, which also needs no publishing.
+
+### You are adding a dialect to the OTB plugin ecosystem
+
+Then it is a plugin repository, and sections 5 and 6 apply as written:
+
 ```
 itb-plugin-<name>/
   itb-plugin.yaml          name: <id>   +   dialect: { path: dialect/ }
@@ -82,7 +115,11 @@ name: My Thing Steps
 description: >
   One sentence.
 
-kinds: [my-thing-service]          # lower-kebab only: [a-z][a-z0-9-]*
+kinds: [my-thing-service]          # a LIST, lower-kebab only: [a-z][a-z0-9-]*
+                                   # as a mapping it is valid YAML, loads, and
+                                   # used to kill the compiler with "object is
+                                   # not iterable" — no file, no line. Same for
+                                   # verbs: and steps:.
 
 types:
   mything:Doc:                     # free-form key
@@ -151,8 +188,41 @@ the compiler does read.
 6. **Core wins, and first dialect wins.** You cannot override a core sentence,
    and a duplicate actor kind or value type is dropped with a console warning
    you will not see.
+7. **Actor kinds are for infrastructure, never for the system under test.**
+   `is the system under test` has no kind slot, so `{actor:my-kind}` can never
+   bind to the SUT; the author gets `No system under test among the declared
+   actors` and no hint that the dialect is the cause. If your verbs talk *to* the
+   measured system, use a plain `{actor}` slot and read its base as `$$NBase`,
+   the way the core's own HTTP verbs do. Use a kind only for a service you stand
+   up beside it. Compare `oauth` (the authorization server is the SUT: plain
+   `{actor}`) with `jwt` (borrows a validator: `{actor:fhir-validator}`).
 
 ## 5. Verify
+
+### If the dialect is your own
+
+The file you edit is the file the compiler reads, so the loop is one command:
+
+```
+ITB_ASSET_ROOT=<your-root> npx otb-gherkin compile <features-dir>
+```
+
+Two things that are not optional:
+
+- **Your id must be in `components/index.json`.** A folder missing from it is
+  invisible, and the only symptom is `No mapping for step` against the feature
+  file. `otb-gherkin dialects` maintains that file and now keeps a dialect it did
+  not fetch, reporting it as `kept <id>`; on `@opentestbed/otb-gherkin` 0.4.0 or
+  earlier it rewrote the list with only what it fetched, so check after a refresh.
+- **Run `otb-gherkin dialects --from <your folder>` once.** It rejects the
+  mistakes that otherwise fail silently: a folder name disagreeing with
+  `component.yml`'s `id`, a missing steps file or scriptlet, a list-shaped key
+  written as a mapping, and a `baseVersion` the installed core cannot satisfy.
+
+Write a feature that exercises every verb and keep it beside the dialect. That is
+your regression test; the golden corpus below belongs to the language package.
+
+### If the dialect is going into the ecosystem
 
 In order. Each one catches something the previous one does not.
 
@@ -176,14 +246,22 @@ fixture added; without that, nothing anywhere tests your verbs.
 
 ## 6. Ship
 
+**Ecosystem dialects only.** A dialect of your own is already finished at the end
+of section 5 — it needs nothing here, and nothing here is available to you
+anyway. To let other people use it, serve the folder at any URL and point
+`otb-gherkin dialects --from <url>` at it, or add that URL under
+**Components → Plugin dialects** in the workbench. See `EXTENDING.md`.
+
 - Sync, which also rewrites `public/components/index.json`. A folder that is not
   in that file is invisible to the compiler.
 - Mirror to the ITB manager. `sync-dialects.mjs` does this for
   `../itb-manager` or whatever `ITB_DIALECT_MIRRORS` names. A dialect missing
   from a mirror fails as `No mapping for step` in that app alone, which is a
   miserable way to find out.
-- Add the plugin to `itb-plugins/index.yaml` with `dialect: true`. Check the
-  capabilities it declares in `requires:` actually exist under
-  `itb-plugins/capabilities/`; several referenced today do not.
+- Add the plugin to `itb-plugins/index.yaml` with `dialect: true`, plus
+  `kind: dialect` and `provides: []` if it deploys no service, and `requires:`
+  listing the capability names it needs. Every name in `requires:` must have a
+  spec under `itb-plugins/capabilities/`; the registry validator errors if not,
+  and checks the list against the plugin's own `itb-plugin.yaml`.
 - Regenerate the language catalogue docs so the new verbs are findable:
   `npm run gen:language-docs` in `itb-plugin-authoring/app`.
