@@ -1,0 +1,61 @@
+{
+  "id": "ihe.iti.iua.test",
+  "canonical": "http://example.com/fhir/ihe.iti.iua.test",
+  "name": "IUATesting",
+  "title": "IUA: TestPlans and Gherkin for the IUA actors",
+  "description": "A demonstration IG that declares, as TestPlan resources and Gherkin feature files, the conformance tests for the three actors of IHE ITI Internet User Authorization (IUA), Revision 2.5: Authorization Client, Authorization Server and Resource Server. IUA publishes no FHIR package, so every test case is traceable instead to a quoted requirement in the supplement's narrative or to the OAuth 2.1 clause it rests on.",
+  "disclaimer": "This is not an approved IHE test specification, and these tests have not been executed against any implementation.",
+  "version": "0.1.0",
+  "fhirVersion": "6.0.0-ballot5",
+  "license": "CC0-1.0",
+  "publisher": {
+    "name": "Jose Costa Teixeira",
+    "url": "https://github.com/costateixeira"
+  },
+  "spec": {
+    "id": "ihe.iti.iua",
+    "alias": "iua",
+    "version": "2.5.0",
+    "uri": "https://profiles.ihe.net/ITI/IUA/ImplementationGuide/ihe.iti.iua",
+    "title": "IHE ITI Internet User Authorization (IUA), Revision 2.5",
+    "site": "https://profiles.ihe.net/ITI/IUA/",
+    "dependency": false
+  },
+  "specDependencyNote": "IUA is published as a narrative supplement carrying both volumes, not as a FHIR implementation guide. There is no ihe.iti.iua package on the registry, so there is nothing for the publisher to resolve against: the actors below are named in prose rather than by ActorDefinition canonical, and every requirement is quoted from the supplement in the test it justifies",
+  "runner": "https://www.itb.ec.europa.eu/docs/guides/latest/",
+  "features": "public/features",
+  "processPage": "../features/IUA-TESTS.md",
+  "out": "../../../../../ImplementationGuides/ihe-iua-test",
+  "planIntro": "One test plan per actor of [IHE ITI Internet User Authorization (IUA), Revision 2.5](https://profiles.ihe.net/ITI/IUA/). IUA states its obligations in prose, so each test names the sentence or the OAuth 2.1 clause it tests rather than an element obligation:",
+  "artifactsSummary": "The three TestPlan resources, one per actor, and the Gherkin scripts they name.",
+  "testingTitle": "Testing the IUA actors",
+  "actors": [
+    {
+      "id": "iua-authorization-server",
+      "title": "Authorization Server",
+      "actor": "AuthorizationServer",
+      "scope": "https://profiles.ihe.net/ITI/IUA/#authorization-server",
+      "scopeDescription": "The IUA Authorization Server — the system which issues access tokens on transaction Get Access Token [ITI-71], and which introspects them on Introspect Token [ITI-102] when it claims the Token Introspection Option — is the system under test.",
+      "summary": "the server issues tokens that carry the claims the profile requires, and refuses every malformed or unauthorised request in the way OAuth 2.1 prescribes",
+      "feature": "iua-authorization-server.feature"
+    },
+    {
+      "id": "iua-resource-server",
+      "title": "Resource Server",
+      "actor": "ResourceServer",
+      "scope": "https://profiles.ihe.net/ITI/IUA/#resource-server",
+      "scopeDescription": "The IUA Resource Server — the system which polices the access token on transaction Incorporate Access Token [ITI-72] before serving a protected resource — is the system under test.",
+      "summary": "the server serves a request carrying a valid token and refuses every case the profile says it must: expired, wrong audience, insufficient scope, malformed or absent",
+      "feature": "iua-resource-server.feature"
+    },
+    {
+      "id": "iua-authorization-client",
+      "title": "Authorization Client",
+      "actor": "AuthorizationClient",
+      "scope": "https://profiles.ihe.net/ITI/IUA/#authorization-client",
+      "scopeDescription": "The IUA Authorization Client — the system which obtains an access token on Get Access Token [ITI-71] and presents it on Incorporate Access Token [ITI-72] — is the system under test. For this actor the test bed plays both the Authorization Server and the Resource Server and waits to be called.",
+      "summary": "the client asks for a token correctly, presents the token it was issued, does not leak it to a server outside its audience, and obtains a fresh one after a refusal",
+      "feature": "iua-authorization-client.feature"
+    }
+  ]
+}
