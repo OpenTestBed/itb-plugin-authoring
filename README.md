@@ -82,15 +82,29 @@ Two further skills extend the language itself — adding a dialect for a new
 service, or changing the core grammar. You do not need them to write tests; see
 [EXTENDING.md](EXTENDING.md).
 
-To use a skill in a project that is not this one, copy its directory:
+### Installing the skills in another project
 
-```bash
-cp -r itb-plugin-authoring/.claude/skills/spec-to-tests  my-project/.claude/skills/
+They are packaged as a plugin, so you do not copy directories:
+
+```
+/plugin marketplace add OpenTestBed/itb-plugin-authoring
+/plugin install otb-testing@otb-testing-toolkit
 ```
 
-Copy `spec-to-tests` and it will work anywhere: it carries its own scripts and
-needs only the published `@opentestbed/otb-gherkin` package. Read the other five
-where they are, since they reference paths inside this repository.
+That gives you all six skills, plus `/spec-to-tests`, `/test-ig` and
+`/diagnose`, and updates when this repository does.
+
+`spec-to-tests` then works anywhere — it carries its own compile, dialects and
+run scripts and needs only the published `@opentestbed/otb-gherkin`.
+`spec-to-test-ig` and `change-core-language` still want a checkout, because they
+call scripts that live here; [plugins/otb-testing/README.md](plugins/otb-testing/README.md)
+has the table of what needs what.
+
+**Using another agent?** The skills are plain Markdown with YAML frontmatter and
+contain nothing Claude-specific. The same `skills/` directory is declared by
+`.codex-plugin/plugin.json` and by `.agents/plugins/marketplace.json`, and if
+your tool reads neither you can copy `plugins/otb-testing/skills/` wherever it
+looks. You lose update-on-install and nothing else.
 
 ## 3. The full path: specification to test IG
 
@@ -173,8 +187,8 @@ the system under test, so a suite that has never run has established nothing.
 > before telling me it is a defect.
 
 ```bash
-node .claude/skills/spec-to-tests/scripts/run-on-itb.mjs deploy build/suite.zip
-node .claude/skills/spec-to-tests/scripts/run-on-itb.mjs run <testCaseId>
+node plugins/otb-testing/skills/spec-to-tests/scripts/run-on-itb.mjs deploy build/suite.zip
+node plugins/otb-testing/skills/spec-to-tests/scripts/run-on-itb.mjs run <testCaseId>
 ```
 
 A session ending `UNDEFINED` is not a pass — it means nobody answered the
@@ -245,7 +259,7 @@ Check the file you are working on rather than the folder.
 Skip this unless you want the tools served from your Test Bed rather than run
 locally. To edit features you only need `npm run dev`
 ([above](#or-write-them-in-the-editor)); to execute tests you only need the five
-keys in `.claude/skills/spec-to-tests/references/setup.md`.
+keys in `plugins/otb-testing/skills/spec-to-tests/references/setup.md`.
 
 Deployed this way the app is a **functionality plugin** — it extends an ITB
 installation rather than the test language — and serves two things the local dev
@@ -278,4 +292,4 @@ The image build compiles the SPA (npm inside docker build — no local npm neede
 | `Dockerfile` | stage 1 vite-builds `app/`, stage 2 runs `server.mjs` (no npm deps) |
 | `server.mjs` | static SPA + `/manager` + `/api/cli` (allowlisted itb-suite commands) + `/itb-proxy` (same contract as the Vite dev proxy) |
 | `app/` | the workbench sources; `itb-cli` syncs plugin dialects into `app/public/components/` (`sync-dialects.mjs`) |
-| `.claude/skills/` | the procedures — see [Write tests](#2-write-tests) |
+|  `plugins/otb-testing/` | the procedures — see [Write tests](#2-write-tests) |

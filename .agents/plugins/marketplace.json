@@ -1,0 +1,19 @@
+{
+  "name": "otb-testing-toolkit",
+  "interface": {
+    "displayName": "OTB Conformance Testing"
+  },
+  "plugins": [
+    {
+      "name": "otb-testing",
+      "source": {
+        "source": "local",
+        "path": "./plugins/otb-testing"
+      },
+      "policy": {
+        "installation": "AVAILABLE"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

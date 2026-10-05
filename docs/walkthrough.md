@@ -77,7 +77,7 @@ test bed, or membership of any organisation.</span>
 |---|---|---|
 | **You** | — | Decide scope. Confirm the case list. Sign off. |
 | **Agent** | Claude Code | Reads the spec, writes Gherkin, runs the compiler, fixes what it broke |
-| **Skills** | `.claude/skills/*` | The procedure the agent follows: stages, gates, traps |
+| **Skills** | the `otb-testing` plugin | The procedure the agent follows: stages, gates, traps |
 | **CLI + library** | `@opentestbed/otb-gherkin` | Compiles Gherkin → GITB TDL. The only hard dependency |
 | **Dialects** | `components/<id>/` | Verbs for one domain: OAuth, JWT, FHIR validation |
 | **Workbench** | the authoring app | Optional. Browser editor for the same files |
@@ -97,14 +97,18 @@ npm install @opentestbed/otb-gherkin @opentestbed/dialect-fhir-validator
 ```
 
 Then get the skills — they are what makes the agent follow a procedure instead
-of improvising:
+of improvising. Start the agent and install the plugin **in the session**:
 
-```bash
-git clone https://github.com/OpenTestBed/itb-plugin-authoring
-cp -r itb-plugin-authoring/.claude/skills .claude/skills
+```
+/plugin marketplace add OpenTestBed/itb-plugin-authoring
+/plugin install otb-testing@otb-testing-toolkit
 ```
 
 That is the whole setup. No containers, no services, nothing to start.
+
+<span class="small">Six skills and three commands — `/spec-to-tests`, `/test-ig`, `/diagnose`. Using
+a different agent? The skills are plain Markdown; copy
+`plugins/otb-testing/skills/` wherever your tool looks.</span>
 
 ---
 
@@ -509,26 +513,26 @@ every dialect reads alike.
 ## Do it at home
 
 ```bash
-# 1. setup
 mkdir my-tests && cd my-tests && npm init -y
 npm install @opentestbed/otb-gherkin @opentestbed/dialect-fhir-validator
-git clone https://github.com/OpenTestBed/itb-plugin-authoring
-cp -r itb-plugin-authoring/.claude/skills .claude/skills
-
-# 2. ask the agent
 claude
+```
+
+```
+/plugin marketplace add OpenTestBed/itb-plugin-authoring
+/plugin install otb-testing@otb-testing-toolkit
 ```
 
 <div class="prompt">
 
 I want to create a test plan for https://profiles.ihe.net/ITI/PCF/ and all its
-volumes. Use the spec-to-tests skill. Keep any dialect local — I'm not
-publishing anything.
+volumes. Keep any dialect local — I'm not publishing anything.
 
 </div>
 
+Then the loop you will run many times, and the last prompt:
+
 ```bash
-# 3. the loop you will run many times
 npx otb-gherkin dialects --installed --out .
 ITB_ASSET_ROOT=. npx otb-gherkin compile features
 ```

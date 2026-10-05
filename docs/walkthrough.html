@@ -210,7 +210,7 @@ section.lead h1 { font-size: 58px; }
 </tr>
 <tr>
 <td><strong>Skills</strong></td>
-<td><code>.claude/skills/*</code></td>
+<td>the <code>otb-testing</code> plugin</td>
 <td>The procedure the agent follows: stages, gates, traps</td>
 </tr>
 <tr>
@@ -296,11 +296,14 @@ npm init -y
 npm install @opentestbed/otb-gherkin @opentestbed/dialect-fhir-validator
 </code></pre>
 <p>Then get the skills — they are what makes the agent follow a procedure instead<br />
-of improvising:</p>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">git <span class="hljs-built_in">clone</span> https://github.com/OpenTestBed/itb-plugin-authoring
-<span class="hljs-built_in">cp</span> -r itb-plugin-authoring/.claude/skills .claude/skills
+of improvising. Start the agent and install the plugin <strong>in the session</strong>:</p>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code>/plugin marketplace add OpenTestBed/itb-plugin-authoring
+/plugin install otb-testing@otb-testing-toolkit
 </code></pre>
 <p>That is the whole setup. No containers, no services, nothing to start.</p>
+<p><span class="small">Six skills and three commands — <code>/spec-to-tests</code>, <code>/test-ig</code>, <code>/diagnose</code>. Using<br />
+a different agent? The skills are plain Markdown; copy<br />
+<code>plugins/otb-testing/skills/</code> wherever your tool looks.</span></p>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="5" data-paginate="true" data-header="From a specification to running tests" data-class="lead" data-theme="default" data-style="section {
   font-size: 25px;
@@ -1717,22 +1720,19 @@ section.lead h1 { font-size: 58px; }
 ;" data-marpit-pagination-total="32">
 <header>From a specification to running tests</header>
 <h2 id="do-it-at-home">Do it at home</h2>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash"><span class="hljs-comment"># 1. setup</span>
-<span class="hljs-built_in">mkdir</span> my-tests &amp;&amp; <span class="hljs-built_in">cd</span> my-tests &amp;&amp; npm init -y
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash"><span class="hljs-built_in">mkdir</span> my-tests &amp;&amp; <span class="hljs-built_in">cd</span> my-tests &amp;&amp; npm init -y
 npm install @opentestbed/otb-gherkin @opentestbed/dialect-fhir-validator
-git <span class="hljs-built_in">clone</span> https://github.com/OpenTestBed/itb-plugin-authoring
-<span class="hljs-built_in">cp</span> -r itb-plugin-authoring/.claude/skills .claude/skills
-
-<span class="hljs-comment"># 2. ask the agent</span>
 claude
+</code></pre>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code>/plugin marketplace add OpenTestBed/itb-plugin-authoring
+/plugin install otb-testing@otb-testing-toolkit
 </code></pre>
 <div class="prompt">
 <p>I want to create a test plan for <a href="https://profiles.ihe.net/ITI/PCF/">https://profiles.ihe.net/ITI/PCF/</a> and all its<br />
-volumes. Use the spec-to-tests skill. Keep any dialect local — I'm not<br />
-publishing anything.</p>
+volumes. Keep any dialect local — I'm not publishing anything.</p>
 </div>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash"><span class="hljs-comment"># 3. the loop you will run many times</span>
-npx otb-gherkin dialects --installed --out .
+<p>Then the loop you will run many times, and the last prompt:</p>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">npx otb-gherkin dialects --installed --out .
 ITB_ASSET_ROOT=. npx otb-gherkin compile features
 </code></pre>
 <div class="prompt">

@@ -1,0 +1,37 @@
+{
+  "name": "otb-testing",
+  "version": "0.1.0",
+  "description": "Turn a specification into executable conformance tests, and publish them as a FHIR IG with TestPlan resources.",
+  "author": {
+    "name": "Jose Costa Teixeira",
+    "url": "https://github.com/costateixeira"
+  },
+  "repository": "https://github.com/OpenTestBed/itb-plugin-authoring",
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "conformance",
+    "testing",
+    "gherkin",
+    "fhir",
+    "ihe",
+    "testplan",
+    "gitb",
+    "itb"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "OTB Conformance Testing",
+    "shortDescription": "Specification to conformance tests, and on to a FHIR IG with TestPlans.",
+    "longDescription": "Procedure and tooling for turning a published specification into executable conformance tests. Sets the scope from the spec's actors or profiles, agrees the case list before any test is written, authors them in the OTB Gherkin language, proves they compile to GITB TDL, runs them against an Interoperability Test Bed, and packages them as a FHIR implementation guide carrying one TestPlan per actor. Also covers extending the test language with a new dialect when a required verb does not exist.",
+    "developerName": "Jose Costa Teixeira",
+    "category": "Developer Tools",
+    "capabilities": ["Interactive", "Write"],
+    "defaultPrompt": [
+      "I want to create a test plan for https://profiles.ihe.net/ITI/PCF/ and all its volumes.",
+      "Add a test case covering this requirement and show me it compiles.",
+      "Why did this test case fail?",
+      "Publish these tests as a FHIR IG with a TestPlan per actor."
+    ],
+    "brandColor": "#0B4F6C"
+  }
+}

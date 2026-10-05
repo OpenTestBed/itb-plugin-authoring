@@ -1,0 +1,22 @@
+{
+  "name": "otb-testing",
+  "version": "0.1.0",
+  "description": "Turn a specification into executable conformance tests: set the scope, agree the case list, author Gherkin, prove it compiles, run it against an Interoperability Test Bed, and publish it as a FHIR IG with TestPlan resources.",
+  "author": {
+    "name": "Jose Costa Teixeira",
+    "url": "https://github.com/costateixeira"
+  },
+  "homepage": "https://github.com/OpenTestBed/itb-plugin-authoring",
+  "repository": "https://github.com/OpenTestBed/itb-plugin-authoring",
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "conformance",
+    "testing",
+    "gherkin",
+    "fhir",
+    "ihe",
+    "testplan",
+    "gitb",
+    "itb"
+  ]
+}

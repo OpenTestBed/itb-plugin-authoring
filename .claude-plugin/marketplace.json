@@ -1,0 +1,18 @@
+{
+  "name": "otb-testing-toolkit",
+  "owner": {
+    "name": "Jose Costa Teixeira",
+    "url": "https://github.com/costateixeira"
+  },
+  "metadata": {
+    "description": "Tooling for turning a published specification into executable conformance tests, and publishing them as a FHIR implementation guide with TestPlan resources.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "otb-testing",
+      "source": "./plugins/otb-testing",
+      "description": "Specification to conformance tests: scope, case list, Gherkin, compile, run on an Interoperability Test Bed, publish as a FHIR IG with one TestPlan per actor. Includes extending the test language with a new dialect."
+    }
+  ]
+}
