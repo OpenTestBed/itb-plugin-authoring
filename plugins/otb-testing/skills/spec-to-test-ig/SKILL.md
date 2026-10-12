@@ -17,7 +17,7 @@ record (step 7) as you go; the record is part of the deliverable.
 | Feature files, one per actor | `app/public/features/<spec>-<actor>.feature` |
 | Coverage matrix (obligation → test) | `app/public/data/<spec>-obligation-coverage.json` |
 | Process record | `app/public/features/<SPEC>-TESTS.md` |
-| The IG package | `<ImplementationGuides>/<spec>-test/` with `dist/package.tgz` |
+| The IG package | `<igRoot>/<spec>-test/` with `dist/package.tgz` — `igRoot` comes from step 6, never from a guess |
 
 ## 1. Check the specification
 
@@ -97,9 +97,54 @@ Run a scenario end to end on the ITB only when a system under test exists.
 
 ## 6. Package as an IG
 
+### First: where do this user's IGs live?
+
+Before writing the config, find out where the IG should go. **Do not guess** — an
+IG written into the wrong place is easy to lose and annoying to move once a git
+repository exists in it.
+
+```
+node scripts/ig-root.mjs status
+```
+
+It prints one of three states and tells you what to do:
+
+| State | What it means | What you do |
+|---|---|---|
+| `set` | A default folder is recorded | **Do not ask.** Write the IG under it |
+| `none` | The user said they have no default | **Do not ask again** for a default. Ask where this one IG goes, or default to `./<ig-name>` |
+| `unset` | Never answered, or last answer was "not now" | **Ask, once**, offering the best candidate it found |
+
+When the state is `unset`, `status` also lists folders on disk that already hold
+several IGs. Offer the top candidate — it is a guess, not an answer — and give
+the user all three ways out. Then record what they said:
+
+```
+node scripts/ig-root.mjs set E:\work\ImplementationGuides   # a folder, created if missing
+node scripts/ig-root.mjs set none                           # no default; never ask again
+node scripts/ig-root.mjs defer                              # "not now" — ask again next time
+```
+
+`defer` deliberately records no answer. "Not now" means *ask me again*, so it
+must not become a silent "none".
+
+Then get the output path, which goes in the config's `out`:
+
+```
+node scripts/ig-root.mjs out <ig-name>        # e.g. ihe-iua-test
+```
+
+The config is per user, at `~/.claude/otb-testing.json`, because where someone
+keeps their IGs is a property of their machine and not of one specification.
+
+### Then build it
+
 ```
 node app/scripts/build-test-ig.mjs app/public/data/<spec>-test-ig.json --package
 ```
+
+`out` may be absolute — which is what `ig-root.mjs out` gives you — or relative
+to the config file.
 
 The config names the IG, the spec, its actors (scope canonical, feature file)
 and the process page. The builder writes `sushi-config.yaml`, one TestPlan
