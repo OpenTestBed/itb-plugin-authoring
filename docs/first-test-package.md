@@ -37,48 +37,40 @@ later and separate job.
 
 ## Step 1 — get the tooling
 
+Four lines, and nothing to configure:
+
 ```bash
 git clone https://github.com/OpenTestBed/itb-plugin-authoring
 cd itb-plugin-authoring
 npm install @opentestbed/otb-gherkin @opentestbed/dialect-fhir-validator
-```
-
-You need the clone because the step that builds the IG package lives in it.
-
-Now start the agent **in that folder** and install the skills:
-
-```bash
 claude
 ```
 
-```
-/plugin marketplace add OpenTestBed/itb-plugin-authoring
-/plugin install otb-testing@otb-testing-toolkit
-```
+That is the whole install. The skills live in `.claude/skills/` in the clone, so
+the agent picks them up automatically — **there is nothing to install, enable or
+restart.**
 
-If that cannot reach GitHub, add the clone you already have instead — the
-marketplace is just this repository:
+To check, ask the agent:
 
-```
-/plugin marketplace add .
-```
+> What skills do you have for authoring conformance tests?
 
-**Then restart Claude Code and check it worked**: type `/` and you should see
-`/spec-to-tests`, `/test-ig` and `/diagnose`, and `/plugin` should list
-`otb-testing` as enabled. If you do not see them, the plugin did not load and
-nothing below will work. Run `/plugin` to see what it thinks is installed.
+It should name `spec-to-tests`, `write-test-feature`, `diagnose-test-failure` and
+`spec-to-test-ig`. If it names none, you are not in the clone — `cd` into it and
+start `claude` again.
+
+You need the clone rather than just the npm packages because the step that builds
+the IG package lives in it.
 
 ## Step 2 — point it at your IG
 
-One prompt. Substitute your own IG:
-
-```
-/spec-to-tests https://profiles.ihe.net/ITI/PCF/
-```
-
-Or just say it in your own words:
+One prompt, in your own words. Substitute your own IG:
 
 > I want conformance tests for https://profiles.ihe.net/ITI/PCF/ — all of it.
+
+Naming the skill makes it certain, if you would rather not rely on it triggering:
+
+> Use the spec-to-tests skill to build a test plan for
+> https://profiles.ihe.net/ITI/PCF/
 
 The agent downloads the IG's **package**, not its HTML, and reads the actors,
 the capability statements, the profiles and the examples. It will tell you what
@@ -149,9 +141,7 @@ its name claims.
 
 ## Step 5 — turn it into an IG package
 
-```
-/test-ig
-```
+> Now publish these as a FHIR IG with one TestPlan per actor.
 
 The first time, you will be asked **where your IGs live**. It offers a folder it
 found on your disk. Answer once and it never asks again; you can also say
@@ -196,7 +186,8 @@ ITB_ASSET_ROOT=. npx otb-gherkin compile features --out build --zip suite.zip
 ```
 
 Deploy `build/suite.zip` to an Interoperability Test Bed and run it. Ask the
-agent — that is what `spec-to-tests` stage 4 and the `/diagnose` command are for.
+agent — that is what `spec-to-tests` stage 4 and the `diagnose-test-failure`
+skill are for.
 
 ## What the result does and does not mean
 
@@ -226,6 +217,23 @@ cannot fail is not a test.
 | `No system under test among the declared actors` | A dialect verb used `{actor:some-kind}` for the system under test. Kinds are for infrastructure only |
 | A verb you need does not exist | That is a dialect, not a reason to write a worse test. Ask the agent; it needs no repo and no npm package — two YAML files in a folder |
 | `UNDEFINED` after a run | Not a pass and not a failure: no verdict arrived, usually because an operator prompt is unanswered |
+
+## Later: the skills in your own project
+
+Everything above works inside the clone, which is where you want to be the first
+time. Once you are past that, you may want the authoring skills available in a
+project of your own without cloning this one. They are also published as a
+plugin:
+
+```
+/plugin marketplace add OpenTestBed/itb-plugin-authoring
+/plugin install otb-testing@otb-testing-toolkit
+```
+
+That adds the same six skills plus `/spec-to-tests`, `/test-ig` and `/diagnose`
+anywhere. Note the one thing it does *not* carry: building the IG package still
+needs this clone, because the builder lives here. So the plugin is for authoring
+and diagnosis, and the clone is for the full arc.
 
 Deeper reading: [README.md](../README.md) for the full path,
 [EXTENDING.md](../EXTENDING.md) for writing your own dialect, and
