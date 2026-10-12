@@ -6,6 +6,12 @@ package them as a FHIR implementation guide with the features as TestPlans.
 You need Node 18 or newer. You do **not** need an Interoperability Test Bed or
 Docker to write, compile or package tests — only to execute them.
 
+> **New to this?** Start with
+> [docs/first-test-package.md](docs/first-test-package.md) — step by step from a
+> published IG to an installable test package, including the questions you will
+> be asked and what to do when it goes wrong. The rest of this README is the
+> reference.
+
 ## 1. Set up
 
 Clone this repository. That gives you the skills, the written procedures an agent
