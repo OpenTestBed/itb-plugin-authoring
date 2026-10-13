@@ -146,6 +146,57 @@ node app/scripts/build-test-ig.mjs app/public/data/<spec>-test-ig.json --package
 `out` may be absolute — which is what `ig-root.mjs out` gives you — or relative
 to the config file.
 
+### The FHIR version: leave it at ballot5, and know why
+
+**`fhirVersion` must stay `6.0.0-ballot5` for now. Do not "fix" it to
+`6.0.0-snapshot1`, and do not let a newer publisher talk you into it.**
+
+`TestPlan`, `TestScript` and `TestReport` were in R6 core through `ballot3`,
+were removed at `ballot5`, and are **not in `snapshot1`**. From ballot5 on, the
+only package defining them is `hl7.fhir.uv.testing` — which is why every
+`TestPlan` instance is an *additional resource* needing a root-level
+`resourceDefinition` that `_package.py` injects after SUSHI.
+
+That package's current CI build is labelled `0.1.0-snapshot1` but declares
+`fhirVersions: ["6.0.0-ballot5"]`. **The label is misleading; read the
+manifest.** So a snapshot1 IG cannot consume it.
+
+The result is a bind, and the diagnostics point in two different wrong
+directions:
+
+| IG `fhirVersion` | Publisher 3.0.0 says |
+|---|---|
+| `6.0.0-ballot5` | `Unable to support version '6.0.0-ballot5' - must be one of … 6.0.0-snapshot1` |
+| `6.0.0-snapshot1` | `The resource TestPlan cannot be converted from R5 to R4` |
+
+Neither message says "your dependency is a version behind", which is the actual
+cause. **SUSHI succeeds at either version** — `fsh-generated/` and
+`dist/package.tgz` come out correct — so a clean `--package` run proves nothing
+about whether the IG will publish.
+
+Publisher versions, measured:
+
+| Publisher | 6.0.0 codes | Builds a ballot5 TestPlan IG |
+|---|---|---|
+| 2.2.10 | …`ballot4` | no |
+| **2.3.4** | …`ballot5` | **yes, exit 0** |
+| 3.0.0 | …`ballot5`, `snapshot1` | no — `ballot5` present but unsupported |
+
+So if the user reports "the IG doesn't build", **check the publisher version
+before anything else** and pin the one that works:
+
+```
+./_pinPublisher.sh 2.3.4      # shipped in every generated IG
+./_genonce.sh
+```
+
+**When to revisit:** watch the `fhirVersion` of
+<https://build.fhir.org/ig/HL7/fhir-testing-ig/package.manifest.json>. The day it
+reads `6.0.0-snapshot1`, move the config to snapshot1 and drop the pin. Until
+then, moving it only trades one failure for another. The full analysis, including
+the message that looks like a second bug, is in
+`docs/ISSUE-publisher-r6-testplan.md`.
+
 The config names the IG, the spec, its actors (scope canonical, feature file)
 and the process page. The builder writes `sushi-config.yaml`, one TestPlan
 FSH per actor (suite per `Rule:`, test per `Scenario:`, assertion per `Then`
