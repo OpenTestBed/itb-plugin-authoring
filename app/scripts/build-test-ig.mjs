@@ -309,7 +309,14 @@ function sushiConfig(plans, featureFiles) {
   y.push(`license: ${cfg.license ?? 'CC0-1.0'}`);
   y.push(`date: ${today}`);
   y.push(`version: ${cfg.version}`);
-  y.push(`fhirVersion: ${cfg.fhirVersion ?? '6.0.0-snapshot1'}`);
+  // ballot5, deliberately, not snapshot1. TestPlan is not in
+  // hl7.fhir.r6.core#6.0.0-snapshot1, and hl7.fhir.uv.testing — the only
+  // package that defines it — is still built against ballot5. So snapshot1
+  // compiles through SUSHI and then fails in the publisher with "The resource
+  // TestPlan cannot be converted from R5 to R4". Move this to snapshot1 once
+  // the FHIR Testing IG is rebuilt for it; see _pinPublisher.sh for the
+  // publisher versions that go with each.
+  y.push(`fhirVersion: ${cfg.fhirVersion ?? '6.0.0-ballot5'}`);
   y.push(`copyrightYear: ${today.slice(0, 4)}+`);
   y.push(`releaseLabel: ci-build`);
   y.push(`publisher:`);
@@ -525,6 +532,35 @@ ${extra}${extra ? '\n' : ''}| \`input/testing/gherkin/*.feature\` | The Gherkin 
 python _package.py    # sushi + package only, no publisher -> dist/package.tgz
 _genonce.sh           # or _genonce.bat: the full IG Publisher build
 \`\`\`
+
+### If the publisher refuses this IG's FHIR version
+
+\`_updatePublisher.sh\` fetches the **latest** publisher, which is usually right.
+But the publisher drops FHIR versions as they are superseded, so an IG can stop
+building when \`latest\` moves on. This IG targets \`${cfg.fhirVersion ?? '6.0.0-ballot5'}\`, and:
+
+| Publisher | 6.0.0 versions it will build |
+|---|---|
+| 2.2.10 | up to \`ballot5\`'s predecessor, \`ballot4\` |
+| **2.3.4** | adds \`ballot5\` |
+| 3.0.0 | drops \`ballot5\`; requires \`snapshot1\` |
+
+\`snapshot1\` is not usable yet: \`TestPlan\` is not in
+\`hl7.fhir.r6.core#6.0.0-snapshot1\`, and \`hl7.fhir.uv.testing\` — the only
+package that defines it — is still built against \`ballot5\`. SUSHI succeeds
+either way; the publisher is what fails, with *"The resource TestPlan cannot be
+converted from R5 to R4"*.
+
+So if \`latest\` rejects this IG, pin one that does not — optional, and only
+when you need it:
+
+\`\`\`
+./_pinPublisher.sh 2.3.4
+./_genonce.sh
+\`\`\`
+
+Go back to tracking \`latest\` with \`_updatePublisher.sh\` once the FHIR Testing
+IG is rebuilt for \`snapshot1\`.
 `;
 }
 
