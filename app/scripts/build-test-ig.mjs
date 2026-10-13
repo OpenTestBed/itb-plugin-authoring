@@ -309,7 +309,7 @@ function sushiConfig(plans, featureFiles) {
   y.push(`license: ${cfg.license ?? 'CC0-1.0'}`);
   y.push(`date: ${today}`);
   y.push(`version: ${cfg.version}`);
-  y.push(`fhirVersion: ${cfg.fhirVersion ?? '6.0.0-ballot5'}`);
+  y.push(`fhirVersion: ${cfg.fhirVersion ?? '6.0.0-snapshot1'}`);
   y.push(`copyrightYear: ${today.slice(0, 4)}+`);
   y.push(`releaseLabel: ci-build`);
   y.push(`publisher:`);
