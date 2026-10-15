@@ -178,23 +178,25 @@ cd ImplementationGuides/<your-spec>-test
 ./_genonce.sh
 ```
 
-> **If that fails on the FHIR version, it is not your IG.** `_updatePublisher.sh`
-> fetches the newest publisher, and the newest publisher currently cannot build
-> an IG containing `TestPlan` resources. Pin the last one that can — the script
-> ships in your IG:
+> **If that fails on the FHIR version, it is not your IG.** `TestPlan` lives in
+> the `hl7.fhir.uv.testing` package rather than in FHIR core, so your IG's FHIR
+> version has to be one the publisher supports *and* that package is built
+> against. Those two occasionally drift apart — they did for a fortnight in
+> October 2026, when no version satisfied both.
+>
+> Check what the package is built against and match it:
 >
 > ```bash
-> ./_pinPublisher.sh 2.3.4
-> ./_genonce.sh
+> curl -s https://build.fhir.org/ig/HL7/fhir-testing-ig/package.manifest.json
 > ```
 >
-> The reason, in one line: `TestPlan` is not in FHIR `6.0.0-snapshot1`, which the
-> newest publisher requires, and the package that *does* define it is still built
-> for `6.0.0-ballot5`. Your IG is correct either way — `dist/package.tgz` is
-> produced regardless; only the rendered website is affected. Your IG's own
-> README carries the version table, and
-> [ISSUE-publisher-r6-testplan.md](ISSUE-publisher-r6-testplan.md) has the full
-> analysis.
+> If instead the publisher says *"Unable to support version X"*, it is the
+> publisher that is out of step: `./_updatePublisher.sh`, or
+> `./_pinPublisher.sh <version>` for a specific one.
+>
+> Either way `dist/package.tgz` is still produced correctly — only the rendered
+> website is affected. Your IG's own README carries this with the current
+> versions filled in.
 
 **Actually run the tests.** This is where Docker, a test bed and a real system
 under test finally come in:
@@ -235,8 +237,8 @@ cannot fail is not a test.
 | `No system under test among the declared actors` | A dialect verb used `{actor:some-kind}` for the system under test. Kinds are for infrastructure only |
 | A verb you need does not exist | That is a dialect, not a reason to write a worse test. Ask the agent; it needs no repo and no npm package — two YAML files in a folder |
 | `UNDEFINED` after a run | Not a pass and not a failure: no verdict arrived, usually because an operator prompt is unanswered |
-| `Unable to support version '6.0.0-ballot5'` | Your publisher is too new to build a `TestPlan` IG. `./_pinPublisher.sh 2.3.4` |
-| `TestPlan cannot be converted from R5 to R4` | The IG was set to `6.0.0-snapshot1`, where `TestPlan` does not exist. Put it back to `6.0.0-ballot5` |
+| `Unable to support version 'X'` | Your publisher does not build that FHIR version. `./_updatePublisher.sh`, or `./_pinPublisher.sh <version>` |
+| `TestPlan cannot be converted from R5 to R4` | Your IG's FHIR version and the `hl7.fhir.uv.testing` package's disagree. Match the manifest (see step 6) |
 
 ## Later: the skills in your own project
 

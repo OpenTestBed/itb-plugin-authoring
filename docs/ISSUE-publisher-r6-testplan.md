@@ -1,4 +1,26 @@
-# TestPlan IGs cannot move to 6.0.0-snapshot1, and 3.0.0 will not build ballot5
+# RESOLVED — TestPlan IGs had no buildable FHIR version, 8–13 October 2026
+
+> **Resolved upstream on 2026-10-13**, when `hl7.fhir.uv.testing` was rebuilt
+> against `6.0.0-snapshot1`. Nothing was ever reported: the window closed before
+> the write-up was sent.
+>
+> **Current state:** `fhirVersion: 6.0.0-snapshot1` builds with IG Publisher
+> 3.0.1 — exit 0, 0 errors. No publisher pin needed.
+>
+> Kept because the shape of the problem recurs. `TestPlan` is not in FHIR core,
+> so an IG using it needs a FHIR version that the publisher supports *and* that
+> `hl7.fhir.uv.testing` is built against — two things that move independently
+> and had no overlap for five days. If the symptoms below reappear, this is why,
+> and the fix is to match the version in
+> <https://build.fhir.org/ig/HL7/fhir-testing-ig/package.manifest.json>.
+>
+> One loose end still worth raising if it recurs: the error said *"cannot be
+> converted from R5 to **R4**"* for an IG whose `fhirVersion` was `snapshot1`.
+> The R4 target was never explained.
+
+---
+
+*What follows is the original analysis, as measured on 2026-10-13.*
 
 An IG that declares `TestPlan` resources has no buildable FHIR version on IG
 Publisher 3.0.0. The two requirements are mutually exclusive:

@@ -5,20 +5,21 @@
 #
 # WHY THIS EXISTS. `_updatePublisher.sh` always fetches `latest`, which is
 # normally what you want and is left exactly as HL7 ships it. But the publisher
-# drops FHIR versions as they are superseded, and an IG pinned to one of those
-# stops building when `latest` moves:
+# drops FHIR versions as they are superseded, and an IG targeting one of those
+# stops building when `latest` moves on. Observed range, for scale:
 #
 #   publisher 2.2.10  knows 6.0.0 up to ballot4
-#   publisher 2.3.4   adds ballot5                       <- builds this IG
-#   publisher 3.0.0   drops ballot5, requires snapshot1
+#   publisher 2.3.4   adds ballot5
+#   publisher 3.0.0+  drops ballot5, requires snapshot1
 #
-# 6.0.0-snapshot1 cannot be used yet: TestPlan is not in
-# hl7.fhir.r6.core#6.0.0-snapshot1, and hl7.fhir.uv.testing — the only package
-# that defines it — is still built against ballot5. Until that is rebuilt, this
-# IG needs a publisher that still supports ballot5.
+# For a TestPlan IG this bites twice over, because TestPlan is not in FHIR core:
+# the version has to be one the publisher supports AND one that
+# hl7.fhir.uv.testing is built against. Those drifted apart for five days in
+# October 2026 and no version satisfied both.
 #
-# So: run _updatePublisher.sh as usual. If it fetches a publisher that refuses
-# this IG's fhirVersion, pin one that does not, and try `latest` again later.
+# NOT NEEDED TODAY: fhirVersion 6.0.0-snapshot1 builds with publisher 3.0.1.
+# Run _updatePublisher.sh as usual; reach for this only if `latest` refuses the
+# IG's fhirVersion, and then go back to `latest` once it moves on.
 set -e
 
 VERSION="$1"

@@ -146,56 +146,45 @@ node app/scripts/build-test-ig.mjs app/public/data/<spec>-test-ig.json --package
 `out` may be absolute — which is what `ig-root.mjs out` gives you — or relative
 to the config file.
 
-### The FHIR version: leave it at ballot5, and know why
+### The FHIR version has to satisfy two things at once
 
-**`fhirVersion` must stay `6.0.0-ballot5` for now. Do not "fix" it to
-`6.0.0-snapshot1`, and do not let a newer publisher talk you into it.**
+`fhirVersion` is `6.0.0-snapshot1`. Verified 2026-10-15 with IG Publisher 3.0.1:
+**exit 0, 0 errors.**
 
-`TestPlan`, `TestScript` and `TestReport` were in R6 core through `ballot3`,
-were removed at `ballot5`, and are **not in `snapshot1`**. From ballot5 on, the
-only package defining them is `hl7.fhir.uv.testing` — which is why every
-`TestPlan` instance is an *additional resource* needing a root-level
+The reason it needs watching at all: `TestPlan`, `TestScript` and `TestReport`
+are **not in R6 core**. They were there through `ballot3`, went out at `ballot5`,
+and are not in `snapshot1`. They live only in `hl7.fhir.uv.testing`, which is
+why every `TestPlan` instance is an *additional resource* needing the root-level
 `resourceDefinition` that `_package.py` injects after SUSHI.
 
-That package's current CI build is labelled `0.1.0-snapshot1` but declares
-`fhirVersions: ["6.0.0-ballot5"]`. **The label is misleading; read the
-manifest.** So a snapshot1 IG cannot consume it.
+So the version must be one that **both** the publisher supports **and** the
+Testing IG is built against. Those two drift independently, and for a fortnight
+in October 2026 they had no version in common — the publisher had moved to
+`snapshot1` while the Testing IG was still `ballot5`, so no FHIR version worked.
+It resolved on 2026-10-13 when the Testing IG was rebuilt.
 
-The result is a bind, and the diagnostics point in two different wrong
-directions:
+**If the IG stops building, that pairing is the first thing to check**, because
+neither error message mentions it:
 
-| IG `fhirVersion` | Publisher 3.0.0 says |
-|---|---|
-| `6.0.0-ballot5` | `Unable to support version '6.0.0-ballot5' - must be one of … 6.0.0-snapshot1` |
-| `6.0.0-snapshot1` | `The resource TestPlan cannot be converted from R5 to R4` |
-
-Neither message says "your dependency is a version behind", which is the actual
-cause. **SUSHI succeeds at either version** — `fsh-generated/` and
-`dist/package.tgz` come out correct — so a clean `--package` run proves nothing
-about whether the IG will publish.
-
-Publisher versions, measured:
-
-| Publisher | 6.0.0 codes | Builds a ballot5 TestPlan IG |
+| Symptom | Means | Do |
 |---|---|---|
-| 2.2.10 | …`ballot4` | no |
-| **2.3.4** | …`ballot5` | **yes, exit 0** |
-| 3.0.0 | …`ballot5`, `snapshot1` | no — `ballot5` present but unsupported |
-
-So if the user reports "the IG doesn't build", **check the publisher version
-before anything else** and pin the one that works:
+| `The resource TestPlan cannot be converted from R5 to R4` | The IG's version and the Testing IG's disagree | Read the manifest below and match it |
+| `Unable to support version 'X'` | The publisher does not build X | `./_updatePublisher.sh`, or `./_pinPublisher.sh <version>` |
 
 ```
-./_pinPublisher.sh 2.3.4      # shipped in every generated IG
-./_genonce.sh
+curl -s https://build.fhir.org/ig/HL7/fhir-testing-ig/package.manifest.json
 ```
 
-**When to revisit:** watch the `fhirVersion` of
-<https://build.fhir.org/ig/HL7/fhir-testing-ig/package.manifest.json>. The day it
-reads `6.0.0-snapshot1`, move the config to snapshot1 and drop the pin. Until
-then, moving it only trades one failure for another. The full analysis, including
-the message that looks like a second bug, is in
-`docs/ISSUE-publisher-r6-testplan.md`.
+Its `fhirVersion` is what this IG's `fhirVersion` must be. Beware the package's
+own label: through to October 2026 it was versioned `0.1.0-snapshot1` while
+declaring `fhirVersions: ["6.0.0-ballot5"]` — **read the manifest, not the
+version string.** Also check the local cache is not stale
+(`~/.fhir/packages/hl7.fhir.uv.testing#current/package/package.json`), since the
+dependency is `current` and a stale copy will reintroduce a resolved problem.
+
+**SUSHI succeeds through both failures**, producing correct `fsh-generated/` and
+`dist/package.tgz`. So a clean `--package` run says nothing about whether the IG
+will publish, and the package is never the thing to doubt.
 
 The config names the IG, the spec, its actors (scope canonical, feature file)
 and the process page. The builder writes `sushi-config.yaml`, one TestPlan

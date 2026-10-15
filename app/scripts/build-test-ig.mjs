@@ -309,14 +309,13 @@ function sushiConfig(plans, featureFiles) {
   y.push(`license: ${cfg.license ?? 'CC0-1.0'}`);
   y.push(`date: ${today}`);
   y.push(`version: ${cfg.version}`);
-  // ballot5, deliberately, not snapshot1. TestPlan is not in
-  // hl7.fhir.r6.core#6.0.0-snapshot1, and hl7.fhir.uv.testing — the only
-  // package that defines it — is still built against ballot5. So snapshot1
-  // compiles through SUSHI and then fails in the publisher with "The resource
-  // TestPlan cannot be converted from R5 to R4". Move this to snapshot1 once
-  // the FHIR Testing IG is rebuilt for it; see _pinPublisher.sh for the
-  // publisher versions that go with each.
-  y.push(`fhirVersion: ${cfg.fhirVersion ?? '6.0.0-ballot5'}`);
+  // snapshot1, which is what the current publisher builds. This was ballot5
+  // until 2026-10-13, when hl7.fhir.uv.testing was rebuilt against snapshot1 —
+  // before that, snapshot1 passed SUSHI and then died in the publisher with
+  // "The resource TestPlan cannot be converted from R5 to R4", because
+  // TestPlan is in neither hl7.fhir.r6.core#6.0.0-snapshot1 nor a snapshot1
+  // build of the Testing IG. Verified with publisher 3.0.1: exit 0, 0 errors.
+  y.push(`fhirVersion: ${cfg.fhirVersion ?? '6.0.0-snapshot1'}`);
   y.push(`copyrightYear: ${today.slice(0, 4)}+`);
   y.push(`releaseLabel: ci-build`);
   y.push(`publisher:`);
@@ -535,33 +534,79 @@ _genonce.sh           # or _genonce.bat: the full IG Publisher build
 
 ### If the publisher refuses this IG's FHIR version
 
-\`_updatePublisher.sh\` fetches the **latest** publisher, which is usually right.
-But the publisher drops FHIR versions as they are superseded, so an IG can stop
-building when \`latest\` moves on. This IG targets \`${cfg.fhirVersion ?? '6.0.0-ballot5'}\`, and:
+This IG targets \`${cfg.fhirVersion ?? '6.0.0-snapshot1'}\`, which the current
+publisher builds — \`_updatePublisher.sh\` and \`_genonce.sh\` are all you need.
 
-| Publisher | 6.0.0 versions it will build |
-|---|---|
-| 2.2.10 | up to \`ballot5\`'s predecessor, \`ballot4\` |
-| **2.3.4** | adds \`ballot5\` |
-| 3.0.0 | drops \`ballot5\`; requires \`snapshot1\` |
-
-\`snapshot1\` is not usable yet: \`TestPlan\` is not in
-\`hl7.fhir.r6.core#6.0.0-snapshot1\`, and \`hl7.fhir.uv.testing\` — the only
-package that defines it — is still built against \`ballot5\`. SUSHI succeeds
-either way; the publisher is what fails, with *"The resource TestPlan cannot be
-converted from R5 to R4"*.
-
-So if \`latest\` rejects this IG, pin one that does not — optional, and only
-when you need it:
+It is worth knowing why that pairing matters, because it broke once and will
+break again. \`TestPlan\`, \`TestScript\` and \`TestReport\` are not in R6 core: they
+were there through \`ballot3\`, went out at \`ballot5\`, and are not in
+\`snapshot1\`. They live in \`hl7.fhir.uv.testing\`, so this IG's FHIR version has
+to be one that **both** the publisher supports **and** that package is built
+against. For a fortnight in October 2026 no such version existed — the publisher
+had moved to \`snapshot1\` while the Testing IG was still on \`ballot5\` — and the
+symptom was:
 
 \`\`\`
-./_pinPublisher.sh 2.3.4
-./_genonce.sh
+Publishing Content Failed: The resource TestPlan cannot be converted from R5 to R4
 \`\`\`
 
-Go back to tracking \`latest\` with \`_updatePublisher.sh\` once the FHIR Testing
-IG is rebuilt for \`snapshot1\`.
+If that returns, check what \`hl7.fhir.uv.testing\` is built against:
+
+\`\`\`
+curl -s https://build.fhir.org/ig/HL7/fhir-testing-ig/package.manifest.json
+\`\`\`
+
+and set this IG's \`fhirVersion\` to match. If instead the publisher rejects the
+version outright — *"Unable to support version X"* — it is the publisher that is
+behind or ahead, and \`./_pinPublisher.sh <version>\` will fetch a specific one.
+SUSHI succeeds throughout either failure, so \`dist/package.tgz\` is never the
+thing to doubt.
 `;
+}
+
+/**
+ * Fit a standalone record into an IG page.
+ *
+ * The record is written to be read on its own, so it opens with an `#` title
+ * and uses `##` for its sections. The IG template supplies the page's own
+ * heading from `pages:` in sushi-config ("Method"), which renders as an `<h2>`,
+ * so copying the file verbatim gives a page whose first heading is below a
+ * later one and which has several top-level headings. The publisher reports
+ * both as WCAG errors:
+ *
+ *   The heading <h1> '…' is at a higher level than the first heading on the
+ *   page (<h2> 'Method'). The first heading on a page must be its top level
+ *   heading (WCAG compliance test)
+ *
+ * So drop the title — the page already has one — and push everything else down
+ * a level, leaving exactly one top-level heading. Fenced code blocks are left
+ * alone, or a `#` comment inside a bash example would be mangled into a
+ * heading.
+ */
+function asPageContent(md) {
+  const out = [];
+  let fence = null;
+  let droppedTitle = false;
+  for (const line of md.split(/\r?\n/)) {
+    const f = /^\s*(```+|~~~+)/.exec(line);
+    if (f) {
+      if (!fence) fence = f[1][0];
+      else if (f[1][0] === fence) fence = null;
+      out.push(line);
+      continue;
+    }
+    if (fence) { out.push(line); continue; }
+    const h = /^(#{1,5})(\s+)(.*)$/.exec(line);
+    if (h) {
+      if (h[1].length === 1 && !droppedTitle) { droppedTitle = true; continue; }
+      out.push('#' + h[1] + h[2] + h[3]);
+      continue;
+    }
+    out.push(line);
+  }
+  // Dropping the title usually leaves a blank first line.
+  while (out.length && out[0].trim() === '') out.shift();
+  return out.join('\n');
 }
 
 // ─────────────────────────────────────────────────────────────────────
@@ -599,7 +644,11 @@ for (const f of featureFiles) fs.copyFileSync(path.join(FEATURES, f.source), pat
 fs.writeFileSync(path.join(OUT, 'input', 'fsh', 'binary-gherkin.fsh'), binaryFsh(featureFiles));
 fs.writeFileSync(path.join(OUT, 'input', 'pagecontent', 'index.md'), indexMd(plans));
 fs.writeFileSync(path.join(OUT, 'input', 'pagecontent', 'testing.md'), testingMd(plans));
-if (cfg.processPage) fs.copyFileSync(path.resolve(path.dirname(configPath), cfg.processPage), path.join(OUT, 'input', 'pagecontent', 'process.md'));
+if (cfg.processPage) {
+  fs.writeFileSync(
+    path.join(OUT, 'input', 'pagecontent', 'process.md'),
+    asPageContent(fs.readFileSync(path.resolve(path.dirname(configPath), cfg.processPage), 'utf8')));
+}
 else if (fs.existsSync(path.join(OUT, 'input', 'pagecontent', 'process.md'))) fs.unlinkSync(path.join(OUT, 'input', 'pagecontent', 'process.md'));
 fs.writeFileSync(path.join(OUT, 'README.md'), readmeMd(plans));
 // The scaffold's ig.ini names the IG file by id.
