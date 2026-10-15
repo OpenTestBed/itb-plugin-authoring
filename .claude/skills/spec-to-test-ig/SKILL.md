@@ -1,9 +1,9 @@
 ---
 name: spec-to-test-ig
-description: Derive conformance test cases from a FHIR implementation guide's actors and element obligations, self-test them against the IG's examples, and publish them as a TestPlan + Gherkin IG package (the pharm-MEOW-test layout). Use when asked to "add test cases for the actors of <IG>", to cover obligations, or to build a test IG package for a specification.
+description: Build a FHIR Test Package — an implementation guide carrying one TestPlan per actor plus the Gherkin it names — from a specification, self-testing the assertions against the spec's own examples first. Use when asked for a FHIR Test Package or a test IG, to "add test cases for the actors of <IG>", to cover obligations, or to publish an existing Gherkin suite as TestPlans.
 ---
 
-# From a specification to a test IG
+# From a specification to a FHIR Test Package
 
 The procedure that produced `ips-creator.feature`, `ips-consumer.feature`,
 `ips-server.feature` and the `hl7-ips-test` IG. Follow it in order and keep the

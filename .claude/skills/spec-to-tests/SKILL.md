@@ -105,6 +105,19 @@ node scripts/run-on-itb.mjs deploy build/suite.zip
 node scripts/run-on-itb.mjs run <testCaseId> ...
 ```
 
+**One archive is one test suite.** `/api/rest/testsuite/deploy` takes a single
+`testSuite`, so N features produce N archives: with more than one feature
+`--zip suite.zip` writes `suite-<feature>.zip` for each and prints them, and
+**each has to be deployed separately**. Deploying one and assuming the rest went
+with it is the mistake this naming exists to prevent.
+
+The two deliverables are different artifacts and both may be wanted:
+
+| | What it is | Built by |
+|---|---|---|
+| **test suite archive** | `suite-<feature>.zip` — GITB TDL, deploys to ITB and runs | `compile.mjs --zip` |
+| **FHIR Test Package** | an IG with one `TestPlan` per actor, `dist/package.tgz` | `spec-to-test-ig` |
+
 `run` exits non-zero unless every session ends in SUCCESS, so it is a gate
 rather than a report. Two results need care:
 

@@ -1,10 +1,10 @@
 ---
-description: Publish an existing Gherkin test suite as a FHIR IG with one TestPlan per actor.
+description: Build a FHIR Test Package — an IG with one TestPlan per actor, carrying the Gherkin.
 argument-hint: <spec id or the features to package>
 ---
 
-You have been asked to package conformance tests as a FHIR implementation guide
-for: **$ARGUMENTS**
+You have been asked to build a **FHIR Test Package** — an implementation guide
+carrying one TestPlan per actor — for: **$ARGUMENTS**
 
 Follow the `spec-to-test-ig` skill. The deliverable is a publishable IG, not a
 folder of scripts:

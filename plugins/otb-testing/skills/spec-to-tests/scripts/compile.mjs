@@ -95,7 +95,11 @@ function expand(t) {
 const files = targets.flatMap(expand);
 const report = [];
 let failed = 0;
-let lastOut = null;
+// Every feature's output, not just the last one: a GITB test suite archive
+// holds ONE test suite (/api/rest/testsuite/deploy takes a single `testSuite`),
+// so N features means N archives. Keeping only the last silently shipped one
+// actor's tests out of however many were compiled.
+const outs = [];
 
 for (const file of files) {
   const text = fs.readFileSync(file, 'utf8');
@@ -107,7 +111,7 @@ for (const file of files) {
     const gen = new XMLGenerator(parser);
     gen.setExternalScriptlets(externalScriptlets(file, text));
     const out = gen.generate(parsed);
-    lastOut = out;
+    outs.push({ file, out });
     for (const i of [...(parsed.errors ?? []), ...(out.issues ?? [])]) {
       (i.severity === 'warning' ? entry.warnings : entry.errors).push(i);
     }
@@ -178,11 +182,27 @@ function crc32(buf) {
   return (c ^ -1) >>> 0;
 }
 
-if (ZIP && failed === 0 && lastOut) {
-  const target = OUT ? path.join(OUT, ZIP) : ZIP;
-  fs.mkdirSync(path.dirname(path.resolve(target)), { recursive: true });
-  fs.writeFileSync(target, zipOf(lastOut.files.map(f => [f.filename, f.xml])));
-  if (!JSON_OUT) console.log(`zip: ${target}`);
+if (ZIP && failed === 0 && outs.length) {
+  // One archive per feature, because one archive is one test suite. With a
+  // single feature the name you asked for is used as-is; with several, each
+  // archive is named after its feature so the names say what they hold, and
+  // `--zip suite.zip` becomes suite-<feature>.zip rather than one of them
+  // silently winning.
+  const base = ZIP.replace(/\.zip$/i, '');
+  const many = outs.length > 1;
+  const written = [];
+  for (const { file, out } of outs) {
+    const stem = path.basename(file).replace(/\.feature$/i, '');
+    const name = many ? `${base}-${stem}.zip` : `${base}.zip`;
+    const target = OUT ? path.join(OUT, name) : name;
+    fs.mkdirSync(path.dirname(path.resolve(target)), { recursive: true });
+    fs.writeFileSync(target, zipOf(out.files.map(f => [f.filename, f.xml])));
+    written.push({ target, cases: out.files.filter(f => f.type === 'testcase').length });
+  }
+  if (!JSON_OUT) {
+    for (const w of written) console.log(`zip: ${w.target}  [${w.cases} test case${w.cases === 1 ? '' : 's'}]`);
+    if (many) console.log(`${written.length} archives — deploy each one: run-on-itb.mjs deploy <zip>`);
+  }
 }
 
 if (JSON_OUT) {
