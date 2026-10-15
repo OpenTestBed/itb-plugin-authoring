@@ -6,7 +6,7 @@
   "description": "A demonstration IG that declares, as TestPlan resources and Gherkin feature files, the conformance tests for the three actors of IHE ITI Internet User Authorization (IUA), Revision 2.5: Authorization Client, Authorization Server and Resource Server. IUA publishes no FHIR package, so every test case is traceable instead to a quoted requirement in the supplement's narrative or to the OAuth 2.1 clause it rests on.",
   "disclaimer": "This is not an approved IHE test specification, and these tests have not been executed against any implementation.",
   "version": "0.1.0",
-  "fhirVersion": "6.0.0-ballot5",
+  "fhirVersion": "6.0.0-snapshot1",
   "license": "CC0-1.0",
   "publisher": {
     "name": "Jose Costa Teixeira",
