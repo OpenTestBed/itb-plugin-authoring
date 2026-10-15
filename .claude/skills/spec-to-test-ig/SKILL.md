@@ -5,6 +5,39 @@ description: Build a FHIR Test Package — an implementation guide carrying one 
 
 # From a specification to a FHIR Test Package
 
+A **FHIR Test Package** is an implementation guide carrying one `TestPlan` per
+actor plus the Gherkin each plan names, published as `dist/package.tgz`. Not to
+be confused with a **test suite archive** (`suite-<feature>.zip`), which is the
+GITB TDL you upload to an ITB and run — a different artifact, built by
+`spec-to-tests`. A user may want either or both; ask if "test package" is all
+you were given.
+
+## First: is this the right skill?
+
+This procedure is **obligation-driven**. It derives test cases from the
+`obligation` extensions on a FHIR IG's profiles, self-tests the assertions
+against the IG's own examples, and then packages them.
+
+**If the specification carries no obligations, use `spec-to-tests` for stages 1
+to 3 and come back here for the packaging (step 6).** Check before starting:
+
+```
+node app/scripts/ips-obligations.mjs extract --spec <id>#<version> --url <site>
+```
+
+Nothing extracted means one of two things, and they differ:
+
+- **a FHIR IG without obligations** — derive from `mustSupport` plus the
+  narrative, as step 3 says, and continue here;
+- **not a FHIR IG at all** — no package on the registry, so no profiles, no
+  capability statements, no examples. IHE IUA is this case. There is nothing for
+  this procedure to read, so hand stages 1 to 3 to `spec-to-tests`, which works
+  from the narrative, then return for step 6 with the feature files it produced.
+  Set `spec.dependency: false` in the config and quote the requirements in prose.
+
+Either way the deliverable is the same, and step 6 does not care how the
+features were authored.
+
 The procedure that produced `ips-creator.feature`, `ips-consumer.feature`,
 `ips-server.feature` and the `hl7-ips-test` IG. Follow it in order and keep the
 record (step 7) as you go; the record is part of the deliverable.

@@ -1,6 +1,6 @@
 ---
 name: spec-to-tests
-description: Turn a specification into executable conformance tests — set the scope from its profiles or its actors, agree with the user which kinds of test to write, author them in Gherkin, prove they compile, and run them against a live Interoperability Test Bed. Use when someone brings a spec, an implementation guide, a profile or a capability statement and wants tests for it.
+description: Turn a specification into executable conformance tests — set the scope from its profiles or its actors, agree with the user which kinds of test to write, author them in Gherkin, prove they compile, and run them against a live Interoperability Test Bed. Use when someone brings a spec, an implementation guide, a profile or a capability statement and wants tests for it, including when they ask for a FHIR Test Package from a specification that publishes no FHIR package of its own.
 ---
 
 # From a specification to running tests
